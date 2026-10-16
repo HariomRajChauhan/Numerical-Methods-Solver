@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { ApiError } from "../api/client";
 import { ErrorAlert } from "../components/ErrorAlert";
 import { DataTable } from "../components/DataTable";
+import { ExportButtons } from "../components/ExportButtons";
 import { LatexView } from "../components/LatexView";
 import { LoadingSkeleton } from "../components/LoadingSkeleton";
 import { MethodForm } from "../components/MethodForm";
@@ -119,6 +120,12 @@ export function MethodSolverPage() {
         </section>
 
         <section aria-label="Results" className="min-w-0">
+          {response && (
+            <div className="mb-2 flex justify-end">
+              <ExportButtons methodId={meta.id} inputs={inputs} />
+            </div>
+          )}
+
           <Tabs
             tabs={tabs}
             activeId={activeTab}

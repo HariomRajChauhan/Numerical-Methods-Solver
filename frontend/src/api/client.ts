@@ -44,6 +44,20 @@ function messageFromBody(body: BackendErrorBody, fallback: string): string {
   return fallback;
 }
 
+async function toApiError(response: Response): Promise<ApiError> {
+  let body: BackendErrorBody = {};
+  try {
+    body = (await response.json()) as BackendErrorBody;
+  } catch {
+    /* non-JSON error body */
+  }
+  return new ApiError(messageFromBody(body, `Request failed (${response.status}).`), {
+    status: response.status,
+    code: body.code ?? `http_${response.status}`,
+    hint: body.hint,
+  });
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const url = `${BASE_URL}${API_PREFIX}${path}`;
   let response: Response;
@@ -60,21 +74,37 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   if (!response.ok) {
-    let body: BackendErrorBody = {};
-    try {
-      body = (await response.json()) as BackendErrorBody;
-    } catch {
-      /* non-JSON error body */
-    }
-    throw new ApiError(messageFromBody(body, `Request failed (${response.status}).`), {
-      status: response.status,
-      code: body.code ?? `http_${response.status}`,
-      hint: body.hint,
-    });
+    throw await toApiError(response);
   }
 
   return (await response.json()) as T;
 }
+
+/** Like {@link request} but for binary downloads (PDF/CSV reports). */
+async function requestBlob(path: string, init?: RequestInit): Promise<Blob> {
+  const url = `${BASE_URL}${API_PREFIX}${path}`;
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+      ...init,
+    });
+  } catch {
+    throw new ApiError(
+      "Cannot reach the solver server. Is the backend running?",
+      { code: "network_error", hint: `Tried ${url}` },
+    );
+  }
+
+  if (!response.ok) {
+    throw await toApiError(response);
+  }
+
+  return response.blob();
+}
+
+/** Report formats the backend can render. */
+export type ExportFormat = "pdf" | "csv";
 
 export const api = {
   /** Backend liveness probe. */
@@ -95,6 +125,18 @@ export const api = {
   /** Run a solver. Inputs are validated by the backend schema. */
   solve(methodId: string, inputs: Record<string, unknown>): Promise<SolveResponse> {
     return request<SolveResponse>(`/solve/${encodeURIComponent(methodId)}`, {
+      method: "POST",
+      body: JSON.stringify(inputs),
+    });
+  },
+
+  /** Download a server-rendered PDF/CSV report for a solved problem. */
+  exportReport(
+    methodId: string,
+    inputs: Record<string, unknown>,
+    format: ExportFormat = "pdf",
+  ): Promise<Blob> {
+    return requestBlob(`/export/${encodeURIComponent(methodId)}?format=${format}`, {
       method: "POST",
       body: JSON.stringify(inputs),
     });

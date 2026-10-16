@@ -61,14 +61,12 @@ def _source_of(fn: Any) -> str:
 PayloadBody = Annotated[dict[str, Any] | None, Body()]
 
 
-@router.post("/solve/{method_id}", response_model=SolveResponse, summary="Solve a problem")
-@limiter.limit(solve_rate_limit)
-def solve(
-    request: Request,
-    method_id: str,
-    payload: PayloadBody = None,
-) -> SolveResponse:
-    """Validate the payload against the method schema, solve it, return the contract."""
+def execute_solve(method_id: str, payload: dict[str, Any] | None) -> SolveResponse:
+    """Validate inputs, run the solver under a deadline and enrich the response.
+
+    Shared by the ``/solve`` and ``/export`` endpoints so both go through exactly
+    the same validation, timeout and enrichment path.
+    """
     entry = registry.get_entry(method_id)
     if entry.solver is None:
         raise MethodUnavailableError(
@@ -87,3 +85,14 @@ def solve(
             f"The computation exceeded the {limits.timeout_seconds:g}s time limit.",
             hint="Reduce the number of iterations or simplify the problem.",
         ) from exc
+
+
+@router.post("/solve/{method_id}", response_model=SolveResponse, summary="Solve a problem")
+@limiter.limit(solve_rate_limit)
+def solve(
+    request: Request,
+    method_id: str,
+    payload: PayloadBody = None,
+) -> SolveResponse:
+    """Validate the payload against the method schema, solve it, return the contract."""
+    return execute_solve(method_id, payload)

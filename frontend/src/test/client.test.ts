@@ -68,4 +68,37 @@ describe("api client", () => {
 
     await expect(api.getMethod("bisection")).rejects.toMatchObject({ code: "network_error" });
   });
+
+  it("downloads a report as a Blob", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(new Blob(["%PDF-1.4"], { type: "application/pdf" }), {
+        status: 200,
+        headers: { "Content-Type": "application/pdf" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const blob = await api.exportReport("bisection", { a: 1, b: 2 }, "pdf");
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.type).toBe("application/pdf");
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/export/bisection?format=pdf",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("maps a failed export onto ApiError", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        jsonResponse({ detail: "not implemented yet", code: "method_unavailable" }, 409),
+      ),
+    );
+
+    await expect(api.exportReport("newton_raphson", {}, "csv")).rejects.toMatchObject({
+      status: 409,
+      code: "method_unavailable",
+      message: "not implemented yet",
+    });
+  });
 });

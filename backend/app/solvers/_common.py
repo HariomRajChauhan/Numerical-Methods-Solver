@@ -12,6 +12,9 @@ from typing import Any
 
 import numpy as np
 
+from app.core.models import Chapter, MethodMeta, MethodStatus
+from app.core.registry import register_stub
+
 # Function-like callable produced by app.core.parser.make_function.
 Evaluator = Callable[[Any], Any]
 
@@ -68,3 +71,31 @@ def marker_trace(
         "y": [y],
         "marker": {"size": 11, "color": color, "symbol": symbol},
     }
+
+
+def register_coming_soon(
+    chapter: Chapter,
+    method_id: str,
+    name: str,
+    summary: str,
+    theory: str = "",
+    pseudocode: str = "",
+) -> None:
+    """Register a syllabus method that is planned but not yet implemented.
+
+    Coming-soon methods appear in navigation, search and the chapter pages with
+    a "Coming soon" badge, and their theory/pseudocode tabs are already readable.
+    Implementing the method later means replacing this call with ``@register``.
+    """
+    register_stub(
+        MethodMeta(
+            id=method_id,
+            chapter=chapter,
+            name=name,
+            status=MethodStatus.COMING_SOON,
+            summary=summary,
+            theory=theory,
+            pseudocode=pseudocode,
+            input_schema=[],
+        )
+    )

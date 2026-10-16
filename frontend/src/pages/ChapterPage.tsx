@@ -41,26 +41,24 @@ export function ChapterPage() {
       <ul className="grid gap-3 sm:grid-cols-2">
         {chapterMethods.map((method) => {
           const available = method.status === "available";
-          const body = (
-            <>
-              <div className="flex items-center justify-between gap-2">
-                <h2 className="font-semibold text-slate-900 dark:text-slate-100">{method.name}</h2>
-                <MethodStatusBadge status={method.status} />
-              </div>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{method.summary}</p>
-            </>
-          );
           return (
             <li key={method.id}>
-              {available ? (
-                <Link to={`/methods/${method.id}`} className={`block p-4 ${ui.card} ${ui.cardHover}`}>
-                  {body}
-                </Link>
-              ) : (
-                <div className={`p-4 opacity-70 ${ui.card}`} aria-disabled="true">
-                  {body}
+              <Link
+                to={`/methods/${method.id}`}
+                className={`block p-4 ${ui.card} ${ui.cardHover} ${
+                  available ? "" : "opacity-80"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+                    {method.name}
+                  </h2>
+                  <MethodStatusBadge status={method.status} />
                 </div>
-              )}
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                  {method.summary}
+                </p>
+              </Link>
             </li>
           );
         })}

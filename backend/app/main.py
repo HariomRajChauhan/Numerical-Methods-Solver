@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import health, methods, solve
+from app.api import export, health, methods, solve
 from app.core.config import Settings, get_settings
 from app.core.errors import register_exception_handlers
 from app.core.rate_limit import limiter
@@ -54,6 +54,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health.router, prefix=settings.api_prefix)
     app.include_router(methods.router, prefix=settings.api_prefix)
     app.include_router(solve.router, prefix=settings.api_prefix)
+    app.include_router(export.router, prefix=settings.api_prefix)
     return app
 
 
