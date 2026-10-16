@@ -7,6 +7,14 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    proxy: {
+      // Local dev: forward API calls to the FastAPI backend so requests are
+      // same-origin (no CORS preflight, works from localhost/127.0.0.1/LAN).
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     chunkSizeWarningLimit: 800,

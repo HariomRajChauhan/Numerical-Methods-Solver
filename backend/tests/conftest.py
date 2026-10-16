@@ -22,8 +22,14 @@ def client() -> Iterator[TestClient]:
 
 @pytest.fixture
 def registry_guard() -> Iterator[None]:
-    """Isolate registry mutations made by a test from the rest of the suite."""
+    """Isolate registry mutations made by a test from the rest of the suite.
+
+    The registry is emptied for the duration of the test (so real, auto-loaded
+    solvers like ``bisection`` never leak into the assertions) and restored
+    exactly afterwards.
+    """
     snapshot = dict(registry._REGISTRY)
+    registry._REGISTRY.clear()
     try:
         yield
     finally:

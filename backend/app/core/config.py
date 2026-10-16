@@ -15,7 +15,10 @@ class Settings(BaseSettings):
     api_prefix: str = "/api"
     debug: bool = False
 
-    cors_origins: str = "http://localhost:5173,http://localhost:3000"
+    cors_origins: str = (
+        "http://localhost:5173,http://127.0.0.1:5173,"
+        "http://localhost:3000,http://127.0.0.1:3000"
+    )
 
     rate_limit_per_minute: int = 60
 
