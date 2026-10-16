@@ -1,0 +1,27 @@
+services:
+  backend:
+    build: ./backend
+    container_name: nms-backend
+    ports:
+      - "8000:8000"
+    environment:
+      API_PREFIX: ${API_PREFIX:-/api}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000,http://localhost}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-60}
+      SOLVER_TIMEOUT_SECONDS: ${SOLVER_TIMEOUT_SECONDS:-10}
+      MAX_ITERATIONS_LIMIT: ${MAX_ITERATIONS_LIMIT:-10000}
+      MAX_MATRIX_SIZE: ${MAX_MATRIX_SIZE:-50}
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Empty = same-origin; nginx proxies /api to the backend service.
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+    container_name: nms-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
