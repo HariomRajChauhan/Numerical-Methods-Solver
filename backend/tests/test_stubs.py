@@ -87,7 +87,14 @@ SYLLABUS: dict[Chapter, list[str]] = {
 
 # Methods with a real solver (updated as chapters are implemented).
 IMPLEMENTED: dict[Chapter, list[str]] = {
-    Chapter.CH1_NONLINEAR: ["errors_accuracy", "bisection", "false_position", "secant"],
+    Chapter.CH1_NONLINEAR: [
+        "errors_accuracy",
+        "bisection",
+        "false_position",
+        "secant",
+        "newton_raphson",
+        "fixed_point",
+    ],
 }
 
 IMPLEMENTED_IDS = {method_id for ids in IMPLEMENTED.values() for method_id in ids}

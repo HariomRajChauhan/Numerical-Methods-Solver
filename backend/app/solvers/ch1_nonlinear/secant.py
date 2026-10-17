@@ -28,6 +28,7 @@ from app.core.models import (
 from app.core.parser import expr_to_latex, make_function, parse_expression
 from app.core.registry import register
 from app.solvers._common import (
+    estimate_order,
     format_num,
     function_field,
     line_trace,
@@ -151,24 +152,6 @@ META = MethodMeta(
         ),
     ],
 )
-
-
-def _estimate_order(step_errors: list[float]) -> float | None:
-    """Estimate the convergence order p from the last three step errors."""
-    if len(step_errors) < 3:
-        return None
-    e_prev2, e_prev1, e_last = step_errors[-3:]
-    if e_prev2 <= 0 or e_prev1 <= 0 or e_last <= 0:
-        return None
-    ratio_1 = e_prev1 / e_prev2
-    ratio_2 = e_last / e_prev1
-    if ratio_1 <= 0 or ratio_2 <= 0:
-        return None
-    try:
-        order = math.log(ratio_2) / math.log(ratio_1)
-    except (ValueError, ZeroDivisionError):
-        return None
-    return order if math.isfinite(order) and 0.0 < order < 5.0 else None
 
 
 def _error_column(criterion: str) -> str:
@@ -322,7 +305,7 @@ def solve(inputs: dict[str, Any], limits: SolverLimits) -> SolveResponse:
             )
         )
 
-    order = _estimate_order(step_errors)
+    order = estimate_order(step_errors)
     if order is None and converged and len(step_errors) >= 2:
         order = _GOLDEN
     relative = abs(last_dx / root) * 100.0 if root != 0 else None

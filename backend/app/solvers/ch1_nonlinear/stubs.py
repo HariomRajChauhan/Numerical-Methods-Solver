@@ -3,7 +3,9 @@
 These register with ``status=coming_soon`` so they appear in navigation, search
 and the chapter page (with a badge) and expose their theory/pseudocode, but
 ``POST /api/solve/<id>`` returns 409 until a real solver replaces the stub.
-``bisection`` is the one implemented method and lives in ``bisection.py``.
+``bisection``, ``errors_accuracy``, ``false_position``, ``secant``,
+``newton_raphson`` and ``fixed_point`` are implemented and live in their own
+modules.
 """
 
 from __future__ import annotations
@@ -12,46 +14,6 @@ from app.core.models import Chapter
 from app.solvers._common import register_coming_soon
 
 CHAPTER = Chapter.CH1_NONLINEAR
-
-register_coming_soon(
-    CHAPTER,
-    "newton_raphson",
-    "Newton-Raphson Method",
-    "Quadratic root finding using f(x) and its derivative f'(x) from a single guess.",
-    theory=(
-        "Newton-Raphson follows the tangent line at the current point to its "
-        "x-intercept, giving x(k+1) = x(k) - f(x(k))/f'(x(k)). Started near the root "
-        "it converges quadratically (the number of correct digits roughly doubles each "
-        "step); a poor guess or a near-zero derivative can make it diverge."
-    ),
-    pseudocode=(
-        "NewtonRaphson(f, df, x0, tol, max_iter):\n"
-        "    for k = 1 to max_iter:\n"
-        "        x1 <- x0 - f(x0)/df(x0)\n"
-        "        if |x1 - x0| < tol: return x1, k\n"
-        "        x0 <- x1"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "fixed_point",
-    "Fixed-Point Iteration",
-    "Solve x = g(x) by repeated substitution; converges when |g'(x)| < 1 near the root.",
-    theory=(
-        "A root of f(x) = 0 is rearranged into the fixed-point form x = g(x). Iterating "
-        "x(k+1) = g(x(k)) converges to a fixed point when |g'(x)| < 1 in the "
-        "neighbourhood of the solution; the smaller the derivative, the faster the "
-        "convergence."
-    ),
-    pseudocode=(
-        "FixedPoint(g, x0, tol, max_iter):\n"
-        "    for k = 1 to max_iter:\n"
-        "        x1 <- g(x0)\n"
-        "        if |x1 - x0| < tol: return x1, k\n"
-        "        x0 <- x1"
-    ),
-)
 
 register_coming_soon(
     CHAPTER,

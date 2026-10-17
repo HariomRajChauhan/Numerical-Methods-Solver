@@ -332,3 +332,23 @@ def stop_reached(
             return False, None
         error = abs(x - x_prev)
     return error < tolerance, error
+
+
+def estimate_order(step_errors: list[float]) -> float | None:
+    """Estimate the convergence order ``p`` from successive iterate errors.
+
+    Uses ``p ~= ln(e_{k+1}/e_k) / ln(e_k/e_{k-1})`` over the last three
+    available errors. Returns ``None`` when the estimate is not meaningful.
+    """
+    errors = [e for e in step_errors if e > 0.0]
+    if len(errors) < 3:
+        return None
+    e_prev, e_cur, e_next = errors[-3], errors[-2], errors[-1]
+    num = math.log(e_next / e_cur)
+    den = math.log(e_cur / e_prev)
+    if den == 0.0:
+        return None
+    order = num / den
+    if not math.isfinite(order) or order <= 0.0 or order >= 5.0:
+        return None
+    return order
