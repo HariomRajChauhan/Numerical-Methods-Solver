@@ -8,6 +8,7 @@ import type { MethodMeta } from "../types/api";
 const BISECTION: MethodMeta = {
   id: "bisection",
   chapter: "ch1_nonlinear",
+  variables: ["x"],
   name: "Bisection Method",
   status: "available",
   summary: "",

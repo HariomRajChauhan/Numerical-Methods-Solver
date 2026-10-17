@@ -18,8 +18,12 @@ one test file — no router or UI changes.
 - **Error & convergence** — absolute/relative error and order of convergence where applicable.
 - **Reports** — download a formatted PDF (reportlab) or a CSV of the iteration table.
 - **Safe expression parsing** — user formulas go through SymPy with a whitelist; no `eval`/`exec`.
+  Pasted notation is normalised (`−`→`-`, `×`→`*`, `÷`→`/`, `π`→`pi`, `√(`→`sqrt(`, `x²`→`x^2`).
+- **On-screen keypad** — a shared, tabbed keypad (numbers / operators / functions /
+  variables / edit) inserts at the cursor, shows a live KaTeX preview and remembers
+  its open state in `localStorage`; matrix and vector inputs get a compact numeric pad.
 - **Robust by construction** — per-request timeout, iteration/matrix caps, rate limiting.
-- **51 methods in the catalogue** — 7 available and 44 syllabus methods as
+- **51 methods in the catalogue** — 9 available and 42 syllabus methods as
   navigable "coming soon" stubs with theory and pseudocode already readable.
 
 ## Stack
@@ -27,7 +31,7 @@ one test file — no router or UI changes.
 - **Frontend:** React 19 + Vite + TypeScript, Tailwind CSS, React Router, Zustand,
   Plotly.js, KaTeX, mathjs (input preview/validation only).
 - **Backend:** Python 3.11+, FastAPI, Pydantic v2, NumPy, SciPy, SymPy, reportlab.
-- **Tests:** pytest (backend, 315 tests), Vitest + Testing Library (frontend, 31 tests).
+- **Tests:** pytest (backend, 361 tests), Vitest + Testing Library (frontend, 45 tests).
 - **Packaging:** Docker + docker-compose, `.env` configuration.
 
 ## Project structure
@@ -193,6 +197,7 @@ from app.core.registry import register
 META = MethodMeta(
     id="fixed_point",
     chapter=Chapter.CH1_NONLINEAR,
+    variables=["x"],  # optional; drives the keypad variable tab
     name="Fixed-Point Iteration",
     summary="Solve x = g(x) by repeated substitution.",
     theory="Iterate x(k+1) = g(x(k)); converges when |g'(x)| < 1 near the root.",
@@ -269,7 +274,7 @@ validates/coerces it (`app/core/validation.py`).
 | `number`, `tolerance` | number input | `float` |
 | `integer`, `max_iterations`, `precision` | integer input | `int` |
 | `boolean` | checkbox | `bool` |
-| `text`, `select` | text input / dropdown | `str` |
+| `text`, `select` | text input / dropdown (a `rows` value renders a textarea) | `str` |
 | `vector` | comma/space list | `list[float]` |
 | `data_points` | `x,y; x,y; …` | `list[[x, y]]` |
 | `matrix` | editable grid | `list[list[float]]` |
@@ -280,6 +285,21 @@ Useful building blocks: `app/solvers/_common.py` (`sample_curve`, `line_trace`,
 and `app/core/utils.py` (`to_builtin`, `split_points`, `float_list`). Raise
 `InvalidInputError`/`EvaluationError` for student-friendly messages; the API layer
 converts them into 400 responses.
+
+System methods (`ch1_nonlinear/nonlinear_system_*`) accept several equations per
+`text` field separated by `;`, a newline **or a comma** (top-level commas only, so
+calls such as `Max(x, y)` survive), and tolerate the unicode notation above. An
+equation may be written either as an expression or as `left = right`.
+
+### The expression keypad
+
+Every `function`/`text` field shows a shared, schema-driven **keypad** (`frontend/src/components/fields/MathKeypad.tsx`).
+It has no method-specific code: the **Variables** tab is fed from `MethodMeta.variables`
+(falling back to each field's `variable`). The keypad remembers its open/hidden state
+in `localStorage` (`nms.keypad.open`; numeric keypads use `nms.keypad.numeric.open`),
+inserts at the caret (never overwriting the field), and every key updates the live
+KaTeX preview. `matrix`/`vector` fields get a compact numeric keypad
+(0-9, `.`, `-`, `/`); matrix cells are also navigable with the arrow keys (and `Tab`).
 
 ## Checks (quality gates)
 
@@ -304,8 +324,7 @@ npm run build
 
 | Chapter | Methods | Status |
 | --- | --- | --- |
-| 1 · Non-linear Equations | errors_accuracy, Bisection, false_position, secant, Newton-Raphson, Fixed-Point Iteration, Method Comparison | Available |
-| 1 · Non-linear Equations | nonlinear_system_direct, nonlinear_system_newton | Coming soon |
+| 1 · Non-linear Equations | errors_accuracy, Bisection, false_position, secant, Newton-Raphson, Fixed-Point Iteration, Method Comparison, nonlinear_system_direct, nonlinear_system_newton | Available |
 | 2 · Linear Systems | gauss_jordan, gauss_elimination, matrix_inverse, doolittle, crout, jacobi, gauss_seidel, power_method | Coming soon |
 | 3 · Interpolation | finite_differences, newton_forward, newton_backward, stirling, bessel, newton_divided_difference, lagrange, least_squares, cubic_spline | Coming soon |
 | 4 · Differentiation & Integration | numerical_differentiation, local_extrema, newton_cotes, trapezoidal, simpson_13, simpson_38, boole, weddle, romberg, gauss_legendre | Coming soon |

@@ -94,6 +94,31 @@ class TestParseRejects:
             parse_expression("x + y", ("x",))
 
 
+class TestUnicodeNormalization:
+    """Word-processor input (unicode minus, superscripts, symbols) is folded to ASCII."""
+
+    def test_unicode_minus_and_superscript(self) -> None:
+        expr = parse_expression("4\u2212x\u00b2", ("x",))
+        x = sp.Symbol("x")
+        assert sp.simplify(expr - (4 - x**2)) == 0
+
+    def test_superscript_with_two_digits(self) -> None:
+        expr = parse_expression("x\u00b2\u00b3", ("x",))
+        assert sp.simplify(expr - sp.Symbol("x") ** 23) == 0
+
+    def test_unicode_times_and_pi(self) -> None:
+        fn = make_function(parse_expression("2\u00d7\u03c0", ("x",)))
+        assert fn(0.0) == pytest.approx(2 * np.pi)
+
+    def test_square_root_sign_before_bracket(self) -> None:
+        fn = make_function(parse_expression("\u221a(4-x)", ("x",)))
+        assert fn(0.0) == pytest.approx(2.0)
+
+    def test_equals_sign_is_still_rejected(self) -> None:
+        with pytest.raises(ExpressionError):
+            parse_expression("x = 5")
+
+
 class TestMakeFunction:
     """Evaluation behaviour, including the non-strict (plot) mode."""
 

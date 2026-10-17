@@ -95,6 +95,8 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "newton_raphson",
         "fixed_point",
         "method_comparison",
+        "nonlinear_system_direct",
+        "nonlinear_system_newton",
     ],
 }
 

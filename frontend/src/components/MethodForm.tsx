@@ -21,14 +21,27 @@ interface MethodFormProps {
   onLoadExample: (inputs: MethodExample["inputs"]) => void;
 }
 
+/**
+ * The variables a method allows, read from its schema: the explicit
+ * `meta.variables` list first, otherwise every `variable` named by its fields.
+ */
+function methodVariables(meta: MethodMeta): string[] {
+  if (meta.variables && meta.variables.length > 0) return meta.variables;
+  const fromFields = meta.input_schema
+    .map((field) => field.variable)
+    .filter((name): name is string => Boolean(name));
+  return Array.from(new Set(fromFields));
+}
+
 function renderField(
   field: InputField,
   value: unknown,
   onChange: (value: unknown) => void,
+  variables: string[],
 ): ReactElement {
   switch (field.type) {
     case "function":
-      return <FunctionField field={field} value={value} onChange={onChange} />;
+      return <FunctionField field={field} value={value} onChange={onChange} variables={variables} />;
     case "matrix":
       return <MatrixInput field={field} value={value} onChange={onChange} />;
     case "vector":
@@ -44,7 +57,7 @@ function renderField(
     case "select":
     case "boolean":
     default:
-      return <BasicField field={field} value={value} onChange={onChange} />;
+      return <BasicField field={field} value={value} onChange={onChange} variables={variables} />;
   }
 }
 
@@ -63,6 +76,7 @@ export function MethodForm({
   onLoadExample,
 }: MethodFormProps) {
   const busy = status === "loading";
+  const variables = methodVariables(meta);
 
   return (
     <form
@@ -100,7 +114,7 @@ export function MethodForm({
 
       {meta.input_schema.map((field) => (
         <div key={field.key}>
-          {renderField(field, inputs[field.key], (value) => onChange(field.key, value))}
+          {renderField(field, inputs[field.key], (value) => onChange(field.key, value), variables)}
         </div>
       ))}
 

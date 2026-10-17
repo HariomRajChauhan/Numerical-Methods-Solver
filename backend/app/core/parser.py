@@ -49,6 +49,69 @@ _INTEGER_LITERAL_RE = re.compile(r"\d+")
 _POW_EXPONENT_RE = re.compile(r"(?:\*\*|\^)\s*(\d+)")
 _FLOAT_MASK_RE = re.compile(r"\d+\.\d+")
 
+# Multi-character replacements (str.maketrans is 1:1 only).
+_UNICODE_SEQUENCES: tuple[tuple[str, str], ...] = (
+    ("\u221a(", "sqrt("),  # square-root sign before an opening bracket
+)
+
+# Characters students often paste from word processors / other maths software.
+# They are folded into their ASCII equivalents before the forbidden-char guard
+# so friendly input like "4-x" typed as "4-x" (unicode minus) still works.
+_UNICODE_OPERATORS = str.maketrans(
+    {
+        "\u2212": "-",  # minus sign
+        "\u2013": "-",  # en dash
+        "\u2014": "-",  # em dash
+        "\u00d7": "*",  # multiplication sign
+        "\u22c5": "*",  # dot operator
+        "\u00b7": "*",  # middle dot
+        "\u2219": "*",  # bullet operator
+        "\u00f7": "/",  # division sign
+        "\u2044": "/",  # fraction slash
+        "\u03c0": "pi",  # greek small letter pi
+        "\u00a0": " ",  # non-breaking space
+    }
+)
+
+# Unicode superscript digits, e.g. x^2 written as x-superscript-two.
+_SUPERSCRIPT_DIGITS = {
+    "\u2070": "0",
+    "\u00b9": "1",
+    "\u00b2": "2",
+    "\u00b3": "3",
+    "\u2074": "4",
+    "\u2075": "5",
+    "\u2076": "6",
+    "\u2077": "7",
+    "\u2078": "8",
+    "\u2079": "9",
+}
+
+
+def _normalize(text: str) -> str:
+    """Fold common unicode maths notation into the ASCII the parser expects."""
+    normalized = text
+    for source, target in _UNICODE_SEQUENCES:
+        normalized = normalized.replace(source, target)
+    normalized = normalized.translate(_UNICODE_OPERATORS)
+    if not any(char in _SUPERSCRIPT_DIGITS for char in normalized):
+        return normalized
+    out: list[str] = []
+    index = 0
+    length = len(normalized)
+    while index < length:
+        char = normalized[index]
+        if char in _SUPERSCRIPT_DIGITS:
+            digits: list[str] = []
+            while index < length and normalized[index] in _SUPERSCRIPT_DIGITS:
+                digits.append(_SUPERSCRIPT_DIGITS[normalized[index]])
+                index += 1
+            out.append("^" + "".join(digits))
+        else:
+            out.append(char)
+            index += 1
+    return "".join(out)
+
 # Whitelisted elementary functions (SymPy attribute names).
 _FUNCTION_NAMES: tuple[str, ...] = (
     "sin", "cos", "tan", "cot", "sec", "csc",
@@ -230,6 +293,7 @@ def parse_expression(text: str, variables: Sequence[str] = ("x",)) -> sp.Expr:
     Raises:
         ExpressionError: If the text fails any guard or is not valid math.
     """
+    text = _normalize(text)
     _check_raw_text(text)
     _guard_numeric_explosion(text)
     try:

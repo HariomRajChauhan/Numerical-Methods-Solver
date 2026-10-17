@@ -125,12 +125,13 @@ class MethodStatus(StrEnum):
 
 
 class MethodMeta(BaseModel):
-    """Everything the frontend needs to render a method page — no UI edits per method."""
+    """A method's full metadata: theory, schema, examples (drives the UI)."""
 
     model_config = ConfigDict(extra="forbid")
 
     id: str
     chapter: Chapter
+    variables: list[str] = []  # symbols the keypad may offer (e.g. ["x", "y"])
     name: str
     status: MethodStatus = MethodStatus.AVAILABLE
     summary: str = ""

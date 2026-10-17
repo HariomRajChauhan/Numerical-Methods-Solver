@@ -1,6 +1,7 @@
 """Coming-soon stubs for Chapter 4 — Numerical Differentiation and Integration (ENSH 252).
 
-See ``ch1_nonlinear/stubs.py`` for the pattern.
+Stubs use ``register_coming_soon`` from ``app.solvers._common``; every method
+imports it the same way until a real solver replaces the stub.
 """
 
 from __future__ import annotations

@@ -71,6 +71,8 @@ export type MethodStatus = "available" | "coming_soon";
 export interface MethodMeta {
   id: string;
   chapter: ChapterId;
+  /** Variables the method allows (drives the keypad variable tab). */
+  variables: string[];
   name: string;
   status: MethodStatus;
   summary: string;

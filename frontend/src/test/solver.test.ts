@@ -6,6 +6,7 @@ import type { MethodMeta } from "../types/api";
 const META: MethodMeta = {
   id: "bisection",
   chapter: "ch1_nonlinear",
+  variables: ["x"],
   name: "Bisection",
   status: "available",
   summary: "",
