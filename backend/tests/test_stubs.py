@@ -106,6 +106,7 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "crout",
         "jacobi",
         "gauss_seidel",
+        "power_method",
     ],
 }
 
