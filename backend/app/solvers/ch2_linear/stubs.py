@@ -13,49 +13,6 @@ CHAPTER = Chapter.CH2_LINEAR
 
 register_coming_soon(
     CHAPTER,
-    "gauss_jordan",
-    "Gauss-Jordan Elimination",
-    "Reduce the augmented matrix to reduced row-echelon form to read the solution directly.",
-    theory=(
-        "Gauss-Jordan elimination continues eliminating above each pivot as well, "
-        "producing reduced row-echelon form so every unknown is read directly without "
-        "back-substitution. Applying the same steps to an identity matrix yields the "
-        "matrix inverse A^-1."
-    ),
-    pseudocode=(
-        "GaussJordan(A, b):\n"
-        "    for each column k:\n"
-        "        normalise row k by the pivot A[k][k]\n"
-        "        eliminate column k from every other row\n"
-        "    solution is the final column"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "gauss_elimination",
-    "Gauss Elimination",
-    "Solve Ax = b by forward elimination then back-substitution, with partial or complete pivoting.",
-    theory=(
-        "Gauss elimination reduces the augmented matrix [A|b] to upper-triangular form "
-        "with elementary row operations, then recovers the unknowns by "
-        "back-substitution. Stability is improved by pivoting: partial pivoting swaps "
-        "rows to bring the largest available pivot to the diagonal, while complete "
-        "pivoting also swaps columns to use the largest element of the submatrix. The "
-        "pivoting strategy can be selected as an option."
-    ),
-    pseudocode=(
-        "GaussElimination(A, b, pivoting='partial'):\n"
-        "    for k = 1 to n-1:\n"
-        "        choose the pivot (largest |A[i][k]| for partial, whole submatrix for complete)\n"
-        "        swap rows (and columns) accordingly\n"
-        "        eliminate the entries below the pivot\n"
-        "    back-substitute to obtain x"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
     "matrix_inverse",
     "Matrix Inversion",
     "Compute A^-1 by applying Gauss-Jordan elimination to [A | I].",

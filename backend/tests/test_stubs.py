@@ -98,6 +98,10 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "nonlinear_system_direct",
         "nonlinear_system_newton",
     ],
+    Chapter.CH2_LINEAR: [
+        "gauss_jordan",
+        "gauss_elimination",
+    ],
 }
 
 IMPLEMENTED_IDS = {method_id for ids in IMPLEMENTED.values() for method_id in ids}

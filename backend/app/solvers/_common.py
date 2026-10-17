@@ -386,6 +386,7 @@ def failed_response(
     result: dict[str, Any] | None = None,
     plot: PlotPayload | None = None,
     errors: ErrorInfo | None = None,
+    warnings: list[str] | None = None,
 ) -> SolveResponse:
     """Build a HTTP-200 ``failed`` response for a mathematical breakdown.
 
@@ -400,5 +401,5 @@ def failed_response(
         steps=steps or [],
         plot=plot or PlotPayload(),
         errors=errors or ErrorInfo(),
-        warnings=[message],
+        warnings=[message, *(warnings or [])],
     )
