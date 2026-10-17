@@ -1,8 +1,13 @@
-"""Tests for the Phase 5 'coming soon' stubs.
+"""Tests for the 'coming soon' stubs and the implemented-method catalogue.
 
 Every syllabus method that has no solver yet must be registered as a
 ``coming_soon`` placeholder: visible in the catalogue and chapter navigation,
-with readable theory/pseudocode, but refusing to solve with HTTP 409.
+with readable theory/pseudocode, but refusing to solve with HTTP 409. Methods
+that have been implemented must instead be ``available`` and expose an input
+schema.
+
+The full ENSH 252 syllabus is listed once in ``SYLLABUS``; implemented ids are
+moved out of the stub expectations by editing ``IMPLEMENTED``.
 """
 
 from __future__ import annotations
@@ -13,11 +18,11 @@ from fastapi.testclient import TestClient
 from app.core import registry
 from app.core.models import Chapter, MethodStatus
 
-# The exact ENSH 252 syllabus: chapter -> stub method ids. ``bisection`` is the
-# one already implemented, so it is intentionally absent here.
-EXPECTED_STUBS: dict[Chapter, list[str]] = {
+# The complete ENSH 252 syllabus: chapter -> every method id in that chapter.
+SYLLABUS: dict[Chapter, list[str]] = {
     Chapter.CH1_NONLINEAR: [
         "errors_accuracy",
+        "bisection",
         "false_position",
         "secant",
         "newton_raphson",
@@ -80,6 +85,19 @@ EXPECTED_STUBS: dict[Chapter, list[str]] = {
     ],
 }
 
+# Methods with a real solver (updated as chapters are implemented).
+IMPLEMENTED: dict[Chapter, list[str]] = {
+    Chapter.CH1_NONLINEAR: ["errors_accuracy", "bisection", "false_position", "secant"],
+}
+
+IMPLEMENTED_IDS = {method_id for ids in IMPLEMENTED.values() for method_id in ids}
+ALL_SYLLABUS_IDS = [method_id for ids in SYLLABUS.values() for method_id in ids]
+
+# Stubs = syllabus methods without a solver yet.
+EXPECTED_STUBS: dict[Chapter, list[str]] = {
+    chapter: [method_id for method_id in ids if method_id not in IMPLEMENTED_IDS]
+    for chapter, ids in SYLLABUS.items()
+}
 ALL_STUB_IDS = [method_id for ids in EXPECTED_STUBS.values() for method_id in ids]
 
 
@@ -97,11 +115,18 @@ def test_all_expected_stubs_are_registered(catalogue: dict) -> None:
 
 def test_catalog_matches_syllabus_exactly(catalogue: dict) -> None:
     registered = {method["id"] for method in catalogue["methods"]}
-    assert registered == set(ALL_STUB_IDS) | {"bisection"}
+    assert registered == set(ALL_SYLLABUS_IDS)
 
 
 def test_ids_are_unique() -> None:
-    assert len(ALL_STUB_IDS) == len(set(ALL_STUB_IDS))
+    assert len(ALL_SYLLABUS_IDS) == len(set(ALL_SYLLABUS_IDS))
+
+
+def test_implemented_methods_are_available(catalogue: dict) -> None:
+    for method_id in sorted(IMPLEMENTED_IDS):
+        method = next(m for m in catalogue["methods"] if m["id"] == method_id)
+        assert method["status"] == "available"
+        assert method["input_schema"], f"{method_id} must expose an input schema"
 
 
 @pytest.mark.parametrize("method_id", ALL_STUB_IDS)
@@ -124,12 +149,12 @@ def test_stub_chapters_are_correct(catalogue: dict, chapter: Chapter, method_ids
 
 def test_chapter_counts_include_stubs(catalogue: dict) -> None:
     chapters = {card["id"]: card for card in catalogue["chapters"]}
-    for chapter, method_ids in EXPECTED_STUBS.items():
+    for chapter, method_ids in SYLLABUS.items():
         card = chapters[chapter.value]
         assert card["method_count"] >= len(method_ids)
-    # Only bisection is implemented in Phase 5, so exactly one available method.
+        assert card["method_count"] == len(method_ids)
     total_available = sum(card["available_count"] for card in catalogue["chapters"])
-    assert total_available == 1
+    assert total_available == len(IMPLEMENTED_IDS)
 
 
 def test_available_and_coming_soon_are_the_only_statuses(catalogue: dict) -> None:
@@ -138,13 +163,13 @@ def test_available_and_coming_soon_are_the_only_statuses(catalogue: dict) -> Non
 
 
 def test_stub_detail_endpoint_returns_meta(client: TestClient) -> None:
-    response = client.get("/api/methods/newton_raphson")
+    response = client.get("/api/methods/trapezoidal")
     assert response.status_code == 200
     body = response.json()
-    assert body["id"] == "newton_raphson"
+    assert body["id"] == "trapezoidal"
     assert body["status"] == MethodStatus.COMING_SOON
-    assert body["chapter"] == Chapter.CH1_NONLINEAR
-    assert body["chapter_title"] == "Non-linear Equations"
+    assert body["chapter"] == Chapter.CH4_DIFF_INTEGRATION
+    assert body["chapter_title"] == "Differentiation & Integration"
     assert body["pseudocode"]
 
 

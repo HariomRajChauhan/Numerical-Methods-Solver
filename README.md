@@ -19,7 +19,7 @@ one test file — no router or UI changes.
 - **Reports** — download a formatted PDF (reportlab) or a CSV of the iteration table.
 - **Safe expression parsing** — user formulas go through SymPy with a whitelist; no `eval`/`exec`.
 - **Robust by construction** — per-request timeout, iteration/matrix caps, rate limiting.
-- **51 methods in the catalogue** — 1 available (Bisection) and 50 syllabus methods as
+- **51 methods in the catalogue** — 4 available and 47 syllabus methods as
   navigable "coming soon" stubs with theory and pseudocode already readable.
 
 ## Stack
@@ -27,7 +27,7 @@ one test file — no router or UI changes.
 - **Frontend:** React 19 + Vite + TypeScript, Tailwind CSS, React Router, Zustand,
   Plotly.js, KaTeX, mathjs (input preview/validation only).
 - **Backend:** Python 3.11+, FastAPI, Pydantic v2, NumPy, SciPy, SymPy, reportlab.
-- **Tests:** pytest (backend, 221 tests), Vitest + Testing Library (frontend, 31 tests).
+- **Tests:** pytest (backend, 268 tests), Vitest + Testing Library (frontend, 31 tests).
 - **Packaging:** Docker + docker-compose, `.env` configuration.
 
 ## Project structure
@@ -291,8 +291,8 @@ npm run build
 
 | Chapter | Methods | Status |
 | --- | --- | --- |
-| 1 · Non-linear Equations | Bisection | Available |
-| 1 · Non-linear Equations | errors_accuracy, false_position, secant, newton_raphson, fixed_point, method_comparison, nonlinear_system_direct, nonlinear_system_newton | Coming soon |
+| 1 · Non-linear Equations | errors_accuracy, Bisection, false_position, secant | Available |
+| 1 · Non-linear Equations | newton_raphson, fixed_point, method_comparison, nonlinear_system_direct, nonlinear_system_newton | Coming soon |
 | 2 · Linear Systems | gauss_jordan, gauss_elimination, matrix_inverse, doolittle, crout, jacobi, gauss_seidel, power_method | Coming soon |
 | 3 · Interpolation | finite_differences, newton_forward, newton_backward, stirling, bessel, newton_divided_difference, lagrange, least_squares, cubic_spline | Coming soon |
 | 4 · Differentiation & Integration | numerical_differentiation, local_extrema, newton_cotes, trapezoidal, simpson_13, simpson_38, boole, weddle, romberg, gauss_legendre | Coming soon |
