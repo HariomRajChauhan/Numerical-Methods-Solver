@@ -8,7 +8,6 @@ from typing import Any, ClassVar
 import pytest
 from fastapi.testclient import TestClient
 
-from app.core.errors import InvalidInputError
 from app.core.models import SolverLimits, SolveStatus
 from app.core.validation import validate_inputs
 from app.solvers.ch1_nonlinear.errors_accuracy import META, solve
@@ -71,13 +70,15 @@ class TestErrorsAccuracySolver:
         assert response.result["relative_error_percent"] == 0.0
         assert response.result["significant_digits"] is None
 
-    def test_zero_true_value_raises(self) -> None:
-        with pytest.raises(InvalidInputError, match="non-zero"):
-            run(true_value=0.0)
+    def test_zero_true_value_fails_gracefully(self) -> None:
+        response = run(true_value=0.0)
+        assert response.status == SolveStatus.FAILED
+        assert any("true value" in warning for warning in response.warnings)
 
-    def test_zero_approximation_with_previous_raises(self) -> None:
-        with pytest.raises(InvalidInputError, match="non-zero"):
-            run(approximate_value=0.0, previous_approximation=1.0)
+    def test_zero_approximation_with_previous_fails_gracefully(self) -> None:
+        response = run(approximate_value=0.0, previous_approximation=1.0)
+        assert response.status == SolveStatus.FAILED
+        assert any("approximation" in warning for warning in response.warnings)
 
     def test_full_contract(self) -> None:
         response = run()
@@ -123,13 +124,13 @@ class TestErrorsAccuracyApi:
         assert "attachment" in response.headers["content-disposition"]
         assert "Absolute error" in response.text
 
-    def test_zero_true_value_is_400(self, client: TestClient) -> None:
+    def test_zero_true_value_is_failed_not_400(self, client: TestClient) -> None:
         response = client.post(
             "/api/solve/errors_accuracy",
             json={**self.PAYLOAD, "true_value": 0},
         )
-        assert response.status_code == 400
-        assert response.json()["code"] == "invalid_input"
+        assert response.status_code == 200
+        assert response.json()["status"] == "failed"
 
     def test_catalog_marks_it_available(self, client: TestClient) -> None:
         method = next(

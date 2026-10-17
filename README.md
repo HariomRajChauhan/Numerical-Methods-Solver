@@ -19,7 +19,7 @@ one test file — no router or UI changes.
 - **Reports** — download a formatted PDF (reportlab) or a CSV of the iteration table.
 - **Safe expression parsing** — user formulas go through SymPy with a whitelist; no `eval`/`exec`.
 - **Robust by construction** — per-request timeout, iteration/matrix caps, rate limiting.
-- **51 methods in the catalogue** — 6 available and 45 syllabus methods as
+- **51 methods in the catalogue** — 7 available and 44 syllabus methods as
   navigable "coming soon" stubs with theory and pseudocode already readable.
 
 ## Stack
@@ -27,7 +27,7 @@ one test file — no router or UI changes.
 - **Frontend:** React 19 + Vite + TypeScript, Tailwind CSS, React Router, Zustand,
   Plotly.js, KaTeX, mathjs (input preview/validation only).
 - **Backend:** Python 3.11+, FastAPI, Pydantic v2, NumPy, SciPy, SymPy, reportlab.
-- **Tests:** pytest (backend, 298 tests), Vitest + Testing Library (frontend, 31 tests).
+- **Tests:** pytest (backend, 315 tests), Vitest + Testing Library (frontend, 31 tests).
 - **Packaging:** Docker + docker-compose, `.env` configuration.
 
 ## Project structure
@@ -134,6 +134,19 @@ Error responses are always JSON `{ "detail": ..., "code": ..., "hint": ... }` wi
 friendly messages. Notable codes: `invalid_input` (400), `expression_error` (400),
 `method_not_found` (404), `method_unavailable` (409 for stubs), `timeout` (408),
 `rate_limited` (429).
+
+The distinction between a **400 error** and a **200 `failed`** response is
+deliberate and applied consistently across every solver:
+
+- **HTTP 400** is reserved for *malformed or invalid input*: an expression that
+  cannot be parsed (`expression_error`), a non-bracketing interval, equal bounds
+  (`a == b`) or equal starting guesses (`x0 == x1`), plus the schema checks run by
+  `validate_inputs` (missing/invalid numbers, negative tolerance, …).
+- **HTTP 200 with `status: "failed"`** is returned when the method *starts but
+  breaks down for a mathematical reason*: `f'(x) = 0` (horizontal tangent or an
+  identically zero derivative), `f(x0) = f(x1)` (a flat secant), or any division by
+  zero. The response carries a `warnings` message explaining the breakdown, so the
+  UI can display it like any other result instead of an error banner.
 
 ### The solver contract
 
@@ -291,8 +304,8 @@ npm run build
 
 | Chapter | Methods | Status |
 | --- | --- | --- |
-| 1 · Non-linear Equations | errors_accuracy, Bisection, false_position, secant, Newton-Raphson, Fixed-Point Iteration | Available |
-| 1 · Non-linear Equations | method_comparison, nonlinear_system_direct, nonlinear_system_newton | Coming soon |
+| 1 · Non-linear Equations | errors_accuracy, Bisection, false_position, secant, Newton-Raphson, Fixed-Point Iteration, Method Comparison | Available |
+| 1 · Non-linear Equations | nonlinear_system_direct, nonlinear_system_newton | Coming soon |
 | 2 · Linear Systems | gauss_jordan, gauss_elimination, matrix_inverse, doolittle, crout, jacobi, gauss_seidel, power_method | Coming soon |
 | 3 · Interpolation | finite_differences, newton_forward, newton_backward, stirling, bessel, newton_divided_difference, lagrange, least_squares, cubic_spline | Coming soon |
 | 4 · Differentiation & Integration | numerical_differentiation, local_extrema, newton_cotes, trapezoidal, simpson_13, simpson_38, boole, weddle, romberg, gauss_legendre | Coming soon |

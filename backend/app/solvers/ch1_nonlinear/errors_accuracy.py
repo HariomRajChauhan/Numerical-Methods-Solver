@@ -17,7 +17,6 @@ import math
 from decimal import ROUND_DOWN, ROUND_HALF_UP, Decimal
 from typing import Any
 
-from app.core.errors import InvalidInputError
 from app.core.models import (
     Chapter,
     DataTable,
@@ -33,6 +32,7 @@ from app.core.models import (
 )
 from app.core.registry import register
 from app.solvers._common import (
+    failed_response,
     format_num,
     number_field,
     precision_field,
@@ -187,9 +187,31 @@ def solve(inputs: dict[str, Any], limits: SolverLimits) -> SolveResponse:
     previous = None if previous_raw is None else float(previous_raw)
 
     if true_value == 0:
-        raise InvalidInputError(
-            "The true value must be non-zero for a relative error.",
-            hint="Relative and percentage error divide by |x|; use a non-zero true value.",
+        return failed_response(
+            META.id,
+            "Relative and percentage error divide by the true value, which is zero "
+            "here, so they are undefined.",
+            steps=[
+                Step(
+                    title="Cannot compute",
+                    latex=(
+                        f"x = 0,\\quad x^{{*}} = {format_num(approximate, decimals)}"
+                        f"\\\\ E_r = \\frac{{|x - x^{{*}}|}}{{|x|}} = \\frac{{"
+                        f"{format_num(abs(true_value - approximate), decimals)}}}{{0}}"
+                        " \\;\\text{undefined}"
+                    ),
+                    note=(
+                        "Provide a non-zero true value to obtain a relative error. "
+                        "The absolute error is still "
+                        f"{format_num(abs(true_value - approximate), decimals)}."
+                    ),
+                )
+            ],
+            result={
+                "true_value": true_value,
+                "approximate_value": approximate,
+                "absolute_error": abs(true_value - approximate),
+            },
         )
 
     absolute = abs(true_value - approximate)
@@ -205,9 +227,37 @@ def solve(inputs: dict[str, Any], limits: SolverLimits) -> SolveResponse:
     approximate_percent: float | None = None
     if previous is not None:
         if approximate == 0:
-            raise InvalidInputError(
-                "The approximate value must be non-zero to form a relative approximate error.",
-                hint="The successive error divides by the current approximation.",
+            return failed_response(
+                META.id,
+                "The successive (approximate) error divides by the current "
+                "approximation, which is zero here, so it is undefined.",
+                steps=[
+                    Step(
+                        title="Cannot compute",
+                        latex=(
+                            f"\\varepsilon_a = \\left|\\frac{{x_k - x_{{k-1}}}}"
+                            f"{{x_k}}\\right| \\times 100\\% = \\frac{{"
+                            f"{format_num(approximate - previous, decimals)}}}{{0}}"
+                            " \\;\\text{undefined}"
+                        ),
+                        note=(
+                            "Clear the optional previous iterate, or use a non-zero "
+                            "approximate value, to obtain the successive error."
+                        ),
+                    )
+                ],
+                result={
+                    "true_value": true_value,
+                    "approximate_value": approximate,
+                    "absolute_error": absolute,
+                    "relative_error": relative,
+                    "relative_error_percent": relative_percent,
+                    "significant_digits": digits,
+                    "rounded_value": rounded,
+                    "rounded_absolute_error": rounded_error,
+                    "chopped_value": chopped,
+                    "chopped_absolute_error": chopped_error,
+                },
             )
         approximate_percent = abs((approximate - previous) / approximate) * 100.0
 

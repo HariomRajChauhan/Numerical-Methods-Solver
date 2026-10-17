@@ -94,6 +94,7 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "secant",
         "newton_raphson",
         "fixed_point",
+        "method_comparison",
     ],
 }
 

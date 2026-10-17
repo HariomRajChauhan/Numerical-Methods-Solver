@@ -4,8 +4,8 @@ These register with ``status=coming_soon`` so they appear in navigation, search
 and the chapter page (with a badge) and expose their theory/pseudocode, but
 ``POST /api/solve/<id>`` returns 409 until a real solver replaces the stub.
 ``bisection``, ``errors_accuracy``, ``false_position``, ``secant``,
-``newton_raphson`` and ``fixed_point`` are implemented and live in their own
-modules.
+``newton_raphson``, ``fixed_point`` and ``method_comparison`` are implemented and
+live in their own modules.
 """
 
 from __future__ import annotations
@@ -14,25 +14,6 @@ from app.core.models import Chapter
 from app.solvers._common import register_coming_soon
 
 CHAPTER = Chapter.CH1_NONLINEAR
-
-register_coming_soon(
-    CHAPTER,
-    "method_comparison",
-    "Comparison of Root-Finding Methods",
-    "Compare bisection, false position, secant, Newton-Raphson and fixed point.",
-    theory=(
-        "Bracketing methods (bisection, false position) are robust but slower, with "
-        "linear or slightly super-linear convergence. Open methods (secant, "
-        "Newton-Raphson) converge faster (super-linear/quadratic) but can diverge or "
-        "leave the bracket. This topic compares convergence order, function evaluations "
-        "and reliability so an appropriate method can be chosen for a given problem."
-    ),
-    pseudocode=(
-        "Compare methods on a common problem:\n"
-        "    record iterations, final error, convergence order, evaluations\n"
-        "    tabulate and plot the convergence histories"
-    ),
-)
 
 register_coming_soon(
     CHAPTER,

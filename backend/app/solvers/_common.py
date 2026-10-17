@@ -15,10 +15,15 @@ import numpy as np
 
 from app.core.models import (
     Chapter,
+    ErrorInfo,
     InputField,
     MethodMeta,
     MethodStatus,
+    PlotPayload,
     SelectOption,
+    SolveResponse,
+    SolveStatus,
+    Step,
 )
 from app.core.registry import register_stub
 
@@ -193,6 +198,7 @@ def function_field(
         "Use ^ for powers, * for products (2*x). Allowed: sin, cos, tan, exp, "
         "ln, log, log10, sqrt, abs and more."
     ),
+    required: bool = True,
 ) -> InputField:
     """A text field holding a function of one variable."""
     return InputField(
@@ -200,7 +206,7 @@ def function_field(
         label=label,
         type="function",
         variable=variable,
-        required=True,
+        required=required,
         placeholder=placeholder,
         help=help,
     )
@@ -289,6 +295,24 @@ STOP_CRITERION_OPTIONS: list[SelectOption] = [
 ]
 
 
+def boolean_field(
+    key: str,
+    label: str,
+    default: bool = False,
+    *,
+    help: str = "",
+) -> InputField:
+    """A checkbox used to include/exclude an option or method."""
+    return InputField(
+        key=key,
+        label=label,
+        type="boolean",
+        required=False,
+        default=default,
+        help=help,
+    )
+
+
 def stop_criterion_field(
     *,
     key: str = "stopping_criterion",
@@ -352,3 +376,29 @@ def estimate_order(step_errors: list[float]) -> float | None:
     if not math.isfinite(order) or order <= 0.0 or order >= 5.0:
         return None
     return order
+
+
+def failed_response(
+    method_id: str,
+    message: str,
+    *,
+    steps: list[Step] | None = None,
+    result: dict[str, Any] | None = None,
+    plot: PlotPayload | None = None,
+    errors: ErrorInfo | None = None,
+) -> SolveResponse:
+    """Build a HTTP-200 ``failed`` response for a mathematical breakdown.
+
+    Used when the method cannot continue for a *mathematical* reason
+    (``f'(x) = 0``, ``f(x0) = f(x1)``, a division by zero) as opposed to
+    malformed or invalid input, which is rejected earlier with HTTP 400.
+    """
+    return SolveResponse(
+        method=method_id,
+        status=SolveStatus.FAILED,
+        result=result or {},
+        steps=steps or [],
+        plot=plot or PlotPayload(),
+        errors=errors or ErrorInfo(),
+        warnings=[message],
+    )

@@ -28,6 +28,7 @@ from app.core.models import (
 from app.core.parser import expr_to_latex, make_function, parse_expression
 from app.core.registry import register
 from app.solvers._common import (
+    failed_response,
     format_num,
     function_field,
     line_trace,
@@ -255,9 +256,29 @@ def solve(inputs: dict[str, Any], limits: SolverLimits) -> SolveResponse:
     for k in range(1, max_iterations + 1):
         denominator = fb - fa
         if denominator == 0:
-            raise InvalidInputError(
-                "The secant denominator f(b) - f(a) vanished.",
-                hint="The two function values are equal; choose a different bracket.",
+            return failed_response(
+                META.id,
+                "Division by zero: f(b) equals f(a), so the secant line is horizontal "
+                "and gives no new estimate.",
+                steps=[
+                    *steps,
+                    Step(
+                        title=f"Iteration {k} - failed",
+                        latex=(
+                            f"f(b) - f(a) = {format_num(fb, decimals)} - "
+                            f"{format_num(fa, decimals)} = 0 \\Rightarrow "
+                            r"\text{division by zero}"
+                        ),
+                        note="Choose a bracket where the endpoint values are not equal.",
+                    ),
+                ],
+                result={
+                    "root": prev,
+                    "iterations": k - 1,
+                    "f(root)": f(prev),
+                    "final_interval": [a, b],
+                },
+                plot=_build_plot(f_plot, expression, a0, b0, prev, secant_data, decimals),
             )
         c = b - fb * (b - a) / denominator
         fc = f(c)

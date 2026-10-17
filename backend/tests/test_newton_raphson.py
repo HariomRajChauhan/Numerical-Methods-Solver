@@ -75,6 +75,11 @@ class TestNewtonSolver:
         assert response.status == SolveStatus.FAILED
         assert any("f'(x) = 0" in warning for warning in response.warnings)
 
+    def test_identically_zero_derivative_fails_gracefully(self) -> None:
+        response = run(function="5", x0=1.0)
+        assert response.status == SolveStatus.FAILED
+        assert any("identically zero" in warning for warning in response.warnings)
+
     def test_divergence_detected(self) -> None:
         response = run(function="atan(x)", x0=2.0, max_iterations=60)
         assert response.status == SolveStatus.DIVERGED

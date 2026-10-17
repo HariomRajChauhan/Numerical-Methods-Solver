@@ -85,9 +85,10 @@ class TestSecantSolver:
         with pytest.raises(InvalidInputError, match="different"):
             run(x0=1.5, x1=1.5)
 
-    def test_division_by_zero_raises(self) -> None:
-        with pytest.raises(InvalidInputError, match="Division by zero"):
-            run(function="x^2 + 1", x0=0.0, x1=1.0)
+    def test_division_by_zero_fails_gracefully(self) -> None:
+        response = run(function="x^2 + 1", x0=0.0, x1=1.0)
+        assert response.status == SolveStatus.FAILED
+        assert any("Division by zero" in warning for warning in response.warnings)
 
     def test_divergence_detected(self) -> None:
         response = run(function="sqrt(x^2+1)", x0=0.0, x1=1.0, max_iterations=60, tolerance=1e-6)

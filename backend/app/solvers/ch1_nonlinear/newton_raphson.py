@@ -16,7 +16,6 @@ from typing import Any
 
 import sympy as sp
 
-from app.core.errors import InvalidInputError
 from app.core.models import (
     Chapter,
     DataTable,
@@ -35,6 +34,7 @@ from app.core.parser import expr_to_latex, make_function, parse_expression
 from app.core.registry import register
 from app.solvers._common import (
     estimate_order,
+    failed_response,
     format_num,
     function_field,
     line_trace,
@@ -205,18 +205,35 @@ def solve(inputs: dict[str, Any], limits: SolverLimits) -> SolveResponse:
     else:
         dexpr = sp.diff(expression, symbol)
 
-    if dexpr == 0:
-        raise InvalidInputError(
-            "The derivative is identically zero, so Newton-Raphson cannot be applied.",
-            hint="The method needs f'(x) != 0; try Bisection or the Secant method.",
-        )
-
     f = make_function(expression, ("x",), strict=True)
     df = make_function(dexpr, ("x",), strict=True)
     f_plot = make_function(expression, ("x",), strict=False)
     latex_f = expr_to_latex(expression)
     latex_df = expr_to_latex(dexpr)
     source = "supplied derivative" if manual else "derivative from SymPy"
+
+    if dexpr == 0:
+        return failed_response(
+            META.id,
+            "f'(x) is identically zero, so Newton-Raphson cannot proceed "
+            "(the tangent line is always horizontal).",
+            steps=[
+                Step(
+                    title="Cannot compute",
+                    latex=(
+                        f"f(x) = {latex_f},\\quad f'(x) = 0"
+                        "\\\\ x_{k+1} = x_k - \\frac{f(x_k)}{0}"
+                        " \\;\\text{undefined}"
+                    ),
+                    note=(
+                        "Use a method that does not need a derivative, such as "
+                        "Bisection or the Secant method."
+                    ),
+                )
+            ],
+            result={"x0": x0},
+            plot=_build_plot(f_plot, expression, x0, x0, [], decimals),
+        )
 
     warnings: list[str] = []
     rows: list[list[Any]] = []

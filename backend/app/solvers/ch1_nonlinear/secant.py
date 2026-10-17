@@ -29,6 +29,7 @@ from app.core.parser import expr_to_latex, make_function, parse_expression
 from app.core.registry import register
 from app.solvers._common import (
     estimate_order,
+    failed_response,
     format_num,
     function_field,
     line_trace,
@@ -215,9 +216,32 @@ def solve(inputs: dict[str, Any], limits: SolverLimits) -> SolveResponse:
     for k in range(1, max_iterations + 1):
         denominator = f1 - f0
         if denominator == 0:
-            raise InvalidInputError(
-                "Division by zero: f(x_(k-1)) equals f(x_k).",
-                hint="Change the starting guesses so the function values differ.",
+            return failed_response(
+                META.id,
+                "Division by zero: f(x0) equals f(x1), so the secant line is horizontal "
+                "and gives no new estimate.",
+                steps=[
+                    *steps,
+                    Step(
+                        title=f"Iteration {k} - failed",
+                        latex=(
+                            f"f(x_{{{k - 1}}}) - f(x_{{{k}}}) = "
+                            f"{format_num(f0, decimals)} - {format_num(f1, decimals)} = 0"
+                            " \\Rightarrow \\text{division by zero}"
+                        ),
+                        note="Change the starting guesses so the function values differ.",
+                    ),
+                ],
+                result={
+                    "root": x1,
+                    "iterations": k - 1,
+                    "f(root)": f1,
+                    "step_error": abs(x1 - x0),
+                    "estimated_order": None,
+                },
+                plot=_build_plot(
+                    f_plot, expression, x0_init, x1_init, x1, secant_data, decimals
+                ),
             )
         x2 = x1 - f1 * (x1 - x0) / denominator
         f2 = f(x2)
