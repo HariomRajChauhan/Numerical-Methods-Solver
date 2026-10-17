@@ -1,7 +1,9 @@
-"""Coming-soon stubs for Chapter 2 — Linear Systems (ENSH 252 syllabus).
+"""Chapter 2 coming-soon stubs.
 
-Stubs use ``register_coming_soon`` from ``app.solvers._common``; every method
-imports it the same way until a real solver replaces the stub.
+Only the iterative / eigenvalue methods remain as stubs; the direct solvers
+(Gauss-Jordan, Gauss elimination, matrix inversion and the LU decompositions)
+now have real solver modules. Every stub imports ``register_coming_soon`` the
+same way until a real solver replaces it.
 """
 
 from __future__ import annotations
@@ -10,62 +12,6 @@ from app.core.models import Chapter
 from app.solvers._common import register_coming_soon
 
 CHAPTER = Chapter.CH2_LINEAR
-
-register_coming_soon(
-    CHAPTER,
-    "matrix_inverse",
-    "Matrix Inversion",
-    "Compute A^-1 by applying Gauss-Jordan elimination to [A | I].",
-    theory=(
-        "The inverse is found by augmenting A with the identity matrix and reducing the "
-        "left block to the identity with Gauss-Jordan elimination; the right block then "
-        "becomes A^-1. It exists only when A is non-singular, and partial pivoting is "
-        "used to improve numerical stability."
-    ),
-    pseudocode=(
-        "Inverse(A):\n"
-        "    form the augmented matrix [A | I]\n"
-        "    Gauss-Jordan reduce the left block to I\n"
-        "    return the right block, now A^-1"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "doolittle",
-    "Doolittle's LU Method",
-    "LU factorisation with unit lower-triangular L, so U carries the pivots.",
-    theory=(
-        "Doolittle's method factors A = L U where L is unit lower-triangular (ones on "
-        "the diagonal) and U is upper-triangular. The factors are computed column by "
-        "column from the standard LU equations; forward and back substitution then solve "
-        "A x = b cheaply for repeated right-hand sides."
-    ),
-    pseudocode=(
-        "Doolittle(A):\n"
-        "    for k = 1..n:\n"
-        "        U[k][j] <- A[k][j] - sum_{s<k} L[k][s]*U[s][j]\n"
-        "        L[i][k] <- (A[i][k] - sum_{s<k} L[i][s]*U[s][k]) / U[k][k]"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "crout",
-    "Crout's LU Method",
-    "LU factorisation with unit upper-triangular U, so L carries the pivots.",
-    theory=(
-        "Crout's method is the transpose arrangement of Doolittle: L is lower-triangular "
-        "with the pivots on its diagonal and U is unit upper-triangular. Both give the "
-        "same A = L U factorisation, differing only in where the divisions fall."
-    ),
-    pseudocode=(
-        "Crout(A):\n"
-        "    for k = 1..n:\n"
-        "        L[i][k] <- A[i][k] - sum_{s<k} L[i][s]*U[s][k]\n"
-        "        U[k][j] <- (A[k][j] - sum_{s<k} L[k][s]*U[s][j]) / L[k][k]"
-    ),
-)
 
 register_coming_soon(
     CHAPTER,

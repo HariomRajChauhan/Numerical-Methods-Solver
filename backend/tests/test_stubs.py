@@ -101,6 +101,9 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
     Chapter.CH2_LINEAR: [
         "gauss_jordan",
         "gauss_elimination",
+        "matrix_inverse",
+        "doolittle",
+        "crout",
     ],
 }
 
