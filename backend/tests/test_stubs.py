@@ -104,6 +104,8 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "matrix_inverse",
         "doolittle",
         "crout",
+        "jacobi",
+        "gauss_seidel",
     ],
 }
 
