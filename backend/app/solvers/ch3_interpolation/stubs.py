@@ -13,62 +13,6 @@ CHAPTER = Chapter.CH3_INTERPOLATION
 
 register_coming_soon(
     CHAPTER,
-    "finite_differences",
-    "Finite Difference Operators",
-    "Forward, backward and central difference operators and their difference tables.",
-    theory=(
-        "Finite differences express a tabulated function through difference operators: "
-        "forward (delta), backward (nabla) and central. Repeated differences build a "
-        "table whose leading entries give the coefficients of Newton's interpolation "
-        "formulas; the operators underpin every equally-spaced interpolation formula."
-    ),
-    pseudocode=(
-        "DifferenceTable(ys):\n"
-        "    Delta^0 y <- ys\n"
-        "    Delta^k y[i] <- Delta^{k-1} y[i+1] - Delta^{k-1} y[i]\n"
-        "    return the difference table"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "newton_forward",
-    "Newton Forward Difference",
-    "Interpolate near the start of an equally-spaced table using forward differences.",
-    theory=(
-        "With equally-spaced nodes the interpolating polynomial is written in terms of "
-        "the forward differences (Delta^k y0) and the binomial term s(s-1).../k!, where "
-        "s = (x - x0)/h. It is most accurate for interpolation near the beginning of the "
-        "table."
-    ),
-    pseudocode=(
-        "NewtonForward(xs, ys, x):\n"
-        "    build the forward-difference table\n"
-        "    s <- (x - xs[0]) / h\n"
-        "    P <- ys[0] + sum_k C(s, k) * Delta^k y0"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "newton_backward",
-    "Newton Backward Difference",
-    "Interpolate near the end of an equally-spaced table using backward differences.",
-    theory=(
-        "Using the backward differences (nabla^k yn) and the term t(t+1).../k! with "
-        "t = (x - xn)/h, this form is most accurate for interpolation near the end of "
-        "the table."
-    ),
-    pseudocode=(
-        "NewtonBackward(xs, ys, x):\n"
-        "    build the backward-difference table\n"
-        "    t <- (x - xs[n]) / h\n"
-        "    P <- ys[n] + sum_k C(t+k-1, k) * nabla^k yn"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
     "stirling",
     "Stirling's Interpolation",
     "Central-difference interpolation averaging forward and backward differences near the middle.",

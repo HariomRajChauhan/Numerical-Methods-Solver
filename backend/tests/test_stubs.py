@@ -108,6 +108,11 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "gauss_seidel",
         "power_method",
     ],
+    Chapter.CH3_INTERPOLATION: [
+        "finite_differences",
+        "newton_forward",
+        "newton_backward",
+    ],
 }
 
 IMPLEMENTED_IDS = {method_id for ids in IMPLEMENTED.values() for method_id in ids}
