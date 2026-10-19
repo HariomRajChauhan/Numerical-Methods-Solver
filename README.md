@@ -23,7 +23,7 @@ one test file — no router or UI changes.
   variables / edit) inserts at the cursor, shows a live KaTeX preview and remembers
   its open state in `localStorage`; matrix and vector inputs get a compact numeric pad.
 - **Robust by construction** — per-request timeout, iteration/matrix caps, rate limiting.
-- **51 methods in the catalogue** — 20 available and 31 syllabus methods as
+- **51 methods in the catalogue** — 22 available and 29 syllabus methods as
   navigable "coming soon" stubs with theory and pseudocode already readable.
 
 ## Stack
@@ -31,7 +31,7 @@ one test file — no router or UI changes.
 - **Frontend:** React 19 + Vite + TypeScript, Tailwind CSS, React Router, Zustand,
   Plotly.js, KaTeX, mathjs (input preview/validation only).
 - **Backend:** Python 3.11+, FastAPI, Pydantic v2, NumPy, SciPy, SymPy, reportlab.
-- **Tests:** pytest (backend, 542 tests), Vitest + Testing Library (frontend, 45 tests).
+- **Tests:** pytest (backend, 571 tests), Vitest + Testing Library (frontend, 45 tests).
 - **Packaging:** Docker + docker-compose, `.env` configuration.
 
 ## Project structure
@@ -326,7 +326,7 @@ npm run build
 | --- | --- | --- |
 | 1 · Non-linear Equations | errors_accuracy, Bisection, false_position, secant, Newton-Raphson, Fixed-Point Iteration, Method Comparison, nonlinear_system_direct, nonlinear_system_newton | Available |
 | 2 · Linear Systems | gauss_jordan, gauss_elimination, matrix_inverse, doolittle, crout, jacobi, gauss_seidel, power_method | All available: Gauss-Jordan, Gauss elimination, matrix inversion, Doolittle, Crout, Jacobi, Gauss-Seidel & power method |
-| 3 · Interpolation | finite_differences, newton_forward, newton_backward, stirling, bessel, newton_divided_difference, lagrange, least_squares, cubic_spline | Finite difference operators & Newton forward/backward available; central, divided-difference, Lagrange, least-squares & spline coming soon |
+| 3 · Interpolation | finite_differences, newton_forward, newton_backward, stirling, bessel, newton_divided_difference, lagrange, least_squares, cubic_spline | Finite difference operators, Newton forward/backward & Stirling/Bessel central formulas available; divided-difference, Lagrange, least-squares & spline coming soon |
 | 4 · Differentiation & Integration | numerical_differentiation, local_extrema, newton_cotes, trapezoidal, simpson_13, simpson_38, boole, weddle, romberg, gauss_legendre | Coming soon |
 | 5 · ODEs | taylor_series, euler, runge_kutta_2, runge_kutta_4, ode_system_rk, ode_second_order_rk, bvp_shooting, bvp_finite_difference | Coming soon |
 | 6 · PDEs | pde_classification, fd_approximations, laplace, poisson, heat_bendre_schmidt, heat_crank_nicolson, wave | Coming soon |

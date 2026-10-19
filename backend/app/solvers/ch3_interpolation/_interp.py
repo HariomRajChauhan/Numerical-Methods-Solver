@@ -382,6 +382,30 @@ def difference_table(
     )
 
 
+def central_table(
+    xs: np.ndarray,
+    ys: np.ndarray,
+    decimals: int,
+    marked: set[tuple[int, int]] | None = None,
+) -> DataTable:
+    """Central difference table with the entries used by the chosen formula flagged."""
+    levels = central_differences(ys)
+    size = len(ys)
+    columns = ["Order", *[f"x_{j}" if j < size else "mid" for j in range(size)]]
+    rows = []
+    for order, level in enumerate(levels):
+        cells: list[object] = [f"C{order}"]
+        for position, value in enumerate(level):
+            mark = marked is not None and (order, position) in marked
+            cells.append(_marked(_cell(value, decimals), mark))
+        rows.append(cells)
+    return DataTable(
+        title="Central difference table (* = entries used, C = delta)",
+        columns=columns,
+        rows=rows,
+    )
+
+
 def node_table(xs: np.ndarray, ys: np.ndarray, decimals: int) -> DataTable:
     """The list of data points with their indices."""
     rows = [

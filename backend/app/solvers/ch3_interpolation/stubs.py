@@ -13,43 +13,6 @@ CHAPTER = Chapter.CH3_INTERPOLATION
 
 register_coming_soon(
     CHAPTER,
-    "stirling",
-    "Stirling's Interpolation",
-    "Central-difference interpolation averaging forward and backward differences near the middle.",
-    theory=(
-        "Stirling's formula is a central-difference interpolation that averages the "
-        "forward and backward differences at the middle of the table. It gives the most "
-        "accurate result when the target x lies near the centre of an equally-spaced "
-        "data set."
-    ),
-    pseudocode=(
-        "Stirling(xs, ys, x):\n"
-        "    build the central-difference table\n"
-        "    p <- (x - x0) / h\n"
-        "    P <- y0 + p*(mu*delta*y0) + (p^2/2!)*delta^2 y0 + ...   # averaged central terms"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "bessel",
-    "Bessel's Interpolation",
-    "Central-difference interpolation for targets between the two middle table entries.",
-    theory=(
-        "Bessel's formula is a central-difference interpolation used when the target "
-        "lies between the two middle entries of the table. It is a companion to "
-        "Stirling's formula and is especially useful when the number of points is even."
-    ),
-    pseudocode=(
-        "Bessel(xs, ys, x):\n"
-        "    build the central-difference table\n"
-        "    p <- (x - x_mid) / h\n"
-        "    P <- Bessel central-difference series evaluated at p"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
     "newton_divided_difference",
     "Newton Divided Difference",
     "Build the Newton form of the interpolating polynomial using divided differences.",

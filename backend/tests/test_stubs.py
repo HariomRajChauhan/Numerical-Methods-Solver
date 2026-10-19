@@ -112,6 +112,8 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "finite_differences",
         "newton_forward",
         "newton_backward",
+        "stirling",
+        "bessel",
     ],
 }
 
