@@ -128,6 +128,8 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "newton_cotes",
         "boole",
         "weddle",
+        "romberg",
+        "gauss_legendre",
     ],
 }
 
@@ -204,13 +206,13 @@ def test_available_and_coming_soon_are_the_only_statuses(catalogue: dict) -> Non
 
 
 def test_stub_detail_endpoint_returns_meta(client: TestClient) -> None:
-    response = client.get("/api/methods/romberg")
+    response = client.get("/api/methods/euler")
     assert response.status_code == 200
     body = response.json()
-    assert body["id"] == "romberg"
+    assert body["id"] == "euler"
     assert body["status"] == MethodStatus.COMING_SOON
-    assert body["chapter"] == Chapter.CH4_DIFF_INTEGRATION
-    assert body["chapter_title"] == "Differentiation & Integration"
+    assert body["chapter"] == Chapter.CH5_ODE
+    assert body["chapter_title"] == "Ordinary Differential Equations"
     assert body["pseudocode"]
 
 

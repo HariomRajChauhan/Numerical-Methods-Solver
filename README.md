@@ -23,7 +23,7 @@ one test file — no router or UI changes.
   variables / edit) inserts at the cursor, shows a live KaTeX preview and remembers
   its open state in `localStorage`; matrix and vector inputs get a compact numeric pad.
 - **Robust by construction** — per-request timeout, iteration/matrix caps, rate limiting.
-- **51 methods in the catalogue** — 34 available and 17 syllabus methods as
+- **51 methods in the catalogue** — 36 available and 15 syllabus methods as
   navigable "coming soon" stubs with theory and pseudocode already readable.
 
 ## Stack
@@ -31,7 +31,7 @@ one test file — no router or UI changes.
 - **Frontend:** React 19 + Vite + TypeScript, Tailwind CSS, React Router, Zustand,
   Plotly.js, KaTeX, mathjs (input preview/validation only).
 - **Backend:** Python 3.11+, FastAPI, Pydantic v2, NumPy, SciPy, SymPy, reportlab.
-- **Tests:** pytest (backend, 868 tests), Vitest + Testing Library (frontend, 45 tests).
+- **Tests:** pytest (backend, 914 tests), Vitest + Testing Library (frontend, 45 tests).
 - **Packaging:** Docker + docker-compose, `.env` configuration.
 
 ## Project structure
@@ -327,7 +327,7 @@ npm run build
 | 1 · Non-linear Equations | errors_accuracy, Bisection, false_position, secant, Newton-Raphson, Fixed-Point Iteration, Method Comparison, nonlinear_system_direct, nonlinear_system_newton | Available |
 | 2 · Linear Systems | gauss_jordan, gauss_elimination, matrix_inverse, doolittle, crout, jacobi, gauss_seidel, power_method | All available: Gauss-Jordan, Gauss elimination, matrix inversion, Doolittle, Crout, Jacobi, Gauss-Seidel & power method |
 | 3 · Interpolation | finite_differences, newton_forward, newton_backward, stirling, bessel, newton_divided_difference, lagrange, least_squares, cubic_spline | All available: finite differences, Newton forward/backward, Stirling/Bessel, Newton divided-difference, Lagrange (compare view + Runge demo), least-squares curve fitting (linear, polynomial and linearisable exponential/power/reciprocal models with comparison and prediction) and cubic splines (natural/clamped, Thomas algorithm, derivative overlay) |
-| 4 · Differentiation & Integration | numerical_differentiation, local_extrema, newton_cotes, trapezoidal, simpson_13, simpson_38, boole, weddle, romberg, gauss_legendre | Groups A–C available: numerical differentiation (forward/backward/central on equally spaced tables, or function stencils), local maxima/minima (interpolating polynomial, dy/dp = 0, second-derivative classification) and quadrature — trapezoidal, Simpson's 1/3 (n even), Simpson's 3/8 (n multiple of 3), Boole (n multiple of 4), Weddle (n multiple of 6) and the general n-point Newton-Cotes rule (panel size 1–8 with composite panels), all from a function or equally spaced table, with node/weight tables, exact Cotes numbers, exact value, error bound, an optional convergence study and a rule-comparison overlay |
+| 4 · Differentiation & Integration | numerical_differentiation, local_extrema, newton_cotes, trapezoidal, simpson_13, simpson_38, boole, weddle, romberg, gauss_legendre | All available: numerical differentiation (forward/backward/central on equally spaced tables, or function stencils), local maxima/minima (interpolating polynomial, dy/dp = 0, second-derivative classification), quadrature — trapezoidal, Simpson's 1/3 (n even), Simpson's 3/8 (n multiple of 3), Boole (n multiple of 4), Weddle (n multiple of 6) and the general n-point Newton-Cotes rule (panel size 1–8 with composite panels) — plus Romberg integration (Romberg extrapolation of trapezoidal estimates with an early-stop tolerance and triangular table) and Gauss-Legendre quadrature (1-, 2- and 3-point on single or composite panels with an optional 2-point / 3-point / Simpson's 1/3 comparison), all from a function or equally spaced table, with node/weight tables, exact Cotes numbers, exact value, error bound, an optional convergence study and a rule-comparison overlay |
 | 5 · ODEs | taylor_series, euler, runge_kutta_2, runge_kutta_4, ode_system_rk, ode_second_order_rk, bvp_shooting, bvp_finite_difference | Coming soon |
 | 6 · PDEs | pde_classification, fd_approximations, laplace, poisson, heat_bendre_schmidt, heat_crank_nicolson, wave | Coming soon |
 

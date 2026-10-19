@@ -56,7 +56,7 @@ class TestExportErrors:
         assert response.json()["code"] == "method_not_found"
 
     def test_stub_method_is_409(self, client: TestClient) -> None:
-        response = client.post("/api/export/romberg?format=pdf", json={})
+        response = client.post("/api/export/euler?format=pdf", json={})
         assert response.status_code == 409
         assert response.json()["code"] == "method_unavailable"
 
