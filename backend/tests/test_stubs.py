@@ -125,6 +125,9 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "trapezoidal",
         "simpson_13",
         "simpson_38",
+        "newton_cotes",
+        "boole",
+        "weddle",
     ],
 }
 

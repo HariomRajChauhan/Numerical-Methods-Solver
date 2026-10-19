@@ -13,58 +13,6 @@ CHAPTER = Chapter.CH4_DIFF_INTEGRATION
 
 register_coming_soon(
     CHAPTER,
-    "newton_cotes",
-    "Newton-Cotes Quadrature",
-    "Family of equal-spacing integration rules behind the trapezoidal and Simpson rules.",
-    theory=(
-        "Newton-Cotes formulas fit a polynomial through equally-spaced nodes and "
-        "integrate it. The trapezoidal rule (degree 1) and Simpson's, Boole's and "
-        "Weddle's rules (higher degrees) are special cases; accuracy improves with the "
-        "polynomial degree for smooth integrands."
-    ),
-    pseudocode=(
-        "NewtonCotes(f, a, b, n, degree):\n"
-        "    fit the degree-d polynomial through the equally spaced nodes\n"
-        "    integrate the polynomial over [a, b]"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "boole",
-    "Boole's Rule",
-    "Fifth-degree Newton-Cotes rule over four subintervals; sixth-order accurate.",
-    theory=(
-        "Boole's rule integrates a degree-5 polynomial over four equal subintervals "
-        "using the weights 7:32:12:32:7 (times 2h/45). Its error is O(h^6), and it is "
-        "exact for polynomials up to degree five."
-    ),
-    pseudocode=(
-        "Boole(f, a, b, n):        # n multiple of 4\n"
-        "    h <- (b - a) / n\n"
-        "    per group of 4 intervals: (2h/45)*(7 y0 + 32 y1 + 12 y2 + 32 y3 + 7 y4)"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "weddle",
-    "Weddle's Rule",
-    "Sixth-degree Newton-Cotes rule over six subintervals (weights 1,5,1,6,1,5,1).",
-    theory=(
-        "Weddle's rule integrates over six equal subintervals using the weights "
-        "1:5:1:6:1:5:1 (times 3h/10). It is exact for polynomials up to degree five and "
-        "is used to improve on Simpson's rule for tabulated data."
-    ),
-    pseudocode=(
-        "Weddle(f, a, b, n):        # n multiple of 6\n"
-        "    h <- (b - a) / n\n"
-        "    per group of 6 intervals: (3h/10)*(y0 + 5y1 + y2 + 6y3 + y4 + 5y5 + y6)"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
     "romberg",
     "Romberg Integration",
     "Accelerate the trapezoidal rule with Richardson extrapolation for high accuracy.",

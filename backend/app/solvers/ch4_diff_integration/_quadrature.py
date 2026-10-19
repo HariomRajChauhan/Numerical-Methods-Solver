@@ -506,7 +506,7 @@ class Prepared:
 
 
 def _prepare(
-    inputs: dict[str, Any], rule: Rule, decimals: int, method_id: str
+    inputs: dict[str, Any], decimals: int, method_id: str
 ) -> Prepared | SolveResponse:
     source = str(inputs.get("source", "function"))
     notices: list[str] = []
@@ -806,7 +806,7 @@ def solve_quadrature(
     method_id = meta.id
     decimals = int(inputs.get("decimal_precision", 6))
 
-    prepared = _prepare(inputs, rule, decimals, method_id)
+    prepared = _prepare(inputs, decimals, method_id)
     if isinstance(prepared, SolveResponse):
         return prepared
     notices = list(prepared.notices)
