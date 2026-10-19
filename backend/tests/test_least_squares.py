@@ -204,9 +204,19 @@ class TestLeastSquaresFailures:
         assert response.status == SolveStatus.FAILED
         assert response.plot.traces == []
 
-    def test_duplicate_x_raises(self) -> None:
-        with pytest.raises(InvalidInputError, match="distinct"):
-            run(points=[[0, 1], [0, 2], [3, 10]], fit_type="linear")
+    def test_repeated_x_values_are_accepted(self) -> None:
+        points = [[1, 2], [1, 2.2], [2, 5], [2, 5.3], [3, 9], [3, 9.4]]
+        response = run(points=points, fit_type="linear")
+        assert response.status == SolveStatus.CONVERGED
+        xs, ys = _columns(points)
+        slope, intercept = np.polyfit(xs, ys, 1)
+        assert response.result["parameters"]["a"] == pytest.approx(intercept, abs=1e-9)
+        assert response.result["parameters"]["b"] == pytest.approx(slope, abs=1e-9)
+
+    def test_repeated_x_notice(self) -> None:
+        points = [[1, 2], [1, 2.2], [2, 5], [3, 9]]
+        response = run(points=points, fit_type="linear")
+        assert any("repeat" in warning.lower() for warning in response.warnings)
 
 
 class TestLeastSquaresCompare:
@@ -264,11 +274,16 @@ class TestLeastSquaresApi:
         assert response.status_code == 200
         assert response.json()["status"] == "failed"
 
-    def test_duplicate_x_is_bad_request(self, client: TestClient) -> None:
-        payload = {**self.PAYLOAD, "points": [[0, 1], [0, 2], [3, 10]]}
+    def test_repeated_x_is_accepted(self, client: TestClient) -> None:
+        payload = {
+            "points": [[1, 2], [1, 2.2], [2, 5], [2, 5.3], [3, 9], [3, 9.4]],
+            "fit_type": "linear",
+            "degree": 3,
+            "decimal_precision": 6,
+        }
         response = client.post("/api/solve/least_squares", json=payload)
-        assert response.status_code == 400
-        assert response.json()["code"] == "invalid_input"
+        assert response.status_code == 200
+        assert response.json()["status"] == "converged"
 
     def test_catalogue_lists_method(self, client: TestClient) -> None:
         body = client.get("/api/methods").json()

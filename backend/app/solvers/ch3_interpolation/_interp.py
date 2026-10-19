@@ -85,11 +85,23 @@ class Dataset:
     notices: list[str]
 
 
-def prepare_dataset(points: list[list[float]], *, min_points: int = 2) -> Dataset:
+def prepare_dataset(
+    points: list[list[float]],
+    *,
+    min_points: int = 2,
+    allow_repeats: bool = False,
+) -> Dataset:
     """Validate the raw ``[[x, y], ...]`` points and sort them by x.
 
+    Args:
+        points: The raw ``[[x, y], ...]`` rows.
+        min_points: The fewest points a method can work with.
+        allow_repeats: When True, repeated x values are permitted (valid for
+            curve fitting, where repeated measurements are meaningful).
+
     Raises:
-        InvalidInputError: On too few points or repeated x values.
+        InvalidInputError: On too few points or, unless ``allow_repeats`` is set,
+            repeated x values.
     """
     if len(points) < min_points:
         raise InvalidInputError(f"At least {min_points} data points are required.")
@@ -99,16 +111,24 @@ def prepare_dataset(points: list[list[float]], *, min_points: int = 2) -> Datase
     sorted_xs = xs[order]
     sorted_ys = ys[order]
 
-    gaps = np.diff(sorted_xs)
-    repeats = gaps == 0.0
-    if bool(np.any(repeats)):
-        repeated = float(sorted_xs[1:][repeats][0])
-        raise InvalidInputError(
-            f"The data points must have distinct x values, but x = {repeated:g} is repeated.",
-            hint="Remove the duplicate point; two different y values at one x are not a function.",
-        )
-
     notices: list[str] = []
+    if not allow_repeats:
+        gaps = np.diff(sorted_xs)
+        repeats = gaps == 0.0
+        if bool(np.any(repeats)):
+            repeated = float(sorted_xs[1:][repeats][0])
+            raise InvalidInputError(
+                f"The data points must have distinct x values, but x = {repeated:g} is repeated.",
+                hint="Remove the duplicate point; two different y values at one x are not a function.",
+            )
+    else:
+        gaps = np.diff(sorted_xs)
+        if bool(np.any(gaps == 0.0)):
+            notices.append(
+                "The data set repeats one or more x values; every point is used in the fit, "
+                "which is valid for least-squares but not for interpolation."
+            )
+
     if not np.array_equal(order, np.arange(len(xs))):
         notices.append(
             "The data points were not listed in ascending order of x; they were sorted "

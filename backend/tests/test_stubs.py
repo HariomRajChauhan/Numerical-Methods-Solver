@@ -117,6 +117,7 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "newton_divided_difference",
         "lagrange",
         "least_squares",
+        "cubic_spline",
     ],
 }
 

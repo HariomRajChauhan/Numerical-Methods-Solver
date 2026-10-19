@@ -247,7 +247,7 @@ def _compare_keys(degree: int) -> list[str]:
 def solve(inputs: dict[str, Any], limits: SolverLimits) -> SolveResponse:
     """Fit the chosen model and, optionally, rank every applicable model."""
     decimals = int(inputs["decimal_precision"])
-    dataset = prepare_dataset(inputs["points"])
+    dataset = prepare_dataset(inputs["points"], allow_repeats=True)
     xs, ys = dataset.xs, dataset.ys
     count = len(xs)
 
