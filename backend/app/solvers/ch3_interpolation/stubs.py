@@ -13,44 +13,6 @@ CHAPTER = Chapter.CH3_INTERPOLATION
 
 register_coming_soon(
     CHAPTER,
-    "newton_divided_difference",
-    "Newton Divided Difference",
-    "Build the Newton form of the interpolating polynomial using divided differences.",
-    theory=(
-        "Divided differences generalise finite differences to arbitrarily spaced nodes. "
-        "The interpolating polynomial is built incrementally as "
-        "P(x) = f[x0] + f[x0,x1](x-x0) + ..., which makes adding a new data point cheap."
-    ),
-    pseudocode=(
-        "NewtonDivided(xs, ys, x):\n"
-        "    build the divided-difference table f[x_i..x_j]\n"
-        "    P <- f[x0] + sum_k f[x0..xk] * product_{j<k} (x - xs[j])"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "lagrange",
-    "Lagrange Interpolation",
-    "Fit the unique degree-n polynomial through n+1 points using Lagrange basis polynomials.",
-    theory=(
-        "Lagrange interpolation builds the unique polynomial of degree at most n "
-        "through n+1 data points as a weighted sum of basis polynomials, each of which "
-        "is 1 at its own node and 0 at the others. It allows unequal spacing but is more "
-        "expensive to update when a point is added."
-    ),
-    pseudocode=(
-        "Lagrange(xs, ys, x):\n"
-        "    P <- 0\n"
-        "    for i in 0..n:\n"
-        "        L_i <- product_{j != i} (x - xs[j])/(xs[i] - xs[j])\n"
-        "        P <- P + ys[i]*L_i\n"
-        "    return P"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
     "least_squares",
     "Least-Squares Curve Fitting",
     "Fit the best straight line or curve by minimising the sum of squared residuals.",

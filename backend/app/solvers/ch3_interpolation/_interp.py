@@ -57,6 +57,7 @@ def targets_field(
     required: bool = True,
     default: Any = None,
     label: str = "Target x value(s)",
+    help: str = "One or more x values to interpolate at, separated by commas.",
 ) -> InputField:
     """One or more x values at which to interpolate."""
     return InputField(
@@ -66,7 +67,7 @@ def targets_field(
         required=required,
         default=default,
         placeholder="0.5",
-        help="One or more x values to interpolate at, separated by commas.",
+        help=help,
     )
 
 
@@ -209,6 +210,17 @@ def backward_region_warning(p: float, count: int) -> list[str]:
             f"{p:.6g}); Newton's forward formula is usually more accurate there."
         ]
     return []
+
+
+def high_degree_warning(count: int, *, limit: int = 10) -> list[str]:
+    """Warn when a single high-degree polynomial is fitted through many points."""
+    if count <= limit:
+        return []
+    return [
+        f"A single polynomial through {count} points has degree {count - 1}. High-degree "
+        "interpolation can oscillate badly between the nodes (Runge's phenomenon); a "
+        "spline or a least-squares fit is usually safer."
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -520,6 +532,117 @@ def _signed_sum(values: list[float], decimals: int) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Newton divided-difference working
+# ---------------------------------------------------------------------------
+
+
+def divided_coefficients_latex(coefficients: list[float], decimals: int) -> str:
+    """The divided differences on the top diagonal, written ``f[x0, ..., x_k]``."""
+    parts = [rf"f[x_0] = {format_num(float(coefficients[0]), decimals)}"]
+    for k in range(1, len(coefficients)):
+        nodes = ", ".join(f"x_{j}" for j in range(k + 1))
+        parts.append(rf"f[{nodes}] = {format_num(float(coefficients[k]), decimals)}")
+    return r",\quad ".join(parts)
+
+
+def divided_polynomial_latex(
+    coefficients: list[float], xs: np.ndarray, decimals: int
+) -> str:
+    """The symbolic Newton divided-difference form ``P(x) = ...``."""
+    pieces = [format_num(float(coefficients[0]), decimals)]
+    for k in range(1, len(coefficients)):
+        coefficient = float(coefficients[k])
+        if abs(coefficient) < 1e-14:
+            continue
+        factors = "".join(
+            rf"\left(x - {format_num(float(xs[j]), decimals)}\right)" for j in range(k)
+        )
+        body = rf"{format_num(abs(coefficient), decimals)}{factors}"
+        pieces.append((" - " if coefficient < 0 else " + ") + body)
+    return r"P(x) = " + "".join(pieces)
+
+
+def divided_evaluation_latex(
+    *,
+    coefficients: list[float],
+    xs: np.ndarray,
+    target: float,
+    decimals: int,
+) -> tuple[str, float]:
+    """Exam-style substitution of the Newton divided-difference form.
+
+    Shows each term ``(x - x_0)(x - x_1)...`` with substituted factor values, the
+    running partial sums and the final value.
+
+    Returns:
+        ``(latex, value)``.
+    """
+    count = len(coefficients)
+    symbol_terms = [format_num(float(coefficients[0]), decimals)]
+    terms: list[float] = [float(coefficients[0])]
+    factors_shown = [
+        rf"\left({format_num(target, decimals)} - {format_num(float(xs[j]), decimals)}\right)"
+        for j in range(count - 1)
+    ]
+
+    for k in range(1, count):
+        coefficient = float(coefficients[k])
+        product = math.prod(target - float(xs[j]) for j in range(k))
+        terms.append(coefficient * product)
+        product_latex = "".join(factors_shown[:k])
+        body = rf"\left({format_num(abs(coefficient), decimals)}\right){product_latex}"
+        if k == 1:
+            body = rf"{format_num(abs(coefficient), decimals)}\,{product_latex}"
+        symbol_terms.append((" - " if coefficient < 0 else " + ") + body)
+
+    value = float(sum(terms))
+    partial = ", ".join(
+        format_num(float(part), decimals) for part in np.cumsum(terms)
+    )
+
+    build = (
+        rf"P\left({format_num(target, decimals)}\right) = " + "".join(symbol_terms)
+    )
+    value_line = "= " + _signed_sum(terms, decimals)
+    running_line = r"\text{running sums } = " + partial
+    result_line = "= " + format_num(value, decimals)
+    return r"\\[1mm]".join([build, value_line, running_line, result_line]), value
+
+
+def expanded_polynomial_latex(
+    xs: np.ndarray, ys: np.ndarray, decimals: int
+) -> str:
+    """The interpolating polynomial expanded into powers of x, using SymPy."""
+    import sympy as sp
+
+    x = sp.Symbol("x")
+    nodes = [(float(xi), float(yi)) for xi, yi in zip(xs, ys, strict=True)]
+    expanded = sp.expand(sp.interpolate(nodes, x))
+    coefficients = sp.Poly(expanded, x).all_coeffs()
+    degree = len(coefficients) - 1
+    pieces: list[str] = []
+    for index, coefficient in enumerate(coefficients):
+        value = float(coefficient)
+        if abs(value) < 1e-12:
+            continue
+        power = degree - index
+        magnitude = format_num(abs(value), decimals)
+        if power == 0:
+            body = magnitude
+        elif power == 1:
+            body = rf"{magnitude}\,x"
+        else:
+            body = rf"{magnitude}\,x^{{{power}}}"
+        if not pieces:
+            pieces.append(body if value >= 0 else f"-{body}")
+        else:
+            pieces.append((" - " if value < 0 else " + ") + body)
+    if not pieces:
+        return r"P(x) = 0"
+    return r"P(x) = " + "".join(pieces)
+
+
+# ---------------------------------------------------------------------------
 # Plots
 # ---------------------------------------------------------------------------
 
@@ -569,6 +692,54 @@ def interpolation_plot(
                 "y": curve[1],
             }
         )
+    if targets and target_values:
+        traces.append(
+            {
+                "type": "scatter",
+                "mode": "markers",
+                "name": "Target",
+                "x": list(targets),
+                "y": list(target_values),
+                "marker": {"color": "#dc2626", "size": 11, "symbol": "diamond"},
+            }
+        )
+    layout = {
+        "title": {"text": title},
+        "xaxis": {"title": {"text": "x"}},
+        "yaxis": {"title": {"text": "y"}},
+    }
+    return PlotPayload(traces=traces, layout=layout)
+
+
+def overlay_plot(
+    *,
+    xs: np.ndarray,
+    ys: np.ndarray,
+    curves: list[tuple[str, tuple[list[float], list[float | None]]]],
+    targets: list[float] | None = None,
+    target_values: list[float] | None = None,
+    title: str,
+    curve_colors: list[str] | None = None,
+) -> PlotPayload:
+    """Data points with several named curves overlaid (used by the compare view)."""
+    traces: list[dict[str, Any]] = [points_trace(list(xs), list(ys), "Data points")]
+    colors = curve_colors or ["#2563eb", "#16a34a", "#9333ea", "#ea580c"]
+    dashes = ["solid", "dash", "dot", "dashdot"]
+    for index, (name, (grid_x, grid_y)) in enumerate(curves):
+        if not grid_x:
+            continue
+        trace: dict[str, Any] = {
+            "type": "scatter",
+            "mode": "lines",
+            "name": name,
+            "x": grid_x,
+            "y": grid_y,
+            "line": {
+                "color": colors[index % len(colors)],
+                "dash": dashes[index % len(dashes)],
+            },
+        }
+        traces.append(trace)
     if targets and target_values:
         traces.append(
             {

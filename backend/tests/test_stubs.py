@@ -114,6 +114,8 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "newton_backward",
         "stirling",
         "bessel",
+        "newton_divided_difference",
+        "lagrange",
     ],
 }
 
