@@ -131,6 +131,10 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "romberg",
         "gauss_legendre",
     ],
+    Chapter.CH5_ODE: [
+        "taylor_series",
+        "euler",
+    ],
 }
 
 IMPLEMENTED_IDS = {method_id for ids in IMPLEMENTED.values() for method_id in ids}
@@ -206,10 +210,10 @@ def test_available_and_coming_soon_are_the_only_statuses(catalogue: dict) -> Non
 
 
 def test_stub_detail_endpoint_returns_meta(client: TestClient) -> None:
-    response = client.get("/api/methods/euler")
+    response = client.get("/api/methods/runge_kutta_2")
     assert response.status_code == 200
     body = response.json()
-    assert body["id"] == "euler"
+    assert body["id"] == "runge_kutta_2"
     assert body["status"] == MethodStatus.COMING_SOON
     assert body["chapter"] == Chapter.CH5_ODE
     assert body["chapter_title"] == "Ordinary Differential Equations"

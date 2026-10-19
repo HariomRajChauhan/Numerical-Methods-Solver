@@ -13,42 +13,6 @@ CHAPTER = Chapter.CH5_ODE
 
 register_coming_soon(
     CHAPTER,
-    "taylor_series",
-    "Taylor Series Method",
-    "Advance the ODE solution using its Taylor expansion and successive derivatives.",
-    theory=(
-        "The Taylor series method expands y(x+h) = y + h y' + (h^2/2!) y'' + ... using "
-        "the ODE and its total derivatives. Higher-order versions are accurate but "
-        "require differentiating the right-hand side repeatedly."
-    ),
-    pseudocode=(
-        "Taylor(f, x0, y0, h, steps, order):\n"
-        "    for each step:\n"
-        "        compute y', y'', ... from f and its derivatives\n"
-        "        y <- y + h y' + (h^2/2!) y'' + ..."
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "euler",
-    "Euler's Method",
-    "The simplest ODE stepper: advance along the tangent line; first-order accurate.",
-    theory=(
-        "Euler's method takes y(k+1) = y(k) + h f(x(k), y(k)), following the slope at "
-        "the current point. It is simple but only first-order accurate, so a small step "
-        "is needed for good accuracy."
-    ),
-    pseudocode=(
-        "Euler(f, x0, y0, h, n):\n"
-        "    for k = 0..n-1:\n"
-        "        y <- y + h * f(x, y)\n"
-        "        x <- x + h"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
     "runge_kutta_2",
     "Runge-Kutta 2nd Order",
     "Two-stage second-order Runge-Kutta (midpoint/Heun); two slope evaluations per step.",

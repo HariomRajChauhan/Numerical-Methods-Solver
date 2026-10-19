@@ -25,8 +25,13 @@ interface FunctionFieldProps {
  */
 export function FunctionField({ field, value, onChange, error, variables }: FunctionFieldProps) {
   const text = String(value ?? "");
-  const variable = field.variable ?? "x";
-  const keypadVariables = field.variable ? [field.variable] : (variables ?? []);
+  // ``variable`` may list several names separated by commas (e.g. "x, y" for an
+  // ODE right-hand side); a single name is the common case.
+  const fieldVariables = field.variable
+    ? field.variable.split(/[,\s]+/).filter(Boolean)
+    : [];
+  const variable = fieldVariables[0] ?? "x";
+  const keypadVariables = fieldVariables.length > 0 ? fieldVariables : (variables ?? []);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const keypad = useKeypadInput(inputRef, text, (next) => onChange(next));
 

@@ -144,11 +144,15 @@ def _as_text(field: InputField, raw: Any) -> str:
 
 def _as_function(field: InputField, raw: Any) -> str:
     if not isinstance(raw, str):
-        raise InvalidInputError(f"'{field.label}' must be a function of x, e.g. x^2 - 2.")
+        raise InvalidInputError(f"'{field.label}' must be a function, e.g. x^2 - 2.")
     text = raw.strip()
-    variable = field.variable or "x"
+    # ``variable`` may list several names separated by commas (e.g. "x, y" for
+    # an ODE right-hand side f(x, y)); a single name is the common case.
+    variables = tuple(
+        part for part in re.split(r"[,\s]+", field.variable or "x") if part
+    )
     # Parse early so the student gets an immediate, friendly syntax error.
-    parse_expression(text, (variable,))
+    parse_expression(text, variables)
     return text
 
 

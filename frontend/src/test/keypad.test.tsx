@@ -118,6 +118,22 @@ describe("Variable filtering", () => {
     expect(screen.queryByRole("button", { name: "Insert variable t" })).not.toBeInTheDocument();
   });
 
+  it("shows every variable of a comma-separated function field", () => {
+    render(
+      <FunctionField
+        field={makeField({ variable: "x, y" })}
+        value=""
+        onChange={vi.fn()}
+        variables={["x", "y", "z"]}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Keypad" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Variables" }));
+    expect(screen.getByRole("button", { name: "Insert variable x" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Insert variable y" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Insert variable z" })).not.toBeInTheDocument();
+  });
+
   it("uses the method variables for equation text fields", () => {
     render(
       <BasicField
