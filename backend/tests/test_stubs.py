@@ -122,6 +122,9 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
     Chapter.CH4_DIFF_INTEGRATION: [
         "numerical_differentiation",
         "local_extrema",
+        "trapezoidal",
+        "simpson_13",
+        "simpson_38",
     ],
 }
 
@@ -198,10 +201,10 @@ def test_available_and_coming_soon_are_the_only_statuses(catalogue: dict) -> Non
 
 
 def test_stub_detail_endpoint_returns_meta(client: TestClient) -> None:
-    response = client.get("/api/methods/trapezoidal")
+    response = client.get("/api/methods/romberg")
     assert response.status_code == 200
     body = response.json()
-    assert body["id"] == "trapezoidal"
+    assert body["id"] == "romberg"
     assert body["status"] == MethodStatus.COMING_SOON
     assert body["chapter"] == Chapter.CH4_DIFF_INTEGRATION
     assert body["chapter_title"] == "Differentiation & Integration"

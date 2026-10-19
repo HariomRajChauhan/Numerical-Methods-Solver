@@ -31,57 +31,6 @@ register_coming_soon(
 
 register_coming_soon(
     CHAPTER,
-    "trapezoidal",
-    "Trapezoidal Rule",
-    "Integrate by approximating the area with trapezoids; second-order accurate.",
-    theory=(
-        "The trapezoidal rule joins successive function values with straight lines, "
-        "giving the integral as h/2 [y0 + 2(y1 + ... + y_{n-1}) + yn]. Its error is "
-        "O(h^2) and it integrates any linear function exactly."
-    ),
-    pseudocode=(
-        "Trapezoidal(f, a, b, n):\n"
-        "    h <- (b - a) / n\n"
-        "    I <- h/2 * (f(a) + f(b) + 2*sum_{i=1}^{n-1} f(a + i*h))"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "simpson_13",
-    "Simpson's 1/3 Rule",
-    "Integrate over pairs of intervals with a quadratic fit; fourth-order accurate (n even).",
-    theory=(
-        "Simpson's 1/3 rule fits a parabola through each pair of subintervals, giving "
-        "the integral as h/3 [y0 + 4(y1 + y3 + ...) + 2(y2 + y4 + ...) + yn]. Its error "
-        "is O(h^4); the number of intervals must be even."
-    ),
-    pseudocode=(
-        "Simpson13(f, a, b, n):        # n even\n"
-        "    h <- (b - a) / n\n"
-        "    I <- h/3 * (f(a) + f(b) + 4*sum(odd i) + 2*sum(even i, i<n))"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "simpson_38",
-    "Simpson's 3/8 Rule",
-    "Integrate over triples of intervals with a cubic fit; fourth-order accurate (n multiple of 3).",
-    theory=(
-        "Simpson's 3/8 rule fits a cubic through each group of three subintervals, "
-        "giving the integral as 3h/8 [y0 + 3(y1 + y2 + ...) + 2(y3 + ...) + yn]. It is "
-        "handy when the number of intervals is a multiple of three."
-    ),
-    pseudocode=(
-        "Simpson38(f, a, b, n):        # n multiple of 3\n"
-        "    h <- (b - a) / n\n"
-        "    I <- 3h/8 * (f(a) + f(b) + 3*sum(i not mult. of 3) + 2*sum(i mult. of 3, i<n))"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
     "boole",
     "Boole's Rule",
     "Fifth-degree Newton-Cotes rule over four subintervals; sixth-order accurate.",
