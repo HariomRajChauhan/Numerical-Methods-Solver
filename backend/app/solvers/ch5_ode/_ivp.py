@@ -162,6 +162,16 @@ def ivp_schema(*extra: InputField, default_h: float = 0.1) -> list[InputField]:
     ]
 
 
+def compare_field() -> InputField:
+    """The shared 'compare Euler / RK2 / RK4' checkbox for Chapter 5 methods."""
+    return boolean_field(
+        "compare",
+        "Compare with Euler and RK4",
+        False,
+        help="Run Euler, the chosen RK2 pair and RK4 on the same problem and overlay them.",
+    )
+
+
 # ---------------------------------------------------------------------------
 # Preparation
 # ---------------------------------------------------------------------------
@@ -301,6 +311,43 @@ def run_fixed_steps(
     return steps, None
 
 
+def reference_sampler(ivp: IVP) -> Callable[[float], float | None]:
+    """A callable giving the exact (or high-accuracy reference) ``y`` at any ``x``.
+
+    Uses the supplied exact solution when present, otherwise a dense
+    ``scipy.integrate.solve_ivp`` reference. Returns ``None`` at points where the
+    reference cannot be evaluated, so overlays stay robust.
+    """
+    exact = ivp.exact
+    if exact is not None:
+        return lambda x: _safe(exact, x)
+
+    try:
+        from scipy.integrate import solve_ivp
+
+        solution = solve_ivp(
+            lambda t, state: [ivp.f(t, state[0])],
+            [ivp.x0, ivp.x_end],
+            [ivp.y0],
+            rtol=1e-11,
+            atol=1e-13,
+            dense_output=True,
+        )
+    except Exception:
+        return lambda x: None
+    if not solution.success:
+        return lambda x: None
+
+    def sample(x: float) -> float | None:
+        try:
+            value = float(solution.sol(x)[0])
+        except Exception:
+            return None
+        return value if math.isfinite(value) else None
+
+    return sample
+
+
 def _safe(fn: ExactFunction, x: float) -> float | None:
     try:
         value = float(fn(x))
@@ -325,6 +372,34 @@ def solution_table(steps: list[IVPStep], decimals: int) -> DataTable:
             row.append(format_num(step.error, decimals) if step.error is not None else "n/a")
         rows.append(row)
     return DataTable(title="Numerical solution", columns=columns, rows=rows)
+
+
+def stage_table(
+    steps: list[IVPStep],
+    stage_labels: list[str],
+    decimals: int,
+    *,
+    title: str,
+) -> DataTable:
+    """A table of the Runge-Kutta stage slopes ``k1, k2, ...`` per step."""
+    has_exact = any(step.exact is not None for step in steps)
+    columns = ["step", "x", "y", *stage_labels]
+    if has_exact:
+        columns += ["Exact y", "|error|"]
+    rows: list[list[Any]] = []
+    for step in steps:
+        row: list[Any] = [step.k, format_num(step.x, decimals), format_num(step.y, decimals)]
+        for label in stage_labels:
+            value = step.data.get(label)
+            if isinstance(value, int | float) and math.isfinite(float(value)):
+                row.append(format_num(float(value), decimals))
+            else:
+                row.append(r"\text{--}")
+        if has_exact:
+            row.append(format_num(step.exact, decimals) if step.exact is not None else "n/a")
+            row.append(format_num(step.error, decimals) if step.error is not None else "n/a")
+        rows.append(row)
+    return DataTable(title=title, columns=columns, rows=rows)
 
 
 def targets_table(
@@ -696,6 +771,7 @@ __all__ = [
     "MAX_SYMBOLIC_OPS",
     "IVPStep",
     "Study",
+    "compare_field",
     "degenerate_response",
     "divergence_response",
     "failed_response",
@@ -704,10 +780,13 @@ __all__ = [
     "ivp_schema",
     "prepare_ivp",
     "reference_endpoint",
+    "reference_sampler",
     "result_step",
     "run_fixed_steps",
     "sample_exact",
+    "setup_step",
     "solution_table",
+    "stage_table",
     "step_size_study",
     "summary_table",
     "targets_table",

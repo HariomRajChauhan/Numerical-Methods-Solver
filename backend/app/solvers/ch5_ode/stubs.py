@@ -13,48 +13,6 @@ CHAPTER = Chapter.CH5_ODE
 
 register_coming_soon(
     CHAPTER,
-    "runge_kutta_2",
-    "Runge-Kutta 2nd Order",
-    "Two-stage second-order Runge-Kutta (midpoint/Heun); two slope evaluations per step.",
-    theory=(
-        "The second-order Runge-Kutta family estimates the solution with two slope "
-        "evaluations per step (for example the midpoint or Heun variant), giving O(h^2) "
-        "accuracy. It is the cheapest way to improve on Euler's method."
-    ),
-    pseudocode=(
-        "RK2(f, x0, y0, h, n):        # midpoint variant\n"
-        "    for k = 0..n-1:\n"
-        "        k1 <- f(x, y)\n"
-        "        k2 <- f(x + h/2, y + h*k1/2)\n"
-        "        y  <- y + h*k2\n"
-        "        x  <- x + h"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "runge_kutta_4",
-    "Runge-Kutta 4th Order",
-    "Classic fourth-order Runge-Kutta: four slope evaluations per step, no derivatives.",
-    theory=(
-        "RK4 combines four slope estimates (k1..k4) weighted 1:2:2:1 to advance the "
-        "solution with O(h^4) accuracy, without needing derivatives of f. It is the "
-        "standard workhorse one-step ODE method."
-    ),
-    pseudocode=(
-        "RK4(f, x0, y0, h, n):\n"
-        "    for k = 0..n-1:\n"
-        "        k1 <- f(x, y)\n"
-        "        k2 <- f(x + h/2, y + h*k1/2)\n"
-        "        k3 <- f(x + h/2, y + h*k2/2)\n"
-        "        k4 <- f(x + h,   y + h*k3)\n"
-        "        y  <- y + h/6*(k1 + 2*k2 + 2*k3 + k4)\n"
-        "        x  <- x + h"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
     "ode_system_rk",
     "Systems of ODEs (Runge-Kutta)",
     "Solve a system of first-order ODEs simultaneously with RK4.",
