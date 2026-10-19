@@ -13,44 +13,6 @@ CHAPTER = Chapter.CH4_DIFF_INTEGRATION
 
 register_coming_soon(
     CHAPTER,
-    "numerical_differentiation",
-    "Numerical Differentiation",
-    "Approximate f'(x) from function values using forward, backward or central differences.",
-    theory=(
-        "Derivatives are estimated from differences of nearby function values: forward "
-        "(f(x+h)-f(x))/h, backward (f(x)-f(x-h))/h, and central "
-        "(f(x+h)-f(x-h))/(2h). Central differences are more accurate; the step h trades "
-        "truncation error against round-off."
-    ),
-    pseudocode=(
-        "Differentiate(f, x, h, scheme):\n"
-        "    forward : (f(x+h) - f(x)) / h\n"
-        "    backward: (f(x) - f(x-h)) / h\n"
-        "    central : (f(x+h) - f(x-h)) / (2h)"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
-    "local_extrema",
-    "Local Maxima and Minima",
-    "Locate extrema of a tabulated function from sign changes of the finite-difference slope.",
-    theory=(
-        "For equally-spaced data a local maximum or minimum is detected where the first "
-        "difference changes sign (delta y goes + to - for a maximum, - to + for a "
-        "minimum). Refining with higher-order differences or interpolation locates the "
-        "turning point more precisely."
-    ),
-    pseudocode=(
-        "LocalExtrema(xs, ys):\n"
-        "    for i: if delta_y changes sign around i:\n"
-        "        classify as maximum (+) or minimum (-)\n"
-        "    optionally refine by interpolating around the turning point"
-    ),
-)
-
-register_coming_soon(
-    CHAPTER,
     "newton_cotes",
     "Newton-Cotes Quadrature",
     "Family of equal-spacing integration rules behind the trapezoidal and Simpson rules.",

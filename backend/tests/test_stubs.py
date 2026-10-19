@@ -119,6 +119,10 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "least_squares",
         "cubic_spline",
     ],
+    Chapter.CH4_DIFF_INTEGRATION: [
+        "numerical_differentiation",
+        "local_extrema",
+    ],
 }
 
 IMPLEMENTED_IDS = {method_id for ids in IMPLEMENTED.values() for method_id in ids}
