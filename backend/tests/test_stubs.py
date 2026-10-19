@@ -116,6 +116,7 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "bessel",
         "newton_divided_difference",
         "lagrange",
+        "least_squares",
     ],
 }
 
