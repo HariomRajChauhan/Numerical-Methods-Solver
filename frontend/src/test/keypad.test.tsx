@@ -213,6 +213,45 @@ describe("MethodForm variable wiring", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Variables" }));
     expect(screen.getByRole("button", { name: "Insert variable z" })).toBeInTheDocument();
   });
+
+  it("offers the declared independent and state variables for ODE-system fields", () => {
+    const systemMeta: MethodMeta = {
+      ...META,
+      id: "ode_system_rk",
+      variables: [],
+      input_schema: [
+        {
+          ...META.input_schema[0],
+          key: "equations",
+          label: "Equations",
+        },
+        {
+          ...META.input_schema[0],
+          key: "state_variables",
+          label: "State variables",
+          type: "text",
+          rows: null,
+        },
+      ],
+    };
+    render(
+      <MethodForm
+        meta={systemMeta}
+        inputs={{ equations: "", independent_variable: "t", state_variables: "u, v" }}
+        status="idle"
+        onChange={vi.fn()}
+        onSubmit={vi.fn()}
+        onClear={vi.fn()}
+        onLoadExample={vi.fn()}
+      />,
+    );
+    fireEvent.click(screen.getAllByRole("button", { name: "Keypad" })[0]);
+    fireEvent.click(screen.getByRole("tab", { name: "Variables" }));
+    expect(screen.getByRole("button", { name: "Insert variable t" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Insert variable u" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Insert variable v" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Insert variable x" })).not.toBeInTheDocument();
+  });
 });
 
 describe("Compact numeric keypad", () => {

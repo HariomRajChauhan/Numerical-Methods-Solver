@@ -136,6 +136,8 @@ IMPLEMENTED: dict[Chapter, list[str]] = {
         "euler",
         "runge_kutta_2",
         "runge_kutta_4",
+        "ode_system_rk",
+        "ode_second_order_rk",
     ],
 }
 
@@ -212,10 +214,10 @@ def test_available_and_coming_soon_are_the_only_statuses(catalogue: dict) -> Non
 
 
 def test_stub_detail_endpoint_returns_meta(client: TestClient) -> None:
-    response = client.get("/api/methods/ode_system_rk")
+    response = client.get("/api/methods/bvp_shooting")
     assert response.status_code == 200
     body = response.json()
-    assert body["id"] == "ode_system_rk"
+    assert body["id"] == "bvp_shooting"
     assert body["status"] == MethodStatus.COMING_SOON
     assert body["chapter"] == Chapter.CH5_ODE
     assert body["chapter_title"] == "Ordinary Differential Equations"

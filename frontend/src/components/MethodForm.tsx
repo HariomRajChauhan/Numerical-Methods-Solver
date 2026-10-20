@@ -24,8 +24,25 @@ interface MethodFormProps {
 /**
  * The variables a method allows, read from its schema: the explicit
  * `meta.variables` list first, otherwise every `variable` named by its fields.
+ * Free-form declaration fields (an independent variable and a list of state
+ * variables, as used by the ODE-system methods) are folded in from the current
+ * inputs so the keypad always offers the names the student declared.
  */
-function methodVariables(meta: MethodMeta): string[] {
+function methodVariables(meta: MethodMeta, inputs: Record<string, unknown>): string[] {
+  const declared: string[] = [];
+  const independent = inputs.independent_variable;
+  if (typeof independent === "string" && independent.trim()) {
+    declared.push(independent.trim());
+  }
+  const state = inputs.state_variables;
+  if (typeof state === "string") {
+    declared.push(...state.split(/[,\s]+/).filter(Boolean));
+  }
+  if (declared.length > 0) {
+    return meta.variables && meta.variables.length > 0
+      ? Array.from(new Set([...meta.variables, ...declared]))
+      : Array.from(new Set(declared));
+  }
   if (meta.variables && meta.variables.length > 0) return meta.variables;
   const fromFields = meta.input_schema
     .map((field) => field.variable)
@@ -76,7 +93,7 @@ export function MethodForm({
   onLoadExample,
 }: MethodFormProps) {
   const busy = status === "loading";
-  const variables = methodVariables(meta);
+  const variables = methodVariables(meta, inputs);
 
   return (
     <form
