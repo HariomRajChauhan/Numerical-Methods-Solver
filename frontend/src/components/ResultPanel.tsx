@@ -37,7 +37,7 @@ export function ResultPanel({ response, precision = 6 }: ResultPanelProps) {
       {response.warnings.length > 0 && (
         <ul
           aria-live="polite"
-          className="space-y-1.5 rounded-2xl border border-amber-200/80 bg-amber-50/90 p-3.5 text-sm text-amber-800 dark:border-amber-400/20 dark:bg-amber-500/[0.07] dark:text-amber-200"
+          className="space-y-1.5 rounded-panel border border-warning/20 bg-warning-soft p-3.5 text-sm text-warning"
         >
           {response.warnings.map((warning) => (
             <li key={warning} className="flex items-start gap-2">
@@ -49,45 +49,41 @@ export function ResultPanel({ response, precision = 6 }: ResultPanelProps) {
       )}
 
       {primary ? (
-        <section className="relative overflow-hidden rounded-2xl border border-indigo-200/70 bg-gradient-to-br from-indigo-50/90 via-white to-white p-5 dark:border-indigo-400/20 dark:from-indigo-500/[0.07] dark:via-slate-900/60 dark:to-slate-900/60">
+        <section className="relative overflow-hidden rounded-panel border border-accent-soft-line bg-gradient-to-br from-accent-soft via-surface to-surface p-5">
           <div
             aria-hidden="true"
-            className="absolute -right-10 -top-12 h-36 w-36 rounded-full bg-indigo-500/10 blur-2xl"
+            className="absolute -right-10 -top-12 h-36 w-36 rounded-full bg-accent-500/10 blur-2xl"
           />
           <div className="relative flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-600 dark:text-indigo-300">
+            <p className="text-2xs font-semibold uppercase tracking-[0.16em] text-accent-text">
               {humanize(primary[0])}
             </p>
             <SolveStatusBadge status={response.status} />
           </div>
-          <p className="relative mt-2 break-all font-mono text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+          <p className="relative mt-2 break-all font-mono text-2xl font-semibold tracking-tight tabular-nums text-ink sm:text-3xl">
             {formatResultValue(primary[1], precision)}
           </p>
         </section>
       ) : (
         <section className={`flex flex-wrap items-center justify-between gap-2 p-4 ${ui.card}`}>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            No final value was produced.
-          </p>
+          <p className="text-sm text-ink-muted">No final value was produced.</p>
           <SolveStatusBadge status={response.status} />
         </section>
       )}
 
       {rest.length > 0 && (
         <section className={`p-4 ${ui.card}`}>
-          <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-            All results
-          </h3>
+          <h3 className="text-sm font-semibold text-ink">All results</h3>
           <dl className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {rest.map(([key, value]) => (
               <div
                 key={key}
-                className="rounded-xl border border-slate-200/70 bg-slate-50/70 px-3 py-2.5 dark:border-white/[0.06] dark:bg-white/[0.03]"
+                className="rounded-control border border-line bg-surface-muted px-3 py-2.5"
               >
-                <dt className="text-[10px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                <dt className="text-[10px] font-medium uppercase tracking-wider text-ink-muted">
                   {humanize(key)}
                 </dt>
-                <dd className="mt-0.5 break-all font-mono text-sm font-medium text-slate-800 dark:text-slate-100">
+                <dd className="mt-0.5 break-all font-mono text-sm font-medium tabular-nums text-ink">
                   {formatResultValue(value, precision)}
                 </dd>
               </div>
@@ -102,20 +98,18 @@ export function ResultPanel({ response, precision = 6 }: ResultPanelProps) {
             <span className={`${ui.iconBox} h-7 w-7`}>
               <Icon name="chart" size={14} />
             </span>
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-              Error &amp; convergence
-            </h3>
+            <h3 className="text-sm font-semibold text-ink">Error &amp; convergence</h3>
           </div>
           <dl className="mt-3 grid gap-2 sm:grid-cols-3">
             {metrics.map((metric) => (
               <div
                 key={metric.label}
-                className="rounded-xl border border-slate-200/70 bg-slate-50/70 px-3 py-2.5 dark:border-white/[0.06] dark:bg-white/[0.03]"
+                className="rounded-control border border-line bg-surface-muted px-3 py-2.5"
               >
-                <dt className="text-[10px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                <dt className="text-[10px] font-medium uppercase tracking-wider text-ink-muted">
                   {metric.label}
                 </dt>
-                <dd className="mt-0.5 font-mono text-sm text-slate-800 dark:text-slate-100">
+                <dd className="mt-0.5 font-mono text-sm tabular-nums text-ink">
                   {typeof metric.value === "number"
                     ? formatResultValue(metric.value, precision)
                     : metric.value}

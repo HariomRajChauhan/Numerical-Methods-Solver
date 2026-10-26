@@ -20,6 +20,10 @@ interface MethodFormProps {
   onSubmit: () => void;
   onClear: () => void;
   onLoadExample: (inputs: MethodExample["inputs"]) => void;
+  /** Let a sticky workspace toolbar own the primary action. */
+  showSubmit?: boolean;
+  /** Lets a toolbar submit button target this form with the `form` attribute. */
+  formId?: string;
 }
 
 /**
@@ -92,12 +96,15 @@ export function MethodForm({
   onSubmit,
   onClear,
   onLoadExample,
+  showSubmit = true,
+  formId = "method-form",
 }: MethodFormProps) {
   const busy = status === "loading";
   const variables = methodVariables(meta, inputs);
 
   return (
     <form
+      id={formId}
       onSubmit={(event) => {
         event.preventDefault();
         if (!busy) onSubmit();
@@ -116,7 +123,7 @@ export function MethodForm({
         <div className={`${ui.surface} p-3`}>
           <label htmlFor="example-select" className={ui.label}>
             <span className="flex items-center gap-1.5">
-              <Icon name="sparkles" size={13} className="text-indigo-500 dark:text-indigo-300" />
+              <Icon name="sparkles" size={13} className="text-accent-text" />
               Worked examples
             </span>
           </label>
@@ -136,7 +143,7 @@ export function MethodForm({
               </option>
             ))}
           </select>
-          <p className="mt-1.5 text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
+          <p className="mt-1.5 text-2xs leading-relaxed text-ink-muted">
             Loads a ready-made problem so you can see the full solution immediately.
           </p>
         </div>
@@ -148,20 +155,26 @@ export function MethodForm({
         </div>
       ))}
 
-      <div className="flex flex-wrap gap-2 border-t border-slate-200/80 pt-4 dark:border-white/[0.07]">
-        <button
-          type="submit"
-          disabled={busy}
-          aria-busy={busy}
-          className={`${ui.btnPrimary} min-w-[8rem] flex-1`}
-        >
-          <Icon
-            name={busy ? "loader" : "play"}
-            size={15}
-            className={busy ? "animate-spin" : undefined}
-          />
-          {busy ? "Solving…" : "Solve"}
-        </button>
+      <div
+        className={`flex flex-wrap gap-2 border-t border-line pt-4 ${
+          showSubmit ? "" : "justify-end"
+        }`}
+      >
+        {showSubmit && (
+          <button
+            type="submit"
+            disabled={busy}
+            aria-busy={busy}
+            className={`${ui.btnPrimary} min-w-[8rem] flex-1`}
+          >
+            <Icon
+              name={busy ? "loader" : "play"}
+              size={15}
+              className={busy ? "animate-spin" : undefined}
+            />
+            {busy ? "Solving…" : "Solve"}
+          </button>
+        )}
         <button type="button" onClick={onClear} disabled={busy} className={ui.btn}>
           <Icon name="refresh" size={14} />
           Clear result

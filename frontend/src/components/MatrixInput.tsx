@@ -116,7 +116,7 @@ export function MatrixInput({ field, value, onChange, error }: MatrixInputProps)
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <div>
           <span className={ui.label}>{field.label}</span>
-          <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-400">
+          <p className="mt-0.5 text-2xs tabular-nums text-ink-muted">
             {matrix.length} × {width} matrix · use arrow keys to move between cells
           </p>
         </div>
@@ -127,7 +127,7 @@ export function MatrixInput({ field, value, onChange, error }: MatrixInputProps)
           <button type="button" onClick={removeRow} className={ui.btnGhost} title="Remove row">
             − Row
           </button>
-          <span aria-hidden="true" className="mx-0.5 h-4 w-px bg-slate-200 dark:bg-white/10" />
+          <span aria-hidden="true" className="mx-0.5 h-4 w-px bg-line" />
           <button type="button" onClick={addColumn} className={ui.btnGhost} title="Add column">
             + Col
           </button>
@@ -143,10 +143,8 @@ export function MatrixInput({ field, value, onChange, error }: MatrixInputProps)
       </div>
 
       <div
-        className={`inline-block max-w-full overflow-x-auto rounded-xl border p-3 scroll-slim ${
-          error
-            ? "border-rose-400 dark:border-rose-500/70"
-            : "border-slate-200/80 bg-slate-50/60 dark:border-white/[0.07] dark:bg-white/[0.02]"
+        className={`inline-block max-w-full overflow-x-auto rounded-panel border p-3 scroll-slim ${
+          error ? "border-danger" : "border-line bg-surface-muted"
         }`}
       >
         {matrix.map((row, rowIndex) => (
@@ -170,7 +168,7 @@ export function MatrixInput({ field, value, onChange, error }: MatrixInputProps)
                   }}
                   onChange={(event) => setCell(rowIndex, colIndex, event.target.value)}
                   onKeyDown={(event) => handleKeyDown(event, rowIndex, colIndex)}
-                  className="h-9 w-[4.75rem] rounded-lg border border-slate-300/90 bg-white px-2 text-right font-mono text-sm text-slate-800 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-white/10 dark:bg-slate-950/50 dark:text-slate-100 dark:focus:border-indigo-400"
+                  className="h-9 w-[4.75rem] rounded-control border border-line-strong bg-surface px-2 text-right font-mono text-sm tabular-nums text-ink shadow-sm transition duration-150 focus:border-accent-500 focus:outline-none focus:ring-4 focus:ring-accent-500/10"
                 />
               );
             })}

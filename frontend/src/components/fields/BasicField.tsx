@@ -33,7 +33,7 @@ export function BasicField({ field, value, onChange, error, variables }: BasicFi
   if (field.type === "boolean") {
     return (
       <FieldWrapper field={field} error={error}>
-        <label className="inline-flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200/80 bg-white px-3.5 py-2.5 text-sm text-slate-700 transition hover:border-slate-300 dark:border-white/[0.08] dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-white/20">
+        <label className="inline-flex cursor-pointer items-center gap-3 rounded-control border border-line bg-surface px-3.5 py-2.5 text-sm text-ink transition duration-150 hover:border-line-strong">
           <span className="relative inline-flex h-5 w-9 shrink-0 items-center">
             <input
               id={field.key}
@@ -42,8 +42,8 @@ export function BasicField({ field, value, onChange, error, variables }: BasicFi
               onChange={(event) => onChange(event.target.checked)}
               className="peer sr-only"
             />
-            <span className="h-5 w-9 rounded-full bg-slate-200 transition peer-checked:bg-indigo-600 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 peer-focus-visible:ring-offset-2 dark:bg-white/10 dark:peer-focus-visible:ring-offset-slate-900" />
-            <span className="absolute left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition peer-checked:translate-x-4" />
+            <span className="h-5 w-9 rounded-pill bg-line-strong transition duration-150 peer-checked:bg-accent-solid peer-focus-visible:ring-2 peer-focus-visible:ring-accent-500 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-canvas" />
+            <span className="absolute left-0.5 h-4 w-4 rounded-full bg-surface shadow-sm transition duration-150 peer-checked:translate-x-4" />
           </span>
           Enabled
         </label>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { toast } from "../store/toast";
 import { copyText } from "../utils/download";
 import { ui } from "../utils/ui";
 import { Icon } from "./ui/Icon";
@@ -16,8 +17,16 @@ export function CopyButton({ text, label = "Copy", className = "" }: CopyButtonP
 
   async function handleCopy(): Promise<void> {
     const ok = await copyText(text);
-    if (!ok) return;
+    if (!ok) {
+      toast({
+        tone: "error",
+        title: "Could not copy",
+        message: "Your browser blocked clipboard access.",
+      });
+      return;
+    }
     setCopied(true);
+    toast({ tone: "success", title: "Copied to clipboard", duration: 2600 });
     window.setTimeout(() => setCopied(false), 1500);
   }
 

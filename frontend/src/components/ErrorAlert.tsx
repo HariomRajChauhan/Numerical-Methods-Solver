@@ -12,21 +12,19 @@ export function ErrorAlert({ error, onDismiss, className = "" }: ErrorAlertProps
   return (
     <div
       role="alert"
-      className={`rounded-2xl border border-rose-200/80 bg-rose-50/90 p-4 text-sm dark:border-rose-500/20 dark:bg-rose-500/[0.07] ${className}`}
+      className={`rounded-panel border border-danger/20 bg-danger-soft p-4 text-sm ${className}`}
     >
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300">
+        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-danger/10 text-danger ring-1 ring-inset ring-danger/20">
           <Icon name="alert" size={17} />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-wide text-rose-500 dark:text-rose-400">
+          <p className="text-2xs font-semibold uppercase tracking-wide text-danger">
             Something went wrong
           </p>
-          <p className="mt-1 font-medium text-rose-800 dark:text-rose-200">{error.message}</p>
+          <p className="mt-1 font-medium text-ink">{error.message}</p>
           {error.hint && (
-            <p className="mt-1 text-xs leading-relaxed text-rose-700/80 dark:text-rose-300/80">
-              {error.hint}
-            </p>
+            <p className="mt-1 text-xs leading-relaxed text-ink-muted">{error.hint}</p>
           )}
         </div>
         {onDismiss && (
@@ -34,7 +32,7 @@ export function ErrorAlert({ error, onDismiss, className = "" }: ErrorAlertProps
             type="button"
             onClick={onDismiss}
             aria-label="Dismiss error"
-            className="rounded-lg p-1.5 text-rose-400 transition hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-500/15 dark:hover:text-rose-200"
+            className="rounded-control p-1.5 text-danger/70 transition duration-150 hover:bg-danger/10 hover:text-danger focus:outline-none focus-visible:ring-2 focus-visible:ring-danger"
           >
             <Icon name="close" size={15} />
           </button>

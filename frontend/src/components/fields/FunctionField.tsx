@@ -53,15 +53,15 @@ export function FunctionField({ field, value, onChange, error, variables }: Func
       preview={
         <div className="mt-2 min-h-[1.75rem]">
           {preview.latex && (
-            <div className="flex items-start gap-2 overflow-x-auto rounded-xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 dark:border-white/[0.06] dark:bg-white/[0.03]">
-              <span className="mt-0.5 shrink-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-400">
+            <div className="flex items-start gap-2 overflow-x-auto rounded-control border border-line bg-surface-muted px-3 py-2">
+              <span className="mt-0.5 shrink-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
                 Preview
               </span>
               <LatexView latex={preview.latex} />
             </div>
           )}
           {preview.error && (
-            <p className="flex items-start gap-1.5 text-xs text-amber-600 dark:text-amber-400">
+            <p className="flex items-start gap-1.5 text-xs text-warning">
               <Icon name="alert" size={13} className="mt-0.5 shrink-0" />
               <span>
                 Preview unavailable: {preview.error} (the solver will validate it too)

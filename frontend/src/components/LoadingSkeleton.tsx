@@ -10,7 +10,7 @@ export function LoadingSkeleton({ lines = 3, className = "" }: LoadingSkeletonPr
       {Array.from({ length: lines }, (_, index) => (
         <div
           key={index}
-          className={`skeleton-shimmer h-3.5 rounded-lg bg-slate-200/80 dark:bg-white/[0.07] ${
+          className={`skeleton-shimmer h-3.5 rounded-control bg-line ${
             index === lines - 1 ? "w-2/3" : "w-full"
           }`}
         />

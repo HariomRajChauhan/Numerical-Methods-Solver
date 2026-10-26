@@ -53,7 +53,7 @@ export function ListField({ field, value, onChange, error }: ListFieldProps) {
       error={error}
       preview={
         text.trim() && preview.length > 0 ? (
-          <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+          <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-success">
             <Icon name="check" size={13} />
             {preview.length} {isPoints ? "point(s)" : "value(s)"} detected
           </p>

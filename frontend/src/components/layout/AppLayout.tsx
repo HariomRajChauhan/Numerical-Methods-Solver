@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 import { useCatalog } from "../../hooks/useCatalog";
+import { Toaster } from "../Toaster";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { Icon } from "../ui/Icon";
@@ -106,6 +107,8 @@ export function AppLayout() {
           </div>
         </div>
       </footer>
+
+      <Toaster />
     </div>
   );
 }

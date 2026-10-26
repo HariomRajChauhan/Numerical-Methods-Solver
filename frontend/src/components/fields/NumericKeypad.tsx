@@ -7,10 +7,10 @@ interface NumericKeypadProps {
 }
 
 const BUTTON =
-  "inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-300 bg-white " +
-  "font-mono text-base text-slate-800 shadow-sm transition active:scale-95 hover:bg-slate-100 " +
-  "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 " +
-  "dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800";
+  "inline-flex h-10 w-10 items-center justify-center rounded-control border border-line-strong bg-surface " +
+  "font-mono text-base tabular-nums text-ink shadow-sm transition duration-150 hover:bg-surface-muted " +
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 " +
+  "active:scale-95";
 
 interface Key {
   label: string;
@@ -41,7 +41,7 @@ export function NumericKeypad({ onAction, label = "Numeric keypad" }: NumericKey
     <div
       role="group"
       aria-label={label}
-      className="mt-1.5 inline-grid grid-cols-4 gap-1 rounded-lg border border-slate-200 bg-slate-50 p-2 dark:border-slate-800 dark:bg-slate-950/40"
+      className="mt-1.5 inline-grid grid-cols-4 gap-1 rounded-control border border-line bg-surface-muted p-2"
     >
       {KEYS.map((key) => (
         <button

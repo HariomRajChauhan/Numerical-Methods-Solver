@@ -60,7 +60,7 @@ export function Tabs({ tabs, activeId, onChange, className = "" }: TabsProps) {
       role="tablist"
       aria-label="Solution views"
       onKeyDown={handleKeyDown}
-      className={`no-scrollbar flex gap-1 overflow-x-auto rounded-xl border border-slate-200/80 bg-white/70 p-1 backdrop-blur-sm dark:border-white/[0.07] dark:bg-white/[0.03] ${className}`}
+      className={`no-scrollbar flex gap-1 overflow-x-auto rounded-control border border-line bg-surface/80 p-1 backdrop-blur-sm ${className}`}
     >
       {tabs.map((tab) => {
         const active = tab.id === activeId;
@@ -74,20 +74,18 @@ export function Tabs({ tabs, activeId, onChange, className = "" }: TabsProps) {
             disabled={tab.disabled}
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(tab.id)}
-            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-40 ${
+            className={`flex shrink-0 items-center gap-1.5 rounded-control px-3 py-2 text-[13px] font-medium transition duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 disabled:cursor-not-allowed disabled:opacity-40 ${
               active
-                ? "bg-slate-900 text-white shadow-sm dark:bg-white dark:text-slate-900"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/[0.06] dark:hover:text-slate-100"
+                ? "bg-accent-solid text-white shadow-sm"
+                : "text-ink-muted hover:bg-surface-muted hover:text-ink"
             }`}
           >
             {tab.icon && <Icon name={tab.icon} size={14} />}
             {tab.label}
             {tab.badge !== undefined && (
               <span
-                className={`ml-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${
-                  active
-                    ? "bg-white/20 text-white dark:bg-slate-900/10 dark:text-slate-700"
-                    : "bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-slate-300"
+                className={`ml-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
+                  active ? "bg-white text-accent-700" : "bg-surface-muted text-ink-muted"
                 }`}
               >
                 {tab.badge}

@@ -20,7 +20,7 @@ export function FieldWrapper({ field, error, children, preview }: FieldWrapperPr
       <label htmlFor={field.key} className={ui.label}>
         {field.label}
         {field.required && (
-          <span aria-hidden="true" className="ml-0.5 text-rose-500">
+          <span aria-hidden="true" className="ml-0.5 text-danger">
             *
           </span>
         )}

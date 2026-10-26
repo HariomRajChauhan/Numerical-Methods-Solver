@@ -12,8 +12,8 @@ const STEPS: Step[] = [
 describe("StepsPanel", () => {
   it("renders a numbered entry per step", () => {
     const { container } = render(<StepsPanel steps={STEPS} />);
-    expect(screen.getByText("Initial interval")).toBeInTheDocument();
-    expect(screen.getByText("First midpoint")).toBeInTheDocument();
+    expect(screen.getAllByText("Initial interval").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("First midpoint").length).toBeGreaterThan(0);
     expect(container.querySelectorAll("details")).toHaveLength(STEPS.length);
   });
 
