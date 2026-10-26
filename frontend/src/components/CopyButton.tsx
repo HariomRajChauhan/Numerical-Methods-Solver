@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { copyText } from "../utils/download";
 import { ui } from "../utils/ui";
+import { Icon } from "./ui/Icon";
 
 interface CopyButtonProps {
   text: string;
@@ -27,7 +28,8 @@ export function CopyButton({ text, label = "Copy", className = "" }: CopyButtonP
       className={`${ui.btnGhost} ${className}`}
       aria-live="polite"
     >
-      {copied ? "✓ Copied" : `⧉ ${label}`}
+      <Icon name={copied ? "check" : "copy"} size={13} />
+      {copied ? "Copied" : label}
     </button>
   );
 }

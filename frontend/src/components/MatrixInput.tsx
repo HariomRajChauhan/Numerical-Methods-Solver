@@ -50,13 +50,13 @@ export function MatrixInput({ field, value, onChange, error }: MatrixInputProps)
     onChange(next);
   }
 
+  const cellMap = useRef(new Map<string, HTMLInputElement>());
+
   function focusCell(row: number, col: number): void {
     const element = cellMap.current.get(`${row}:${col}`);
     element?.focus();
     element?.select();
   }
-
-  const cellMap = useRef(new Map<string, HTMLInputElement>());
 
   function handleKeyDown(
     event: KeyboardEvent<HTMLInputElement>,
@@ -113,26 +113,40 @@ export function MatrixInput({ field, value, onChange, error }: MatrixInputProps)
 
   return (
     <div>
-      <div className="mb-1.5 flex items-center justify-between gap-2">
-        <label className={ui.label}>{field.label}</label>
-        <div className="flex gap-1">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <span className={ui.label}>{field.label}</span>
+          <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-400">
+            {matrix.length} × {width} matrix · use arrow keys to move between cells
+          </p>
+        </div>
+        <div className="flex items-center gap-1">
           <button type="button" onClick={addRow} className={ui.btnGhost} title="Add row">
             + Row
           </button>
           <button type="button" onClick={removeRow} className={ui.btnGhost} title="Remove row">
             − Row
           </button>
+          <span aria-hidden="true" className="mx-0.5 h-4 w-px bg-slate-200 dark:bg-white/10" />
           <button type="button" onClick={addColumn} className={ui.btnGhost} title="Add column">
             + Col
           </button>
-          <button type="button" onClick={removeColumn} className={ui.btnGhost} title="Remove column">
+          <button
+            type="button"
+            onClick={removeColumn}
+            className={ui.btnGhost}
+            title="Remove column"
+          >
             − Col
           </button>
         </div>
       </div>
+
       <div
-        className={`inline-block overflow-x-auto rounded-lg border p-2 ${
-          error ? "border-rose-400" : "border-slate-200 dark:border-slate-800"
+        className={`inline-block max-w-full overflow-x-auto rounded-xl border p-3 scroll-slim ${
+          error
+            ? "border-rose-400 dark:border-rose-500/70"
+            : "border-slate-200/80 bg-slate-50/60 dark:border-white/[0.07] dark:bg-white/[0.02]"
         }`}
       >
         {matrix.map((row, rowIndex) => (
@@ -156,13 +170,14 @@ export function MatrixInput({ field, value, onChange, error }: MatrixInputProps)
                   }}
                   onChange={(event) => setCell(rowIndex, colIndex, event.target.value)}
                   onKeyDown={(event) => handleKeyDown(event, rowIndex, colIndex)}
-                  className="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-right font-mono text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+                  className="h-9 w-[4.75rem] rounded-lg border border-slate-300/90 bg-white px-2 text-right font-mono text-sm text-slate-800 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-white/10 dark:bg-slate-950/50 dark:text-slate-100 dark:focus:border-indigo-400"
                 />
               );
             })}
           </div>
         ))}
       </div>
+
       <div className="mt-1.5">
         <KeypadToggle open={keypad.show} onToggle={keypad.toggle} />
       </div>

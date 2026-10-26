@@ -39,10 +39,11 @@ const FUNCTIONS = [
 ];
 
 const BUTTON_BASE =
-  "inline-flex h-11 min-w-11 items-center justify-center rounded-lg border border-slate-300 " +
-  "bg-white px-2 font-mono text-base text-slate-800 shadow-sm transition active:scale-95 " +
-  "hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 " +
-  "dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800";
+  "inline-flex h-10 min-w-10 items-center justify-center rounded-lg border border-slate-200 " +
+  "bg-white px-2 font-mono text-sm text-slate-700 shadow-sm transition active:scale-95 " +
+  "hover:border-indigo-300 hover:bg-indigo-50/60 hover:text-indigo-700 " +
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 " +
+  "dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-slate-200 dark:hover:border-indigo-400/40 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-200";
 
 interface KeypadButtonProps {
   label: string;
@@ -58,7 +59,7 @@ function KeypadButton({ label, ariaLabel, onClick, wide }: KeypadButtonProps) {
       aria-label={ariaLabel}
       title={ariaLabel}
       onClick={onClick}
-      className={`${BUTTON_BASE} ${wide ? "min-w-[4.5rem] px-3" : "min-w-11"}`}
+      className={`${BUTTON_BASE} ${wide ? "min-w-[4.5rem] px-3" : "min-w-10"}`}
     >
       {label}
     </button>
@@ -73,12 +74,12 @@ export function MathKeypad({ variables = [], onAction }: MathKeypadProps) {
     <div
       role="group"
       aria-label="Mathematical keypad"
-      className="mt-2 max-w-full overflow-hidden rounded-lg border border-slate-200 bg-slate-50 p-2 dark:border-slate-800 dark:bg-slate-950/40"
+      className="mt-2 max-w-full overflow-hidden rounded-xl border border-slate-200/80 bg-slate-50/80 p-2 dark:border-white/[0.08] dark:bg-white/[0.02]"
     >
       <div
         role="tablist"
         aria-label="Keypad sections"
-        className="mb-2 flex flex-wrap gap-1 overflow-x-auto"
+        className="no-scrollbar mb-2 flex gap-1 overflow-x-auto"
       >
         {TABS.map((item) => (
           <button
@@ -88,10 +89,10 @@ export function MathKeypad({ variables = [], onAction }: MathKeypadProps) {
             aria-selected={tab === item.id}
             aria-controls={`keypad-panel-${item.id}`}
             onClick={() => setTab(item.id)}
-            className={`rounded-md px-2.5 py-1.5 text-xs font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
+            className={`shrink-0 rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
               tab === item.id
-                ? "bg-indigo-600 text-white"
-                : "text-slate-600 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-800"
+                ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/25"
+                : "text-slate-600 hover:bg-white hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/[0.06] dark:hover:text-slate-100"
             }`}
           >
             {item.label}
@@ -161,7 +162,7 @@ export function MathKeypad({ variables = [], onAction }: MathKeypadProps) {
               />
             ))
           ) : (
-            <p className="px-1 py-2 text-xs text-slate-500 dark:text-slate-400">
+            <p className="px-1 py-2 text-xs text-slate-600 dark:text-slate-400">
               No variables for this field.
             </p>
           ))}

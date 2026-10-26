@@ -2,6 +2,7 @@ import { useRef } from "react";
 
 import type { InputField } from "../../types/api";
 import { ui } from "../../utils/ui";
+import { Icon } from "../ui/Icon";
 import { FieldWrapper } from "./FieldWrapper";
 import { KeypadToggle } from "./MathKeypad";
 import { NumericKeypad } from "./NumericKeypad";
@@ -52,8 +53,9 @@ export function ListField({ field, value, onChange, error }: ListFieldProps) {
       error={error}
       preview={
         text.trim() && preview.length > 0 ? (
-          <p className="mt-1.5 text-xs text-emerald-600 dark:text-emerald-400">
-            ✓ {preview.length} {isPoints ? "point(s)" : "value(s)"} detected
+          <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+            <Icon name="check" size={13} />
+            {preview.length} {isPoints ? "point(s)" : "value(s)"} detected
           </p>
         ) : null
       }

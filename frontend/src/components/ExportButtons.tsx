@@ -3,6 +3,7 @@ import { useState } from "react";
 import { api, ApiError, type ExportFormat } from "../api/client";
 import { downloadBlob } from "../utils/download";
 import { ui } from "../utils/ui";
+import { Icon } from "./ui/Icon";
 
 interface ExportButtonsProps {
   methodId: string;
@@ -30,8 +31,11 @@ export function ExportButtons({ methodId, inputs }: ExportButtonsProps) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-1">
-      <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Export report:</span>
+    <div className="flex flex-wrap items-center gap-1.5">
+      <span className="hidden items-center gap-1 text-[11px] font-medium text-slate-600 sm:inline-flex dark:text-slate-400">
+        <Icon name="download" size={13} />
+        Export
+      </span>
       {FORMATS.map((format) => (
         <button
           key={format}
@@ -39,12 +43,19 @@ export function ExportButtons({ methodId, inputs }: ExportButtonsProps) {
           disabled={busy !== null}
           onClick={() => void handleExport(format)}
           aria-label={`Download ${format.toUpperCase()} report`}
-          className={`${ui.btnGhost} border border-slate-200 disabled:opacity-40 dark:border-slate-800`}
+          className={`${ui.btn} px-2.5 py-1.5 text-xs`}
         >
-          ⤓ {format.toUpperCase()}
+          <Icon
+            name={busy === format ? "loader" : "file"}
+            size={13}
+            className={busy === format ? "animate-spin" : undefined}
+          />
+          {format.toUpperCase()}
         </button>
       ))}
-      {error && <span className="text-xs text-rose-600 dark:text-rose-400">{error}</span>}
+      {error && (
+        <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400">{error}</span>
+      )}
     </div>
   );
 }

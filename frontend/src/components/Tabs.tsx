@@ -1,8 +1,11 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+
+import { Icon, type IconName } from "./ui/Icon";
 
 export interface TabDef {
   id: string;
   label: string;
+  icon?: IconName;
   badge?: string | number;
   disabled?: boolean;
 }
@@ -14,9 +17,15 @@ interface TabsProps {
   className?: string;
 }
 
-/** Accessible tab bar (role=tablist, arrow-key navigation). */
+/** Accessible tab bar (role=tablist, arrow-key navigation, scrollable on mobile). */
 export function Tabs({ tabs, activeId, onChange, className = "" }: TabsProps) {
   const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    listRef.current
+      ?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')
+      ?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [activeId]);
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
     const enabled = tabs.filter((tab) => !tab.disabled);
@@ -51,7 +60,7 @@ export function Tabs({ tabs, activeId, onChange, className = "" }: TabsProps) {
       role="tablist"
       aria-label="Solution views"
       onKeyDown={handleKeyDown}
-      className={`flex flex-wrap gap-1 border-b border-slate-200 dark:border-slate-800 ${className}`}
+      className={`no-scrollbar flex gap-1 overflow-x-auto rounded-xl border border-slate-200/80 bg-white/70 p-1 backdrop-blur-sm dark:border-white/[0.07] dark:bg-white/[0.03] ${className}`}
     >
       {tabs.map((tab) => {
         const active = tab.id === activeId;
@@ -65,15 +74,22 @@ export function Tabs({ tabs, activeId, onChange, className = "" }: TabsProps) {
             disabled={tab.disabled}
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(tab.id)}
-            className={`-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-40 ${
+            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-40 ${
               active
-                ? "border-indigo-600 text-indigo-700 dark:border-indigo-400 dark:text-indigo-300"
-                : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                ? "bg-slate-900 text-white shadow-sm dark:bg-white dark:text-slate-900"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/[0.06] dark:hover:text-slate-100"
             }`}
           >
+            {tab.icon && <Icon name={tab.icon} size={14} />}
             {tab.label}
             {tab.badge !== undefined && (
-              <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+              <span
+                className={`ml-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${
+                  active
+                    ? "bg-white/20 text-white dark:bg-slate-900/10 dark:text-slate-700"
+                    : "bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-slate-300"
+                }`}
+              >
                 {tab.badge}
               </span>
             )}

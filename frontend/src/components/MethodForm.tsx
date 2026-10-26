@@ -9,6 +9,7 @@ import { FunctionField } from "./fields/FunctionField";
 import { ListField } from "./fields/ListField";
 import { ScalarField } from "./fields/ScalarField";
 import { MatrixInput } from "./MatrixInput";
+import { Icon } from "./ui/Icon";
 
 interface MethodFormProps {
   meta: MethodMeta;
@@ -99,16 +100,25 @@ export function MethodForm({
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit();
+        if (!busy) onSubmit();
+      }}
+      onKeyDown={(event) => {
+        if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+          event.preventDefault();
+          if (!busy) onSubmit();
+        }
       }}
       className="space-y-5"
     >
       {error && <ErrorAlert error={error} />}
 
       {meta.examples.length > 0 && (
-        <div>
+        <div className={`${ui.surface} p-3`}>
           <label htmlFor="example-select" className={ui.label}>
-            Load an example
+            <span className="flex items-center gap-1.5">
+              <Icon name="sparkles" size={13} className="text-indigo-500 dark:text-indigo-300" />
+              Worked examples
+            </span>
           </label>
           <select
             id="example-select"
@@ -126,6 +136,9 @@ export function MethodForm({
               </option>
             ))}
           </select>
+          <p className="mt-1.5 text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
+            Loads a ready-made problem so you can see the full solution immediately.
+          </p>
         </div>
       )}
 
@@ -135,11 +148,22 @@ export function MethodForm({
         </div>
       ))}
 
-      <div className="flex flex-wrap gap-2 pt-1">
-        <button type="submit" disabled={busy} className={ui.btnPrimary}>
+      <div className="flex flex-wrap gap-2 border-t border-slate-200/80 pt-4 dark:border-white/[0.07]">
+        <button
+          type="submit"
+          disabled={busy}
+          aria-busy={busy}
+          className={`${ui.btnPrimary} min-w-[8rem] flex-1`}
+        >
+          <Icon
+            name={busy ? "loader" : "play"}
+            size={15}
+            className={busy ? "animate-spin" : undefined}
+          />
           {busy ? "Solving…" : "Solve"}
         </button>
         <button type="button" onClick={onClear} disabled={busy} className={ui.btn}>
+          <Icon name="refresh" size={14} />
           Clear result
         </button>
       </div>

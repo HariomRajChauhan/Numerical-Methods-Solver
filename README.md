@@ -22,6 +22,13 @@ one test file — no router or UI changes.
 - **On-screen keypad** — a shared, tabbed keypad (numbers / operators / functions /
   variables / edit) inserts at the cursor, shows a live KaTeX preview and remembers
   its open state in `localStorage`; matrix and vector inputs get a compact numeric pad.
+- **A focused workspace** — responsive chapter and method pages, light/dark/system
+  themes, chapter progress, tabbed results (answer, steps, table, graph, theory,
+  pseudocode, code) and a command palette on <kbd>⌘K</kbd> / <kbd>Ctrl-K</kbd> or
+  <kbd>/</kbd> that searches every method.
+- **Accessibility checked** — keyboard navigation, visible focus, accessible names,
+  focusable scroll regions and zero axe WCAG A/AA violations across desktop, mobile
+  and both themes.
 - **Robust by construction** — per-request timeout, iteration/matrix caps, rate limiting.
 - **51 methods in the catalogue** — 42 available and 9 syllabus methods as
   navigable "coming soon" stubs with theory and pseudocode already readable.

@@ -2,79 +2,126 @@ import type { SolveResponse } from "../types/api";
 import { formatResultValue } from "../utils/format";
 import { ui } from "../utils/ui";
 import { SolveStatusBadge } from "./StatusBadge";
+import { Icon } from "./ui/Icon";
 
 interface ResultPanelProps {
   response: SolveResponse;
   precision?: number;
 }
 
-/** "Answer" tab: final named values, error metrics and warnings. */
+function humanize(key: string): string {
+  const label = key.replace(/_/g, " ");
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+/** "Answer" tab: highlighted final value, all result fields and error metrics. */
 export function ResultPanel({ response, precision = 6 }: ResultPanelProps) {
   const { result, errors } = response;
   const resultEntries = Object.entries(result);
-  const errorEntries = [
-    ["Absolute error", errors.absolute],
-    ["Relative error", errors.relative_percent === null ? null : `${errors.relative_percent} %`],
-    ["Order of convergence", errors.order_of_convergence],
-  ] as const;
+  const [primary, ...rest] = resultEntries;
+
+  const metrics = [
+    { label: "Absolute error", value: errors.absolute },
+    {
+      label: "Relative error",
+      value:
+        errors.relative_percent === null || errors.relative_percent === undefined
+          ? null
+          : `${errors.relative_percent} %`,
+    },
+    { label: "Order of convergence", value: errors.order_of_convergence },
+  ].filter((metric) => metric.value !== null && metric.value !== undefined);
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center gap-3">
-        <SolveStatusBadge status={response.status} />
-        {response.status === "max_iter" && (
-          <span className="text-xs text-amber-600 dark:text-amber-400">
-            The tolerance was not reached within the iteration limit.
-          </span>
-        )}
-      </div>
-
+    <div className="animate-fade-in space-y-4">
       {response.warnings.length > 0 && (
-        <ul className="space-y-1 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
+        <ul
+          aria-live="polite"
+          className="space-y-1.5 rounded-2xl border border-amber-200/80 bg-amber-50/90 p-3.5 text-sm text-amber-800 dark:border-amber-400/20 dark:bg-amber-500/[0.07] dark:text-amber-200"
+        >
           {response.warnings.map((warning) => (
-            <li key={warning}>⚠ {warning}</li>
+            <li key={warning} className="flex items-start gap-2">
+              <Icon name="alert" size={15} className="mt-0.5 shrink-0" />
+              <span>{warning}</span>
+            </li>
           ))}
         </ul>
       )}
 
-      <section className={`p-4 ${ui.card}`}>
-        <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">Result</h3>
-        {resultEntries.length === 0 ? (
-          <p className="text-sm text-slate-500">No final value was produced.</p>
-        ) : (
-          <dl className="grid gap-3 sm:grid-cols-2">
-            {resultEntries.map(([key, value]) => (
-              <div key={key} className="rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-950/60">
-                <dt className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  {key.replace(/_/g, " ")}
+      {primary ? (
+        <section className="relative overflow-hidden rounded-2xl border border-indigo-200/70 bg-gradient-to-br from-indigo-50/90 via-white to-white p-5 dark:border-indigo-400/20 dark:from-indigo-500/[0.07] dark:via-slate-900/60 dark:to-slate-900/60">
+          <div
+            aria-hidden="true"
+            className="absolute -right-10 -top-12 h-36 w-36 rounded-full bg-indigo-500/10 blur-2xl"
+          />
+          <div className="relative flex flex-wrap items-center justify-between gap-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-600 dark:text-indigo-300">
+              {humanize(primary[0])}
+            </p>
+            <SolveStatusBadge status={response.status} />
+          </div>
+          <p className="relative mt-2 break-all font-mono text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+            {formatResultValue(primary[1], precision)}
+          </p>
+        </section>
+      ) : (
+        <section className={`flex flex-wrap items-center justify-between gap-2 p-4 ${ui.card}`}>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            No final value was produced.
+          </p>
+          <SolveStatusBadge status={response.status} />
+        </section>
+      )}
+
+      {rest.length > 0 && (
+        <section className={`p-4 ${ui.card}`}>
+          <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+            All results
+          </h3>
+          <dl className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {rest.map(([key, value]) => (
+              <div
+                key={key}
+                className="rounded-xl border border-slate-200/70 bg-slate-50/70 px-3 py-2.5 dark:border-white/[0.06] dark:bg-white/[0.03]"
+              >
+                <dt className="text-[10px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                  {humanize(key)}
                 </dt>
-                <dd className="mt-0.5 break-all font-mono text-sm font-medium text-slate-900 dark:text-slate-100">
+                <dd className="mt-0.5 break-all font-mono text-sm font-medium text-slate-800 dark:text-slate-100">
                   {formatResultValue(value, precision)}
                 </dd>
               </div>
             ))}
           </dl>
-        )}
-      </section>
+        </section>
+      )}
 
-      {errorEntries.some(([, value]) => value !== null && value !== undefined) && (
+      {metrics.length > 0 && (
         <section className={`p-4 ${ui.card}`}>
-          <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
-            Error &amp; convergence
-          </h3>
-          <dl className="grid gap-3 sm:grid-cols-3">
-            {errorEntries
-              .filter(([, value]) => value !== null && value !== undefined)
-              .map(([label, value]) => (
-                <div key={label} className="rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-950/60">
-                  <dt className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                    {label}
-                  </dt>
-                  <dd className="mt-0.5 font-mono text-sm text-slate-900 dark:text-slate-100">
-                    {typeof value === "number" ? formatResultValue(value, precision) : value}
-                  </dd>
-                </div>
-              ))}
+          <div className="flex items-center gap-2">
+            <span className={`${ui.iconBox} h-7 w-7`}>
+              <Icon name="chart" size={14} />
+            </span>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              Error &amp; convergence
+            </h3>
+          </div>
+          <dl className="mt-3 grid gap-2 sm:grid-cols-3">
+            {metrics.map((metric) => (
+              <div
+                key={metric.label}
+                className="rounded-xl border border-slate-200/70 bg-slate-50/70 px-3 py-2.5 dark:border-white/[0.06] dark:bg-white/[0.03]"
+              >
+                <dt className="text-[10px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                  {metric.label}
+                </dt>
+                <dd className="mt-0.5 font-mono text-sm text-slate-800 dark:text-slate-100">
+                  {typeof metric.value === "number"
+                    ? formatResultValue(metric.value, precision)
+                    : metric.value}
+                </dd>
+              </div>
+            ))}
           </dl>
         </section>
       )}

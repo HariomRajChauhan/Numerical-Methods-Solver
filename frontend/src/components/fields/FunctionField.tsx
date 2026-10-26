@@ -5,6 +5,7 @@ import type { InputField } from "../../types/api";
 import { normalizeMath } from "../../utils/mathNormalize";
 import { ui } from "../../utils/ui";
 import { LatexView } from "../LatexView";
+import { Icon } from "../ui/Icon";
 import { FieldWrapper } from "./FieldWrapper";
 import { KeypadToggle, MathKeypad } from "./MathKeypad";
 import { useKeypadInput } from "./useKeypadInput";
@@ -50,15 +51,21 @@ export function FunctionField({ field, value, onChange, error, variables }: Func
       field={field}
       error={error}
       preview={
-        <div className="mt-2 min-h-[1.5rem]">
+        <div className="mt-2 min-h-[1.75rem]">
           {preview.latex && (
-            <div className="overflow-x-auto rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-950/60">
+            <div className="flex items-start gap-2 overflow-x-auto rounded-xl border border-slate-200/70 bg-slate-50/70 px-3 py-2 dark:border-white/[0.06] dark:bg-white/[0.03]">
+              <span className="mt-0.5 shrink-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-400">
+                Preview
+              </span>
               <LatexView latex={preview.latex} />
             </div>
           )}
           {preview.error && (
-            <p className="text-xs text-amber-600 dark:text-amber-400">
-              Preview unavailable: {preview.error} (the solver will validate it too)
+            <p className="flex items-start gap-1.5 text-xs text-amber-600 dark:text-amber-400">
+              <Icon name="alert" size={13} className="mt-0.5 shrink-0" />
+              <span>
+                Preview unavailable: {preview.error} (the solver will validate it too)
+              </span>
             </p>
           )}
         </div>
