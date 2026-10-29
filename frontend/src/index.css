@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @import "./design/tokens.css";
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+img, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
 /* Self-hosted so the first paint never waits on a third-party font host. */
 @font-face {
   font-family: "Inter";

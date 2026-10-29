@@ -27,13 +27,13 @@ export function ThemeToggle() {
             onClick={() => setMode(option.id)}
             aria-pressed={active}
             title={`${option.label} theme`}
-            className={`flex h-7 w-7 items-center justify-center rounded-lg transition sm:h-8 sm:w-8 ${
+            className={`flex h-10 w-10 items-center justify-center rounded-xl transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
               active
-                ? "bg-white text-indigo-600 shadow-sm dark:bg-slate-700/80 dark:text-indigo-300"
-                : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+                ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300"
+                : "text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/[0.04] dark:hover:text-white"
             }`}
           >
-            <Icon name={option.icon} size={15} />
+            <Icon name={option.icon} size={18} />
             <span className="sr-only">{option.label} theme</span>
           </button>
         );

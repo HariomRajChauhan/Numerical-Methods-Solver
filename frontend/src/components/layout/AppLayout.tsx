@@ -37,6 +37,25 @@ export function AppLayout() {
   }
 
   useEffect(() => {
+    function handleFocusKeys(event: KeyboardEvent) {
+      if (!focusMode) return;
+      const target = event.target as HTMLElement | null;
+      const typing =
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA" ||
+        target?.tagName === "SELECT" ||
+        target?.isContentEditable === true;
+      if (typing) return;
+      if (event.key.toLowerCase() === "f" || event.key === "Escape") {
+        event.preventDefault();
+        setFocusMode(false);
+      }
+    }
+    document.addEventListener("keydown", handleFocusKeys);
+    return () => document.removeEventListener("keydown", handleFocusKeys);
+  }, [focusMode, setFocusMode]);
+
+  useEffect(() => {
     if (!drawerOpen) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -145,6 +164,14 @@ export function AppLayout() {
           tabIndex={-1}
           className="min-h-dvh w-full px-4 py-6 focus:outline-none sm:px-6 lg:px-8 lg:py-8"
         >
+          <button
+            type="button"
+            onClick={() => setFocusMode(false)}
+            aria-label="Exit focus mode"
+            className="fixed right-4 top-4 z-[100] rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-xl ring-2 ring-indigo-500 transition hover:bg-slate-50 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
+          >
+            Exit focus (F or Esc)
+          </button>
           <Suspense
             fallback={
               <div className="mx-auto min-h-dvh max-w-6xl space-y-5 py-2">
