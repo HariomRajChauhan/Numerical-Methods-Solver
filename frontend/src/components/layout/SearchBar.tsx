@@ -47,7 +47,7 @@ export function SearchBar() {
         inputRef.current?.focus();
         inputRef.current?.select();
         setOpen(true);
-      } else if (event.key === "/" && !typing) {
+      } else if (event.key === "/" && !event.shiftKey && !typing) {
         event.preventDefault();
         inputRef.current?.focus();
         setOpen(true);
@@ -106,6 +106,7 @@ export function SearchBar() {
           aria-expanded={showResults}
           aria-controls="method-search-results"
           aria-autocomplete="list"
+          aria-keyshortcuts="Control+K Meta+K /"
           aria-activedescendant={
             showResults && results.length > 0 ? `search-result-${activeIndex}` : undefined
           }

@@ -21,10 +21,14 @@ import { PlotPanel } from "../components/PlotPanel";
 import { ResultPanel } from "../components/ResultPanel";
 import { StepsPanel } from "../components/StepsPanel";
 import { Tabs, type TabDef } from "../components/Tabs";
+import { BrandMark } from "../components/ui/BrandMark";
+import { EmptyState } from "../components/ui/EmptyState";
+import { ErrorState } from "../components/ui/ErrorState";
 import { Icon } from "../components/ui/Icon";
 import { ResizeDivider } from "../components/workspace/ResizeDivider";
 import { WorkspaceToolbar } from "../components/workspace/WorkspaceToolbar";
 import { useMethodMeta } from "../hooks/useMethodMeta";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useSolverStore } from "../store/solver";
 import { toast } from "../store/toast";
 import type { SolveResponse } from "../types/api";
@@ -63,7 +67,11 @@ function clampInputWidth(value: number): number {
 export function MethodSolverPage() {
   const { methodId } = useParams();
   const location = useLocation();
-  const { meta, loading, error } = useMethodMeta(methodId);
+  const { meta, loading, error, reload } = useMethodMeta(methodId);
+  usePageTitle(
+    meta?.name ??
+      (error ? (error.status === 404 ? "Page not found" : "Method unavailable") : undefined),
+  );
   const [activeTab, setActiveTab] = useState<TabId>(() => {
     const shared = readShareState(location.search);
     return shared && isTabId(shared.tab) ? shared.tab : "answer";
@@ -179,6 +187,20 @@ export function MethodSolverPage() {
     [response],
   );
 
+  useEffect(() => {
+    function handleTabShortcut(event: KeyboardEvent): void {
+      if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const match = /^Digit([1-7])$/.exec(event.code);
+      if (!match) return;
+      const tab = tabs[Number(match[1]) - 1];
+      if (!tab) return;
+      event.preventDefault();
+      setActiveTab(tab.id as TabId);
+    }
+    window.addEventListener("keydown", handleTabShortcut);
+    return () => window.removeEventListener("keydown", handleTabShortcut);
+  }, [tabs]);
+
   const shareUrl = useMemo(
     () => (meta ? buildShareUrl(meta.id, inputs, activeTab) : ""),
     [meta, inputs, activeTab],
@@ -186,20 +208,46 @@ export function MethodSolverPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4 py-8">
-        <LoadingSkeleton lines={2} />
-        <LoadingSkeleton lines={6} />
+      <div className="method-page mx-auto min-h-[calc(100dvh-4rem)] max-w-[1600px]">
+        <div className="mx-auto max-w-3xl space-y-4">
+          <LoadingSkeleton lines={2} />
+          <LoadingSkeleton lines={6} />
+        </div>
       </div>
     );
   }
 
   if (error || !meta) {
+    if (error && error.status !== 404) {
+      return (
+        <div className="mx-auto max-w-2xl py-12">
+          <ErrorState
+            title="This method could not load"
+            error={error}
+            onRetry={reload}
+            retryLabel="Retry request"
+          />
+          <Link
+            to="/"
+            className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-accent-text transition hover:opacity-75"
+          >
+            <Icon name="arrowLeft" size={13} />
+            Back to all chapters
+          </Link>
+        </div>
+      );
+    }
     return <NotFoundPage message={error?.message ?? "That method does not exist."} />;
   }
 
   const busy = status === "loading";
   const visual = chapterVisual(meta.chapter);
   const method = meta;
+  const printedOn = new Date().toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 
   async function handleSolve(): Promise<void> {
     setActiveTab("answer");
@@ -228,10 +276,32 @@ export function MethodSolverPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[1600px]">
+    <div className="method-page mx-auto max-w-[1600px]">
+      <div className="print-only method-print-header mb-6">
+        <div className="flex items-start gap-4 border-b-2 border-slate-900 pb-4">
+          <BrandMark className="h-12 w-12" iconSize={24} />
+          <div className="min-w-0 flex-1">
+            <p className="text-[9pt] font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Numerical Methods Solver
+            </p>
+            <h1 className="mt-0.5 text-[20pt] font-bold leading-tight text-slate-900">
+              {meta.name}
+            </h1>
+            <p className="mt-1 text-[9pt] text-slate-600">
+              Chapter {meta.chapter_number} · {meta.chapter_title} · ENSH 252
+            </p>
+          </div>
+          <p className="shrink-0 text-right text-[8pt] text-slate-500">
+            Printed {printedOn}
+            <br />
+            numerical-methods-solver
+          </p>
+        </div>
+      </div>
+
       <nav
         aria-label="Breadcrumb"
-        className="flex flex-wrap items-center gap-1.5 text-xs text-ink-muted"
+        className="no-print flex flex-wrap items-center gap-1.5 text-xs text-ink-muted"
       >
         <Link
           to="/"
@@ -251,7 +321,7 @@ export function MethodSolverPage() {
         <span className="truncate font-medium text-ink">{meta.name}</span>
       </nav>
 
-      <header className="mb-5 mt-3 flex flex-wrap items-start justify-between gap-4">
+      <header className="no-print mb-5 mt-3 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Link
@@ -298,14 +368,14 @@ export function MethodSolverPage() {
 
       <div
         ref={workspaceRef}
-        className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-0"
+        className="method-workspace flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-0"
       >
         {!inputsCollapsed && (
           <aside
             id="workspace-inputs"
             aria-label="Inputs"
             style={{ "--workspace-input-width": `${inputWidth}%` } as CSSProperties}
-            className="min-w-0 space-y-3 lg:sticky lg:top-[7.75rem] lg:max-h-[calc(100dvh-9rem)] lg:w-[var(--workspace-input-width)] lg:shrink-0 lg:self-start lg:overflow-y-auto lg:pr-1 lg:scroll-slim"
+            className="no-print min-w-0 space-y-3 lg:sticky lg:top-[7.75rem] lg:max-h-[calc(100dvh-9rem)] lg:w-[var(--workspace-input-width)] lg:shrink-0 lg:self-start lg:overflow-y-auto lg:pr-1 lg:scroll-slim"
           >
             <div className="space-y-3">
               <section className={`overflow-hidden ${ui.card}`}>
@@ -391,8 +461,8 @@ export function MethodSolverPage() {
           />
         )}
 
-        <section aria-label="Results" className="min-w-0 flex-1">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <section aria-label="Results" className="print-results min-w-0 flex-1">
+          <div className="no-print mb-3 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
               <span className="flex h-8 w-8 items-center justify-center rounded-control bg-surface-muted text-ink-muted ring-1 ring-inset ring-line">
                 <Icon name="sparkles" size={15} />
@@ -416,7 +486,7 @@ export function MethodSolverPage() {
             tabs={tabs}
             activeId={activeTab}
             onChange={(id) => setActiveTab(id as TabId)}
-            className="mb-4"
+            className="no-print mb-4"
           />
 
           <div
@@ -560,18 +630,17 @@ function SolveView({
   }
   if (!response) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 rounded-panel border border-dashed border-line-strong bg-surface-muted px-6 py-14 text-center">
-        <span className={`${ui.iconBox} h-12 w-12 rounded-panel`}>
-          <Icon name="sparkles" size={22} />
-        </span>
-        <div>
-          <p className="text-sm font-semibold text-ink">Ready when you are</p>
-          <p className="mt-1 max-w-sm text-xs leading-relaxed text-ink-muted">
+      <EmptyState
+        icon="sparkles"
+        title="Ready when you are"
+        description={
+          <>
             Set up your problem on the left and press{" "}
             <span className="font-semibold text-ink">Solve</span> to see the {tab}.
-          </p>
-        </div>
-      </div>
+          </>
+        }
+        className="py-14"
+      />
     );
   }
 
@@ -582,14 +651,11 @@ function SolveView({
       return <StepsPanel key={solveVersion} steps={response.steps} />;
     case "table":
       return response.tables.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-2 rounded-panel border border-dashed border-line-strong bg-surface-muted px-6 py-12 text-center">
-          <span className="flex h-10 w-10 items-center justify-center rounded-control bg-surface text-ink-subtle shadow-sm">
-            <Icon name="table" size={19} />
-          </span>
-          <p className="text-sm text-ink-muted">
-            This method did not produce an iteration table.
-          </p>
-        </div>
+        <EmptyState
+          icon="table"
+          title="No iteration table"
+          description="This method did not produce a step-by-step table."
+        />
       ) : (
         <div className="space-y-4">
           {response.tables.map((table) => (

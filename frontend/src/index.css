@@ -1,6 +1,23 @@
 @import "tailwindcss";
 @import "./design/tokens.css";
 
+/* Self-hosted so the first paint never waits on a third-party font host. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-latin.woff2") format("woff2");
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
@@ -64,6 +81,43 @@ body {
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
   background-size: 2rem 2rem;
   mask-image: radial-gradient(ellipse 85% 75% at 50% 0%, black 35%, transparent 100%);
+}
+
+/* Layered radial glows are cheaper than large blurred elements. */
+.hero-glow {
+  background-image:
+    radial-gradient(
+      24rem 24rem at 100% 0%,
+      color-mix(in oklab, var(--color-accent-500) 16%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      20rem 20rem at 24% 108%,
+      color-mix(in oklab, var(--color-info) 12%, transparent),
+      transparent 66%
+    );
+}
+
+.dark .hero-glow {
+  background-image:
+    radial-gradient(
+      24rem 24rem at 100% 0%,
+      color-mix(in oklab, var(--color-accent-500) 24%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      20rem 20rem at 24% 108%,
+      color-mix(in oklab, var(--color-info) 16%, transparent),
+      transparent 66%
+    );
+}
+
+.cta-glow {
+  background-image: radial-gradient(
+    18rem 18rem at 100% 0%,
+    color-mix(in oklab, var(--color-accent-500) 30%, transparent),
+    transparent 70%
+  );
 }
 
 .no-scrollbar {
@@ -237,7 +291,120 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.print-only {
+  display: none;
+}
+
+/* A compact, ink-friendly report when the user prints a solved method. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 13mm;
+  }
+
+  html {
+    scroll-padding-top: 0;
+    background: #fff !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #0f172a !important;
+    font-size: 10.5pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .app-shell {
+    min-height: 0 !important;
+    background: none !important;
+  }
+
+  .no-print,
+  .site-header,
+  .site-sidebar,
+  .site-footer,
+  [role="separator"],
+  [role="toolbar"],
+  [role="tablist"],
+  [role="dialog"],
+  .modebar,
+  .modebar-container {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  #main-content {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .method-page {
+    max-width: none !important;
+  }
+
+  .method-workspace {
+    display: block !important;
+  }
+
+  .print-results {
+    width: 100% !important;
+  }
+
+  .print-results > div {
+    break-inside: avoid;
+  }
+
+  .print-results section,
+  .print-results table {
+    box-shadow: none !important;
+  }
+
+  .print-results h2,
+  .print-results h3 {
+    break-after: avoid;
+  }
+
+  .print-results tr,
+  .print-results img,
+  .print-results .js-plotly-plot {
+    break-inside: avoid;
+  }
+
+  a[href]::after {
+    content: "";
+  }
+}
+
+/* Focus mode: hide chrome and give the workspace the full viewport. */
+[data-focus="true"] .site-header,
+[data-focus="true"] .site-footer,
+[data-focus="true"] .site-sidebar,
+[data-focus="true"] .sidebar-open-handle {
+  display: none !important;
+}
+
+[data-focus="true"] #main-content {
+  min-h: 100dvh !important;
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Sidebar transitions respect reduced motion. */
+.site-sidebar {
+  transition: width 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .site-sidebar {
+    transition-duration: 0.01ms !important;
+  }
+
   *,
   *::before,
   *::after {

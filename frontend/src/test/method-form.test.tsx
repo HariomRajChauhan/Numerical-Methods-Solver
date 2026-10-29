@@ -147,11 +147,47 @@ describe("MethodForm (schema-driven)", () => {
     expect(props.onChange).toHaveBeenCalledWith("function", "x^2 - 2");
   });
 
-  it("submits the form", () => {
-    const props = renderForm();
+  it("submits a valid form", () => {
+    const props = renderForm({
+      inputs: { function: "x^3 - x - 1", a: 1, b: 2, tolerance: 1e-6, max_iterations: 50 },
+    });
     const form = screen.getByRole("button", { name: "Solve" }).closest("form");
     expect(form).not.toBeNull();
     fireEvent.submit(form as HTMLFormElement);
+    expect(props.onSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it("blocks an incomplete submit and points at the required field", () => {
+    const props = renderForm();
+    const form = screen.getByRole("button", { name: "Solve" }).closest("form");
+    fireEvent.submit(form as HTMLFormElement);
+
+    expect(props.onSubmit).not.toHaveBeenCalled();
+    expect(screen.getByText(/Function f\(x\) is required/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Function f\(x\)/)).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByText(/Fix 1 highlighted field/i)).toBeInTheDocument();
+  });
+
+  it("clears a field error as soon as the user edits it", () => {
+    renderForm();
+    const form = screen.getByRole("button", { name: "Solve" }).closest("form");
+    fireEvent.submit(form as HTMLFormElement);
+    expect(screen.getByText(/Function f\(x\) is required/i)).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(/Function f\(x\)/), {
+      target: { value: "x^3 - x - 1" },
+    });
+    expect(screen.queryByText(/Function f\(x\) is required/i)).not.toBeInTheDocument();
+  });
+
+  it("solves with Ctrl+Enter from a field", () => {
+    const props = renderForm({
+      inputs: { function: "x^3 - x - 1", a: 1, b: 2, tolerance: 1e-6, max_iterations: 50 },
+    });
+    fireEvent.keyDown(screen.getByLabelText(/Lower bound a/), {
+      key: "Enter",
+      ctrlKey: true,
+    });
     expect(props.onSubmit).toHaveBeenCalledTimes(1);
   });
 });

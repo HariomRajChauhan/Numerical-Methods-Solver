@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 import { Icon, type IconName } from "../components/ui/Icon";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useCatalogStore } from "../store/catalog";
 import { chapterVisual } from "../utils/chapters";
 import { ui } from "../utils/ui";
@@ -43,6 +44,7 @@ const STACK = [
 ];
 
 export function AboutPage() {
+  usePageTitle("About");
   const chapters = useCatalogStore((state) => state.chapters);
 
   return (

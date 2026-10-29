@@ -1,3 +1,4 @@
+import "katex/dist/katex.min.css";
 import katex from "katex";
 
 const ESCAPES: Record<string, string> = {

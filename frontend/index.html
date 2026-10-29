@@ -7,18 +7,63 @@
       name="description"
       content="Numerical Methods Solver — step-by-step solutions, iteration tables, interactive graphs, theory and downloadable reports for engineering students (ENSH 252, IOE)."
     />
-    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
+    <meta name="application-name" content="Numerical Methods Solver" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#f7f8fc" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#070a13" media="(prefers-color-scheme: dark)" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Numerical Methods Solver" />
+    <meta property="og:title" content="Numerical Methods Solver — step by step" />
+    <meta
+      property="og:description"
+      content="Get the final answer, exam-style working, iteration tables, interactive graphs and downloadable reports for ENSH 252 numerical methods."
+    />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Numerical Methods Solver — a worked example with an approximate root and convergence details." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Numerical Methods Solver — step by step" />
+    <meta
+      name="twitter:description"
+      content="Answer, working, tables, graphs and reports for ENSH 252 numerical methods."
+    />
+    <meta name="twitter:image" content="/og-image.png" />
+
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/inter-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/jetbrains-mono-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
     <title>Numerical Methods Solver</title>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="max-width: 40rem; margin: 4rem auto; padding: 0 1.5rem; font-family: system-ui, sans-serif; line-height: 1.6;">
+        <h1>Numerical Methods Solver</h1>
+        <p>
+          This interactive solver needs JavaScript. Enable it to enter a problem, solve it and
+          view the exam-style working, tables and graphs.
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

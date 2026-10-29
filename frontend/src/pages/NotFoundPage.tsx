@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 import { Icon } from "../components/ui/Icon";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { ui } from "../utils/ui";
 
 interface NotFoundPageProps {
@@ -8,6 +9,7 @@ interface NotFoundPageProps {
 }
 
 export function NotFoundPage({ message = "We could not find that page." }: NotFoundPageProps) {
+  usePageTitle("Page not found");
   return (
     <div className="mx-auto flex max-w-xl flex-col items-center py-14 text-center sm:py-20">
       <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-500 ring-1 ring-inset ring-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-300 dark:ring-indigo-400/20">

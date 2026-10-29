@@ -26,6 +26,7 @@ export type IconName =
   | "home"
   | "info"
   | "integral"
+  | "keyboard"
   | "layers"
   | "link"
   | "list"
@@ -36,6 +37,7 @@ export type IconName =
   | "panelLeft"
   | "pause"
   | "play"
+  | "printer"
   | "refresh"
   | "search"
   | "share"
@@ -176,6 +178,16 @@ const ICONS: Record<IconName, ReactNode> = {
       <path d="M9.5 8h5" />
     </>
   ),
+  keyboard: (
+    <>
+      <rect x="2.5" y="6" width="19" height="12" rx="2" />
+      <path d="M6 10h.01" />
+      <path d="M10 10h.01" />
+      <path d="M14 10h.01" />
+      <path d="M18 10h.01" />
+      <path d="M8 14h8" />
+    </>
+  ),
   layers: (
     <>
       <path d="m12 3 9 5-9 5-9-5 9-5Z" />
@@ -226,6 +238,13 @@ const ICONS: Record<IconName, ReactNode> = {
     <>
       <path d="M9 5v14" />
       <path d="M15 5v14" />
+    </>
+  ),
+  printer: (
+    <>
+      <path d="M6 9V3h12v6" />
+      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+      <rect x="6" y="14" width="12" height="7" rx="1" />
     </>
   ),
   refresh: (

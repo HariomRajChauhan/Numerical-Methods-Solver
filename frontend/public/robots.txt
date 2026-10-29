@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# The app has a single canonical home; deep links are generated dynamically.

@@ -16,16 +16,26 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    proxy: {
+      // Keep `vite preview` usable for Lighthouse and manual checks.
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+    },
+  },
   build: {
     chunkSizeWarningLimit: 800,
     rolldownOptions: {
       output: {
         manualChunks(id: string) {
           if (!id.includes("node_modules")) return undefined;
-          // Plotly stays in its own dynamically-imported chunk (never in the
-          // initial bundle); mathjs/katex load up-front but cache separately.
-          if (id.includes("plotly")) return undefined;
-          if (id.includes("mathjs") || id.includes("katex")) return "vendor-math";
+          // Plotly, mathjs and KaTeX are imported on demand, so each gets its
+          // own chunk and stays out of the initial route payload.
+          if (id.includes("plotly")) return "vendor-plotly";
+          if (id.includes("mathjs")) return "vendor-mathjs";
+          if (id.includes("katex")) return "vendor-katex";
           return "vendor";
         },
       },

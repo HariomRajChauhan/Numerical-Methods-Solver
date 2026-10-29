@@ -1,5 +1,4 @@
-import { useMemo, useRef } from "react";
-import { parse } from "mathjs";
+import { useEffect, useRef, useState } from "react";
 
 import type { InputField } from "../../types/api";
 import { normalizeMath } from "../../utils/mathNormalize";
@@ -36,15 +35,48 @@ export function FunctionField({ field, value, onChange, error, variables }: Func
   const inputRef = useRef<HTMLInputElement | null>(null);
   const keypad = useKeypadInput(inputRef, text, (next) => onChange(next));
 
-  const preview = useMemo(() => {
-    if (!text.trim()) return { latex: "", error: null as string | null };
-    try {
-      const node = parse(normalizeMath(text));
-      return { latex: node.toTex({ parenthesis: "keep", implicit: "hide" }), error: null };
-    } catch (parseError) {
-      return { latex: "", error: (parseError as Error).message };
-    }
+  const [renderState, setRenderState] = useState<{
+    text: string;
+    latex: string;
+    error: string | null;
+  }>({ text: "", latex: "", error: null });
+
+  useEffect(() => {
+    if (!text.trim()) return;
+    let active = true;
+    void import("mathjs")
+      .then(({ parse }) => {
+        if (!active) return;
+        try {
+          const node = parse(normalizeMath(text));
+          setRenderState({
+            text,
+            latex: node.toTex({ parenthesis: "keep", implicit: "hide" }),
+            error: null,
+          });
+        } catch (parseError) {
+          setRenderState({ text, latex: "", error: (parseError as Error).message });
+        }
+      })
+      .catch((loadError: unknown) => {
+        if (active) {
+          setRenderState({
+            text,
+            latex: "",
+            error:
+              loadError instanceof Error ? loadError.message : "Preview engine unavailable.",
+          });
+        }
+      });
+    return () => {
+      active = false;
+    };
   }, [text]);
+
+  const preview =
+    text.trim() && renderState.text === text
+      ? { latex: renderState.latex, error: renderState.error }
+      : { latex: "", error: null };
 
   return (
     <FieldWrapper

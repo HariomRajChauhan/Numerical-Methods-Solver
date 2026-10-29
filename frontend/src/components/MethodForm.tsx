@@ -1,8 +1,9 @@
-import { type ReactElement } from "react";
+import { type ReactElement, useState } from "react";
 
 import { ApiError } from "../api/client";
 import type { InputField, MethodExample, MethodMeta } from "../types/api";
 import { ui } from "../utils/ui";
+import { validateInputs } from "../utils/validation";
 import { ErrorAlert } from "./ErrorAlert";
 import { BasicField } from "./fields/BasicField";
 import { FunctionField } from "./fields/FunctionField";
@@ -60,26 +61,43 @@ function renderField(
   value: unknown,
   onChange: (value: unknown) => void,
   variables: string[],
+  error?: string,
 ): ReactElement {
   switch (field.type) {
     case "function":
-      return <FunctionField field={field} value={value} onChange={onChange} variables={variables} />;
+      return (
+        <FunctionField
+          field={field}
+          value={value}
+          onChange={onChange}
+          variables={variables}
+          error={error}
+        />
+      );
     case "matrix":
-      return <MatrixInput field={field} value={value} onChange={onChange} />;
+      return <MatrixInput field={field} value={value} onChange={onChange} error={error} />;
     case "vector":
     case "data_points":
-      return <ListField field={field} value={value} onChange={onChange} />;
+      return <ListField field={field} value={value} onChange={onChange} error={error} />;
     case "number":
     case "integer":
     case "tolerance":
     case "max_iterations":
     case "precision":
-      return <ScalarField field={field} value={value} onChange={onChange} />;
+      return <ScalarField field={field} value={value} onChange={onChange} error={error} />;
     case "text":
     case "select":
     case "boolean":
     default:
-      return <BasicField field={field} value={value} onChange={onChange} variables={variables} />;
+      return (
+        <BasicField
+          field={field}
+          value={value}
+          onChange={onChange}
+          variables={variables}
+          error={error}
+        />
+      );
   }
 }
 
@@ -101,23 +119,80 @@ export function MethodForm({
 }: MethodFormProps) {
   const busy = status === "loading";
   const variables = methodVariables(meta, inputs);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const errorCount = Object.keys(fieldErrors).length;
+
+  function clearFieldError(key: string): void {
+    setFieldErrors((current) => {
+      if (!current[key]) return current;
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+  }
+
+  function handleChange(key: string, value: unknown): void {
+    onChange(key, value);
+    clearFieldError(key);
+  }
+
+  function handleLoadExample(exampleInputs: MethodExample["inputs"]): void {
+    setFieldErrors({});
+    onLoadExample(exampleInputs);
+  }
+
+  function handleClear(): void {
+    setFieldErrors({});
+    onClear();
+  }
+
+  function submit(): void {
+    if (busy) return;
+    const next = validateInputs(meta, inputs);
+    setFieldErrors(next);
+    if (Object.keys(next).length > 0) {
+      const firstKey = meta.input_schema.find((field) => next[field.key])?.key;
+      if (!firstKey) return;
+      const field = document.getElementById(`field-${firstKey}`);
+      field?.scrollIntoView?.({ block: "center" });
+      field?.querySelector<HTMLElement>("input, textarea, select, button")?.focus();
+      return;
+    }
+    onSubmit();
+  }
 
   return (
     <form
       id={formId}
+      noValidate
       onSubmit={(event) => {
         event.preventDefault();
-        if (!busy) onSubmit();
+        submit();
       }}
       onKeyDown={(event) => {
         if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
           event.preventDefault();
-          if (!busy) onSubmit();
+          submit();
         }
       }}
       className="space-y-5"
     >
       {error && <ErrorAlert error={error} />}
+
+      {errorCount > 0 && (
+        <div
+          role="alert"
+          className="flex items-start gap-2.5 rounded-panel border border-danger/20 bg-danger-soft px-3.5 py-3 text-xs text-ink-muted"
+        >
+          <Icon name="alert" size={15} className="mt-0.5 shrink-0 text-danger" />
+          <p>
+            <span className="font-semibold text-ink">
+              Fix {errorCount} highlighted field{errorCount === 1 ? "" : "s"}.
+            </span>{" "}
+            The solver needs valid inputs before it can run.
+          </p>
+        </div>
+      )}
 
       {meta.examples.length > 0 && (
         <div className={`${ui.surface} p-3`}>
@@ -132,7 +207,7 @@ export function MethodForm({
             value=""
             onChange={(event) => {
               const example = meta.examples.find((item) => item.name === event.target.value);
-              if (example) onLoadExample(example.inputs);
+              if (example) handleLoadExample(example.inputs);
             }}
             className={`${ui.input} mt-1.5`}
           >
@@ -150,8 +225,14 @@ export function MethodForm({
       )}
 
       {meta.input_schema.map((field) => (
-        <div key={field.key}>
-          {renderField(field, inputs[field.key], (value) => onChange(field.key, value), variables)}
+        <div key={field.key} id={`field-${field.key}`}>
+          {renderField(
+            field,
+            inputs[field.key],
+            (value) => handleChange(field.key, value),
+            variables,
+            fieldErrors[field.key],
+          )}
         </div>
       ))}
 
@@ -165,6 +246,7 @@ export function MethodForm({
             type="submit"
             disabled={busy}
             aria-busy={busy}
+            aria-keyshortcuts="Control+Enter Meta+Enter"
             className={`${ui.btnPrimary} min-w-[8rem] flex-1`}
           >
             <Icon
@@ -175,7 +257,7 @@ export function MethodForm({
             {busy ? "Solving…" : "Solve"}
           </button>
         )}
-        <button type="button" onClick={onClear} disabled={busy} className={ui.btn}>
+        <button type="button" onClick={handleClear} disabled={busy} className={ui.btn}>
           <Icon name="refresh" size={14} />
           Clear result
         </button>

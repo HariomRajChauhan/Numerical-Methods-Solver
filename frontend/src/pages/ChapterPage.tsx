@@ -2,7 +2,10 @@ import { Link, useParams } from "react-router-dom";
 
 import { LoadingSkeleton } from "../components/LoadingSkeleton";
 import { MethodStatusBadge } from "../components/StatusBadge";
+import { EmptyState } from "../components/ui/EmptyState";
+import { ErrorState } from "../components/ui/ErrorState";
 import { Icon } from "../components/ui/Icon";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { selectChapter, selectChapterMethods, useCatalogStore } from "../store/catalog";
 import { chapterVisual } from "../utils/chapters";
 import { ui } from "../utils/ui";
@@ -14,9 +17,19 @@ export function ChapterPage() {
   const chapters = useCatalogStore((state) => state.chapters);
   const methods = useCatalogStore((state) => state.methods);
   const status = useCatalogStore((state) => state.status);
+  const error = useCatalogStore((state) => state.error);
+  const load = useCatalogStore((state) => state.load);
 
   const chapter = chapterId ? selectChapter(chapters, chapterId) : undefined;
   const chapterMethods = chapterId ? selectChapterMethods(methods, chapterId) : [];
+  usePageTitle(
+    chapter?.title ??
+      (status === "error"
+        ? "Chapter unavailable"
+        : status === "ready" && chapterId
+          ? "Page not found"
+          : undefined),
+  );
 
   if (status === "ready" && chapterId && !chapter) {
     return <NotFoundPage message="That chapter does not exist." />;
@@ -24,7 +37,7 @@ export function ChapterPage() {
 
   if (status === "loading" || status === "idle") {
     return (
-      <div className="mx-auto max-w-6xl space-y-6 py-2">
+      <div className="mx-auto min-h-[calc(100dvh-4rem)] max-w-6xl space-y-6 py-2">
         <LoadingSkeleton lines={2} />
         <div className={`p-6 ${ui.card}`}>
           <LoadingSkeleton lines={4} />
@@ -36,6 +49,26 @@ export function ChapterPage() {
             </div>
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (status === "error" && !chapter) {
+    return (
+      <div className="mx-auto max-w-2xl py-12">
+        <ErrorState
+          title="This chapter could not load"
+          error={error}
+          onRetry={() => void load(true)}
+          retryLabel="Reload catalogue"
+        />
+        <Link
+          to="/"
+          className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-accent-text transition hover:opacity-75"
+        >
+          <Icon name="arrowLeft" size={13} />
+          Back to all chapters
+        </Link>
       </div>
     );
   }
@@ -75,6 +108,16 @@ export function ChapterPage() {
           {chapter.title}
         </span>
       </nav>
+
+      {status === "error" && error && (
+        <ErrorState
+          compact
+          title="Catalogue refresh failed"
+          error={error}
+          onRetry={() => void load(true)}
+          retryLabel="Reload catalogue"
+        />
+      )}
 
       <header
         className={`relative overflow-hidden rounded-3xl border bg-white/80 p-6 shadow-sm shadow-slate-900/[0.03] sm:p-8 dark:bg-slate-900/40 dark:shadow-none ${visual.border}`}
@@ -155,45 +198,54 @@ export function ChapterPage() {
           </p>
         </div>
 
-        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {chapterMethods.map((method, index) => {
-            const isAvailable = method.status === "available";
-            return (
-              <li key={method.id}>
-                <Link
-                  to={`/methods/${method.id}`}
-                  className={`group flex h-full flex-col p-5 ${ui.card} ${ui.cardHover}`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                      {String(index + 1).padStart(2, "0")}
+        {chapterMethods.length === 0 ? (
+          <EmptyState
+            icon="layers"
+            title="No methods in this chapter yet"
+            description="Methods are registered from the syllabus catalogue. Check back after the next release."
+            action={
+              <Link to="/" className={ui.btn}>
+                <Icon name="arrowLeft" size={14} />
+                Browse other chapters
+              </Link>
+            }
+          />
+        ) : (
+          <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {chapterMethods.map((method, index) => {
+              const isAvailable = method.status === "available";
+              return (
+                <li key={method.id}>
+                  <Link
+                    to={`/methods/${method.id}`}
+                    className={`group flex h-full flex-col p-5 ${ui.card} ${ui.cardHover}`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <MethodStatusBadge status={method.status} />
+                    </div>
+                    <h3 className="mt-3 text-[15px] font-semibold text-slate-900 transition group-hover:text-indigo-700 dark:text-slate-100 dark:group-hover:text-indigo-300">
+                      {method.name}
+                    </h3>
+                    <p className="mt-1.5 flex-1 text-[13px] leading-relaxed text-slate-500 dark:text-slate-400">
+                      {method.summary}
+                    </p>
+                    <span className="mt-4 inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 transition group-hover:text-indigo-600 dark:text-slate-300 dark:group-hover:text-indigo-300">
+                      {isAvailable ? "Open solver" : "Preview theory"}
+                      <Icon
+                        name="arrowRight"
+                        size={13}
+                        className="transition group-hover:translate-x-0.5"
+                      />
                     </span>
-                    <MethodStatusBadge status={method.status} />
-                  </div>
-                  <h3 className="mt-3 text-[15px] font-semibold text-slate-900 transition group-hover:text-indigo-700 dark:text-slate-100 dark:group-hover:text-indigo-300">
-                    {method.name}
-                  </h3>
-                  <p className="mt-1.5 flex-1 text-[13px] leading-relaxed text-slate-500 dark:text-slate-400">
-                    {method.summary}
-                  </p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 transition group-hover:text-indigo-600 dark:text-slate-300 dark:group-hover:text-indigo-300">
-                    {isAvailable ? "Open solver" : "Preview theory"}
-                    <Icon
-                      name="arrowRight"
-                      size={13}
-                      className="transition group-hover:translate-x-0.5"
-                    />
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-          {chapterMethods.length === 0 && (
-            <li className="col-span-full rounded-2xl border border-dashed border-slate-300 p-6 text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
-              No methods are registered for this chapter yet.
-            </li>
-          )}
-        </ul>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </section>
 
       {(previous || next) && (

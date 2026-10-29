@@ -6,6 +6,7 @@ import { ui } from "../utils/ui";
 import { CopyButton } from "./CopyButton";
 import { IterationPlayer } from "./IterationPlayer";
 import { LatexView } from "./LatexView";
+import { EmptyState } from "./ui/EmptyState";
 import { Icon } from "./ui/Icon";
 
 interface StepsPanelProps {
@@ -69,12 +70,11 @@ export function StepsPanel({ steps }: StepsPanelProps) {
 
   if (steps.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-2 rounded-panel border border-dashed border-line-strong bg-surface-muted px-6 py-12 text-center">
-        <span className="flex h-10 w-10 items-center justify-center rounded-control bg-surface text-ink-subtle shadow-sm">
-          <Icon name="list" size={19} />
-        </span>
-        <p className="text-sm text-ink-muted">No working steps were produced.</p>
-      </div>
+      <EmptyState
+        icon="list"
+        title="No working steps"
+        description="This method did not produce a step-by-step derivation."
+      />
     );
   }
 

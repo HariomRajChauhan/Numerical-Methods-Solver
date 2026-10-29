@@ -41,7 +41,7 @@ export function WorkspaceToolbar({
     <div
       role="toolbar"
       aria-label="Solver actions"
-      className="sticky top-16 z-30 mb-5 flex flex-wrap items-center gap-2 rounded-panel border border-line bg-surface/90 p-2 shadow-card backdrop-blur-xl"
+      className="no-print sticky top-16 z-30 mb-5 flex flex-wrap items-center gap-2 rounded-panel border border-line bg-surface/90 p-2 shadow-card backdrop-blur-xl"
     >
       <button
         type="button"
@@ -60,6 +60,7 @@ export function WorkspaceToolbar({
         form={formId}
         disabled={busy || !canSolve}
         aria-busy={busy}
+        aria-keyshortcuts="Control+Enter Meta+Enter"
         title={canSolve ? "Solve (Ctrl/⌘ + Enter)" : "This method is coming soon"}
         className={`${ui.btnPrimary} px-4 py-2`}
       >
@@ -82,6 +83,16 @@ export function WorkspaceToolbar({
         {hasResult && (
           <>
             <span aria-hidden="true" className="mx-0.5 hidden h-5 w-px bg-line sm:block" />
+            <button
+              type="button"
+              onClick={() => window.print()}
+              title="Print or save as PDF"
+              aria-label="Print solution"
+              className={`${ui.btn} px-2.5 py-2`}
+            >
+              <Icon name="printer" size={14} />
+              <span className="hidden lg:inline">Print</span>
+            </button>
             <ExportButtons methodId={methodId} inputs={inputs} compact />
           </>
         )}
