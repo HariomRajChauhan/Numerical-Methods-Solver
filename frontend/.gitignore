@@ -1,3 +1,5 @@
 /test-results/
 /playwright-report/
 /.last-run.json
+test-results/
+.last-run.json
