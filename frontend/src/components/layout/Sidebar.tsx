@@ -187,8 +187,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
   const sidebarClasses = `
     site-sidebar no-print sticky top-16 h-[calc(100dvh-4rem)] shrink-0 overflow-hidden
     w-[56px]
-    bg-white/40 backdrop-blur-sm
-    dark:bg-[#070a13]/30
+    bg-[color:var(--color-surface)]/40 backdrop-blur-sm
     ${isDragging ? "" : "transition-[width] duration-150 ease-out"}
     shadow-[inset_-1px_0_0_0_rgb(226_232_240/0.7)] dark:shadow-[inset_-1px_0_0_0_rgb(255_255_255/0.06)]
   `;
@@ -231,23 +230,23 @@ export function Sidebar({ onNavigate }: SidebarProps) {
           {!isRail && (
             <div className="w-full px-0">
               <div className="mt-2 w-full space-y-1">
-                <div className="w-full rounded-2xl border border-indigo-200/60 bg-gradient-to-br from-indigo-50 via-white to-white p-3 dark:border-indigo-400/15 dark:from-indigo-500/[0.08] dark:via-transparent dark:to-transparent" style={{ minWidth: 0 }}>
+                <div className="w-full rounded-2xl border border-[color:var(--color-accent-soft-line)] bg-[color:var(--color-accent-soft)] p-3" style={{ minWidth: 0 }}>
                   <div className="flex items-center justify-between gap-2">
                     <p className={ui.sectionLabel}>Course progress</p>
-                    <span className="rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-semibold text-indigo-600 ring-1 ring-inset ring-indigo-200/70 dark:bg-indigo-500/10 dark:text-indigo-300 dark:ring-indigo-400/20">
+                    <span className="rounded-full bg-[color:var(--color-surface)] px-2 py-0.5 text-[10px] font-semibold text-[color:var(--color-accent)] ring-1 ring-inset ring-[color:var(--color-accent-soft-line)]">
                       {percent}%
                     </span>
                   </div>
-                  <p className="mt-1.5 text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  <p className="mt-1.5 text-sm font-semibold text-[color:var(--color-ink)]">
                     {available} of {total} methods ready
                   </p>
-                  <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-slate-200/80 dark:bg-white/[0.08]">
+                  <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[color:var(--color-border)]">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-[width] duration-500"
                       style={{ width: `${percent}%` }}
                     />
                   </div>
-                  <p className="mt-2 text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
+                  <p className="mt-2 text-[11px] leading-relaxed text-[color:var(--color-ink-muted)]">
                     {total - available} syllabus method{total - available === 1 ? "" : "s"} coming soon
                   </p>
                 </div>
@@ -269,11 +268,11 @@ export function Sidebar({ onNavigate }: SidebarProps) {
                   }}
                   aria-label="Search methods (Ctrl+K / ⌘K)"
                   title="Search methods — Ctrl+K / ⌘K"
-                  className="flex w-full min-w-0 items-center gap-2 rounded-xl border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-left text-ink shadow-sm transition hover:bg-surface-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                  className="flex w-full min-w-0 items-center gap-2 rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-3.5 py-2.5 text-sm text-left text-[color:var(--color-ink)] transition hover:bg-[color:var(--color-surface-2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)]"
                 >
-                  <Icon name="search" size={16} className="text-slate-400" />
+                  <Icon name="search" size={16} className="text-[color:var(--color-ink-muted)]" />
                   <span className="flex-1 truncate">Search</span>
-                  <kbd className="shrink-0 rounded border border-line bg-surface-muted px-1 font-mono text-[10px] text-slate-500">
+                  <kbd className="shrink-0 rounded border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-1 font-mono text-[10px] text-[color:var(--color-ink-muted)]">
                     Ctrl+K
                   </kbd>
                 </button>
@@ -528,7 +527,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
                   </svg>
                 </button>
                 <div className="flex h-10 w-10 items-center justify-center">
-                  <ThemeToggle />
+                  <ThemeToggle compact />
                 </div>
               </div>
             </div>

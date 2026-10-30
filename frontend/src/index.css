@@ -3,6 +3,7 @@
 
 *, *::before, *::after {
   box-sizing: border-box;
+  min-width: 0;
 }
 
 img, video, canvas, svg {
@@ -41,8 +42,21 @@ html {
 }
 
 body {
-  @apply bg-canvas font-sans text-ink antialiased;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-variant-numeric: tabular-nums;
+}
+
+:root[data-theme="paper"] h1,
+:root[data-theme="paper"] h2,
+:root[data-theme="paper"] h3,
+:root[data-theme="paper"] .font-serif-heading,
+:root[data-theme="paper"] .prose {
+  font-family: var(--font-serif);
 }
 
 #root {
@@ -50,83 +64,8 @@ body {
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--color-accent-500) 22%, transparent);
+  background: color-mix(in oklab, var(--color-accent) 22%, transparent);
   color: var(--color-ink);
-}
-
-/* Soft ambient background used by the app shell and hero surfaces. */
-.app-shell {
-  background-image:
-    radial-gradient(
-      55rem 55rem at 110% -10%,
-      color-mix(in oklab, var(--color-accent-500) 7%, transparent),
-      transparent 62%
-    ),
-    radial-gradient(
-      45rem 45rem at -10% 0%,
-      color-mix(in oklab, var(--color-info) 5%, transparent),
-      transparent 58%
-    );
-}
-
-.dark .app-shell {
-  background-image:
-    radial-gradient(
-      55rem 55rem at 110% -10%,
-      color-mix(in oklab, var(--color-accent-500) 13%, transparent),
-      transparent 62%
-    ),
-    radial-gradient(
-      45rem 45rem at -10% 0%,
-      color-mix(in oklab, var(--color-info) 8%, transparent),
-      transparent 58%
-    );
-}
-
-/* Faint blueprint grid for hero sections. */
-.bg-grid {
-  background-image:
-    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-  background-size: 2rem 2rem;
-  mask-image: radial-gradient(ellipse 85% 75% at 50% 0%, black 35%, transparent 100%);
-}
-
-/* Layered radial glows are cheaper than large blurred elements. */
-.hero-glow {
-  background-image:
-    radial-gradient(
-      24rem 24rem at 100% 0%,
-      color-mix(in oklab, var(--color-accent-500) 16%, transparent),
-      transparent 68%
-    ),
-    radial-gradient(
-      20rem 20rem at 24% 108%,
-      color-mix(in oklab, var(--color-info) 12%, transparent),
-      transparent 66%
-    );
-}
-
-.dark .hero-glow {
-  background-image:
-    radial-gradient(
-      24rem 24rem at 100% 0%,
-      color-mix(in oklab, var(--color-accent-500) 24%, transparent),
-      transparent 68%
-    ),
-    radial-gradient(
-      20rem 20rem at 24% 108%,
-      color-mix(in oklab, var(--color-info) 16%, transparent),
-      transparent 66%
-    );
-}
-
-.cta-glow {
-  background-image: radial-gradient(
-    18rem 18rem at 100% 0%,
-    color-mix(in oklab, var(--color-accent-500) 30%, transparent),
-    transparent 70%
-  );
 }
 
 .no-scrollbar {
@@ -137,20 +76,20 @@ body {
   display: none;
 }
 
-/* Slim scrollbars inside panels and the sidebar. */
+/* Slim scrollbars inside panels and the sidebar. 6px overlay. */
 .scroll-slim {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklab, var(--color-ink-subtle) 45%, transparent) transparent;
+  scrollbar-color: color-mix(in oklab, var(--color-ink-muted) 40%, transparent) transparent;
 }
 
 .scroll-slim::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 .scroll-slim::-webkit-scrollbar-thumb {
   border-radius: var(--radius-pill);
-  background-color: color-mix(in oklab, var(--color-ink-subtle) 40%, transparent);
+  background-color: color-mix(in oklab, var(--color-ink-muted) 35%, transparent);
 }
 
 .scroll-slim::-webkit-scrollbar-track {
@@ -165,6 +104,7 @@ body {
 
 .katex-display > .katex {
   max-width: 100%;
+  overflow-x: auto;
 }
 
 @keyframes fade-up {
@@ -227,15 +167,15 @@ body {
 }
 
 .animate-fade-up {
-  animation: fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: fade-up var(--duration-base) var(--ease-standard) both;
 }
 
 .animate-fade-in {
-  animation: fade-in 0.2s ease both;
+  animation: fade-in var(--duration-fast) ease both;
 }
 
 .animate-slide-in {
-  animation: slide-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: slide-in var(--duration-base) var(--ease-standard) both;
 }
 
 .animate-toast-in {
@@ -246,21 +186,10 @@ body {
   animation: toast-out var(--duration-fast) var(--ease-standard) both;
 }
 
-.stagger-1 {
-  animation-delay: 60ms;
-}
-
-.stagger-2 {
-  animation-delay: 120ms;
-}
-
-.stagger-3 {
-  animation-delay: 180ms;
-}
-
-.stagger-4 {
-  animation-delay: 240ms;
-}
+.stagger-1 { animation-delay: 60ms; }
+.stagger-2 { animation-delay: 120ms; }
+.stagger-3 { animation-delay: 180ms; }
+.stagger-4 { animation-delay: 240ms; }
 
 .skeleton-shimmer {
   position: relative;
@@ -274,24 +203,15 @@ body {
   background-image: linear-gradient(
     90deg,
     transparent,
-    rgb(255 255 255 / 0.45),
+    color-mix(in oklab, var(--color-accent) 20%, transparent),
     transparent
   );
   animation: shimmer 1.8s infinite;
   content: "";
 }
 
-.dark .skeleton-shimmer::after {
-  background-image: linear-gradient(
-    90deg,
-    transparent,
-    rgb(255 255 255 / 0.06),
-    transparent
-  );
-}
-
 :where(a, summary):focus-visible {
-  outline: 2px solid var(--color-accent-500);
+  outline: 2px solid var(--color-accent);
   outline-offset: 2px;
   border-radius: var(--radius-control);
 }
@@ -302,90 +222,6 @@ body {
 
 .print-only {
   display: none;
-}
-
-/* A compact, ink-friendly report when the user prints a solved method. */
-@media print {
-  @page {
-    size: A4;
-    margin: 14mm 13mm;
-  }
-
-  html {
-    scroll-padding-top: 0;
-    background: #fff !important;
-  }
-
-  body {
-    background: #fff !important;
-    color: #0f172a !important;
-    font-size: 10.5pt;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
-  .app-shell {
-    min-height: 0 !important;
-    background: none !important;
-  }
-
-  .no-print,
-  .site-header,
-  .site-sidebar,
-  .site-footer,
-  [role="separator"],
-  [role="toolbar"],
-  [role="tablist"],
-  [role="dialog"],
-  .modebar,
-  .modebar-container {
-    display: none !important;
-  }
-
-  .print-only {
-    display: block !important;
-  }
-
-  #main-content {
-    max-width: none !important;
-    padding: 0 !important;
-  }
-
-  .method-page {
-    max-width: none !important;
-  }
-
-  .method-workspace {
-    display: block !important;
-  }
-
-  .print-results {
-    width: 100% !important;
-  }
-
-  .print-results > div {
-    break-inside: avoid;
-  }
-
-  .print-results section,
-  .print-results table {
-    box-shadow: none !important;
-  }
-
-  .print-results h2,
-  .print-results h3 {
-    break-after: avoid;
-  }
-
-  .print-results tr,
-  .print-results img,
-  .print-results .js-plotly-plot {
-    break-inside: avoid;
-  }
-
-  a[href]::after {
-    content: "";
-  }
 }
 
 /* Focus mode: hide chrome and give the workspace the full viewport. */
@@ -406,7 +242,7 @@ body {
 
 /* Sidebar transitions respect reduced motion. */
 .site-sidebar {
-  transition: width 150ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width var(--duration-base) var(--ease-standard);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -422,4 +258,45 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+@media print {
+  :root,
+  :root[data-theme="paper"],
+  :root[data-theme="light"],
+  :root[data-theme="dark"] {
+    --color-canvas: #FFFFFF;
+    --color-surface: #FFFFFF;
+    --color-surface-2: #FFFFFF;
+    --color-border: #E5E7EB;
+    --color-ink: #111111;
+    --color-ink-muted: #333333;
+  }
+  body {
+    font-family: var(--font-serif);
+    background: #FFFFFF !important;
+    color: #111111 !important;
+  }
+  .site-header,
+  .site-sidebar,
+  .sidebar-open-handle,
+  nav,
+  [role="navigation"],
+  button[aria-label="Search"],
+  .no-print {
+    display: none !important;
+  }
+  main,
+  #main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  a[href]::after {
+    content: "";
+  }
+}
+*, *::before, *::after {
+  border-color: var(--color-border);
 }

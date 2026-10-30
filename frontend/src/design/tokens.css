@@ -1,138 +1,227 @@
 /**
- * Design tokens — the single source of truth for colour, spacing, radius,
- * elevation, type and motion. Components consume the generated Tailwind
- * utilities (bg-surface, text-ink, rounded-panel, shadow-card, text-body …).
- *
- * Semantic colours are intentionally theme-aware: the `.dark` block swaps the
- * values once, so components never need `dark:` colour pairs.
+ * Design tokens — Design System v2 ("Modern Scholar")
  */
 @theme {
   --font-sans:
     "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono:
     "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-serif:
+    "Source Serif 4", "Newsreader", ui-serif, Georgia, serif;
 
-  /* One accent family (indigo) + semantic status colours. */
-  --color-accent-50: #eef2ff;
-  --color-accent-100: #e0e7ff;
-  --color-accent-200: #c7d2fe;
-  --color-accent-300: #a5b4fc;
-  --color-accent-400: #818cf8;
-  --color-accent-500: #6366f1;
-  --color-accent-600: #4f46e5;
-  --color-accent-700: #4338ca;
-  --color-accent-800: #3730a3;
-  --color-accent-900: #312e81;
-  --color-accent-950: #1e1b4b;
+  /* Spacing 4px base */
+  --spacing-0: 0;
+  --spacing-1: 0.25rem; /* 4 */
+  --spacing-2: 0.5rem;  /* 8 */
+  --spacing-3: 0.75rem; /* 12 */
+  --spacing-4: 1rem;    /* 16 */
+  --spacing-6: 1.5rem;  /* 24 */
+  --spacing-8: 2rem;    /* 32 */
+  --spacing-12: 3rem;   /* 48 */
+  --spacing-16: 4rem;   /* 64 */
+  --spacing-24: 6rem;   /* 96 */
 
-  --color-accent-solid: #4f46e5;
-  --color-accent-solid-hover: #4338ca;
-  --color-accent-text: #4338ca;
-  --color-accent-soft: #eef2ff;
-  --color-accent-soft-line: #c7d2fe;
-
-  --color-canvas: #f7f8fc;
-  --color-surface: #ffffff;
-  --color-surface-muted: #f4f6fb;
-  --color-surface-raised: #ffffff;
-  --color-ink: #0f172a;
-  --color-ink-muted: #475569;
-  --color-ink-subtle: #64748b;
-  --color-line: #e2e8f0;
-  --color-line-strong: #cbd5e1;
-
-  --color-success: #047857;
-  --color-success-soft: #ecfdf5;
-  --color-warning: #b45309;
-  --color-warning-soft: #fffbeb;
-  --color-danger: #be123c;
-  --color-danger-soft: #fff1f2;
-  --color-info: #0e7490;
-  --color-info-soft: #ecfeff;
-
-  --radius-control: 0.5rem;
-  --radius-card: 0.75rem;
-  --radius-panel: 1rem;
+  /* Radius */
+  --radius-1: 0.5rem;   /* 8 */
+  --radius-2: 0.75rem;  /* 12 */
+  --radius-3: 1rem;     /* 16 */
   --radius-pill: 9999px;
 
-  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -16px rgb(15 23 42 / 0.18);
-  --shadow-popover: 0 18px 48px -20px rgb(15 23 42 / 0.28), 0 2px 8px rgb(15 23 42 / 0.06);
-  --shadow-focus: 0 0 0 4px rgb(99 102 241 / 0.14);
-  --shadow-accent: 0 10px 30px -14px rgb(79 70 229 / 0.55);
+  /* Borders */
+  --border-1: 1px;
 
-  /* 11 / 12 / 14 / 16 / 20 / 32 px scale. */
-  --text-2xs: 0.6875rem;
-  --text-2xs--line-height: 1.45;
-  --text-caption: 0.75rem;
-  --text-caption--line-height: 1.5;
-  --text-body: 0.875rem;
-  --text-body--line-height: 1.6;
-  --text-title: 1rem;
-  --text-title--line-height: 1.45;
-  --text-heading: 1.25rem;
-  --text-heading--line-height: 1.3;
-  --text-display: 2rem;
-  --text-display--line-height: 1.15;
+  /* Shadows (e1, e2, e3) */
+  --shadow-e1: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-e2: 0 4px 12px rgba(16, 24, 40, 0.08);
+  --shadow-e3: 0 12px 32px rgba(16, 24, 40, 0.14);
+  --shadow-popover: 0 12px 32px rgba(16, 24, 40, 0.14);
+  --shadow-focus: 0 0 0 2px var(--color-focus-ring);
 
-  /* Spacing follows the 4 / 8 px rhythm. */
-  --spacing-field: 0.5rem;
-  --spacing-control: 0.5rem;
-  --spacing-gutter: 1.5rem;
-  --spacing-section: 2.5rem;
+  /* Type scale */
+  --text-2xs: 0.75rem;   /* 12 */
+  --text-2xs--line-height: 1.5;
+  --text-xs: 0.8125rem;  /* 13 */
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.875rem;   /* 14 */
+  --text-sm--line-height: 1.5;
+  --text-base: 1rem;     /* 16 */
+  --text-base--line-height: 1.5;
+  --text-lg: 1.25rem;    /* 20 */
+  --text-lg--line-height: 1.3;
+  --text-xl: 1.5rem;     /* 24 */
+  --text-xl--line-height: 1.3;
+  --text-2xl: 2rem;      /* 32 */
+  --text-2xl--line-height: 1.25;
+  --text-display: 3.5rem; /* 56 */
+  --text-display--line-height: 1.07;
 
-  --duration-fast: 150ms;
+  /* Motion */
+  --duration-fast: 120ms;
   --duration-base: 180ms;
-  --duration-slow: 200ms;
-  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
 
-  --grid-line: rgb(15 23 42 / 0.045);
-
-  /* Plotly-specific surfaces that cannot use CSS functions directly. */
-  --plot-font: #0f172a;
-  --plot-axis: #475569;
-  --plot-grid: #e2e8f0;
-  --plot-zero: #cbd5e1;
-  --plot-hover: #ffffff;
-  --plot-modebar: #475569;
+  /* Z-index */
+  --z-header: 40;
+  --z-sidebar: 40;
+  --z-flyout: 50;
+  --z-overlay: 30;
+  --z-popover: 60;
+  --z-palette: 70;
 }
 
-.dark {
-  --color-canvas: #070a13;
-  --color-surface: #0f172a;
-  --color-surface-muted: #111a2c;
-  --color-surface-raised: #172033;
-  --color-ink: #f1f5f9;
-  --color-ink-muted: #cbd5e1;
-  --color-ink-subtle: #94a3b8;
-  --color-line: rgb(255 255 255 / 0.08);
-  --color-line-strong: rgb(255 255 255 / 0.16);
+/* Light / Utility */
+:root,
+:root[data-theme="light"] {
+  --color-canvas: #F6F7FB;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #F1F3F9;
+  --color-surface-3: #E8EBF4;
+  --color-border: #E2E6F0;
+  --color-border-strong: #CDD3E3;
+  --color-text: #0F1424;
+  --color-text-muted: #475467;
+  --color-text-subtle: #667085;
+  --color-accent: #4F46E5;
+  --color-accent-hover: #4338CA;
+  --color-accent-soft: #EEF0FF;
+  --color-success: #15803D;
+  --color-warning: #B45309;
+  --color-error: #B91C1C;
+  --color-info: #1D4ED8;
+  --color-focus-ring: rgb(79 70 229 / 0.5);
 
-  --color-accent-text: #a5b4fc;
-  --color-accent-soft: rgb(99 102 241 / 0.12);
-  --color-accent-soft-line: rgb(129 140 248 / 0.22);
+  --brand-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
 
-  --color-success: #6ee7b7;
-  --color-success-soft: rgb(16 185 129 / 0.1);
-  --color-warning: #fcd34d;
-  --color-warning-soft: rgb(245 158 11 / 0.1);
-  --color-danger: #fda4af;
-  --color-danger-soft: rgb(244 63 94 / 0.1);
-  --color-info: #67e8f9;
-  --color-info-soft: rgb(6 182 212 / 0.1);
+  --ch1: #4F46E5;
+  --ch2: #0284C7;
+  --ch3: #059669;
+  --ch4: #D97706;
+  --ch5: #E11D48;
+  --ch6: #7C3AED;
 
-  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 18px 40px -28px rgb(0 0 0 / 0.8);
-  --shadow-popover: 0 22px 55px -18px rgb(0 0 0 / 0.9), 0 2px 10px rgb(0 0 0 / 0.35);
-  --shadow-focus: 0 0 0 4px rgb(129 140 248 / 0.22);
-  --shadow-accent: 0 10px 30px -14px rgb(99 102 241 / 0.75);
-  --grid-line: rgb(255 255 255 / 0.05);
+  --plot-font: #0F1424;
+  --plot-axis: #475467;
+  --plot-grid: #E2E6F0;
+  --plot-zero: #CDD3E3;
+  --plot-hover: #FFFFFF;
+  --plot-modebar: #475467;
+  --grid-line: rgb(15 20 36 / 0.04);
 
-  --plot-font: #f1f5f9;
-  --plot-axis: #cbd5e1;
-  --plot-grid: #1e293b;
-  --plot-zero: #334155;
-  --plot-hover: #111a2c;
-  --plot-modebar: #cbd5e1;
+  color-scheme: light;
+}
+
+/* Academic Paper */
+:root[data-theme="paper"] {
+  --color-canvas: #FAF7F0;
+  --color-surface: #FFFDF8;
+  --color-surface-2: #F3EEE2;
+  --color-surface-3: #EAE3D3;
+  --color-border: #E0D8C6;
+  --color-border-strong: #CFC5AE;
+  --color-text: #1F1A14;
+  --color-text-muted: #5E5648;
+  --color-text-subtle: #7A705E;
+  --color-accent: #2B4C9B;
+  --color-accent-hover: #223D7E;
+  --color-accent-soft: #E8EDF9;
+  --color-success: #166534;
+  --color-warning: #92400E;
+  --color-error: #991B1B;
+  --color-info: #1E40AF;
+  --color-focus-ring: rgb(43 76 155 / 0.5);
+
+  --brand-gradient: linear-gradient(135deg, #2B4C9B 0%, #1E40AF 100%);
+
+  --ch1: #2B4C9B;
+  --ch2: #0369A1;
+  --ch3: #047857;
+  --ch4: #B45309;
+  --ch5: #BE123C;
+  --ch6: #6D28D9;
+
+  --plot-font: #1F1A14;
+  --plot-axis: #5E5648;
+  --plot-grid: #E0D8C6;
+  --plot-zero: #CFC5AE;
+  --plot-hover: #FFFDF8;
+  --plot-modebar: #5E5648;
+  --grid-line: rgb(31 26 20 / 0.04);
+
+  color-scheme: light;
+}
+
+/* Developer Dark */
+:root[data-theme="dark"] {
+  --color-canvas: #0A0C14;
+  --color-surface: #10131D;
+  --color-surface-2: #161A26;
+  --color-surface-3: #1D2230;
+  --color-border: #262C3B;
+  --color-border-strong: #343B4F;
+  --color-text: #E8EAF2;
+  --color-text-muted: #A0A8BC;
+  --color-text-subtle: #7C869D;
+  --color-accent: #8B8CF8;
+  --color-accent-hover: #A5A6FA;
+  --color-accent-soft: #1E2142;
+  --color-success: #4ADE80;
+  --color-warning: #FBBF24;
+  --color-error: #F87171;
+  --color-info: #60A5FA;
+  --color-focus-ring: rgb(139 140 248 / 0.5);
+
+  --brand-gradient: linear-gradient(135deg, #8B8CF8 0%, #A855F7 100%);
+
+  --ch1: #8B8CF8;
+  --ch2: #38BDF8;
+  --ch3: #34D399;
+  --ch4: #FBBF24;
+  --ch5: #FB7185;
+  --ch6: #C084FC;
+
+  --plot-font: #E8EAF2;
+  --plot-axis: #A0A8BC;
+  --plot-grid: #262C3B;
+  --plot-zero: #343B4F;
+  --plot-hover: #10131D;
+  --plot-modebar: #A0A8BC;
+  --grid-line: rgb(232 234 242 / 0.04);
 
   color-scheme: dark;
+}
+
+/* Legacy mappings for existing components */
+:root {
+  --color-line: var(--color-border);
+  --color-line-strong: var(--color-border-strong);
+  --color-surface-muted: var(--color-surface-2);
+  --color-surface-raised: var(--color-surface);
+  --color-ink: var(--color-text);
+  --color-ink-muted: var(--color-text-muted);
+  --color-ink-subtle: var(--color-text-subtle);
+  --color-accent-500: var(--color-accent);
+  --color-accent-600: var(--color-accent-hover);
+  --color-accent-text: var(--color-accent);
+  --color-success-soft: color-mix(in oklab, var(--color-success) 16%, transparent);
+  --color-warning-soft: color-mix(in oklab, var(--color-warning) 16%, transparent);
+  --color-danger-soft: color-mix(in oklab, var(--color-error) 16%, transparent);
+  --color-info-soft: color-mix(in oklab, var(--color-info) 16%, transparent);
+  --color-accent-soft-line: color-mix(in oklab, var(--color-accent) 30%, transparent);
+  --shadow-card: var(--shadow-e1);
+  --shadow-popover: var(--shadow-e3);
+  --shadow-focus: 0 0 0 2px var(--color-focus-ring);
+  --shadow-accent: none;
+  --radius-control: var(--radius-1);
+  --radius-card: var(--radius-2);
+  --radius-panel: var(--radius-3);
+  --duration-slow: 180ms;
+  --ease-emphasized: var(--ease-standard);
+  --text-body: var(--text-sm);
+  --text-body--line-height: var(--text-sm--line-height);
+  --text-title: var(--text-base);
+  --text-title--line-height: var(--text-base--line-height);
+  --text-heading: var(--text-lg);
+  --text-heading--line-height: var(--text-lg--line-height);
+  --text-display: var(--text-2xl);
+  --text-display--line-height: var(--text-2xl--line-height);
 }

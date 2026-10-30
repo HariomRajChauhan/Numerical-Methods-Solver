@@ -1,9 +1,16 @@
+/// <reference types="node" />
 import { test, expect } from '@playwright/test';
 
 const THEMES = ['light', 'paper', 'dark'];
-const URLS = ['/methods/bisection', '/methods/gauss_seidel'];
+const URLS = [
+  '/methods/bisection',
+  '/methods/gauss_seidel',
+  '/methods/newton_raphson',
+  '/methods/simpson_13',
+  '/methods/runge_kutta_4',
+];
 
-test.describe('Design System v2 Style Audit', () => {
+test.describe('Design System v2 Style Audit (Phase 4)', () => {
   for (const url of URLS) {
     for (const theme of THEMES) {
       test(`audit url=${url} theme=${theme}`, async ({ page }) => {
@@ -27,11 +34,11 @@ test.describe('Design System v2 Style Audit', () => {
           }
         }
 
-        // 2. Cards/panels non-zero radius
-        const panels = page.locator('.rounded-lg, .rounded-panel, .rounded-control, .rounded-md, .rounded-2xl');
-        const count = await panels.count();
-        for (let i = 0; i < Math.min(count, 5); i++) {
-          const el = panels.nth(i);
+        // 2. Cards, panels, tables, steps have non-zero radius and token borders
+        const elements = page.locator('.rounded-lg, .rounded-panel, .rounded-control, .rounded-md, .rounded-2xl, table, details');
+        const count = await elements.count();
+        for (let i = 0; i < Math.min(count, 8); i++) {
+          const el = elements.nth(i);
           const borderRadius = await el.evaluate((node) => window.getComputedStyle(node).borderRadius);
           expect(borderRadius).not.toBe('0px');
         }

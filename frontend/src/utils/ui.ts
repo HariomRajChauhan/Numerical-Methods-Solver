@@ -1,25 +1,25 @@
 /** Shared Tailwind class strings — all values resolve to tokens in design/tokens.css. */
 export const ui = {
-  card: "rounded-panel border border-line bg-surface shadow-card",
+  card: "rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface)]",
   cardHover:
-    "transition duration-200 hover:-translate-y-0.5 hover:border-accent-300 hover:shadow-popover",
-  surface: "rounded-control border border-line bg-surface-muted",
-  btn: "inline-flex items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-3.5 py-2 text-sm font-medium text-ink shadow-sm transition duration-150 hover:border-ink-subtle hover:bg-surface-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-50",
+    "transition duration-150 hover:border-[color:var(--color-accent)]",
+  surface: "rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]",
+  btn: "inline-flex items-center justify-center gap-2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-3.5 py-2 text-sm font-medium text-[color:var(--color-ink)] transition duration-150 hover:border-[color:var(--color-ink-muted)] hover:bg-[color:var(--color-surface-2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-50",
   btnPrimary:
-    "inline-flex items-center justify-center gap-2 rounded-control bg-accent-solid px-4 py-2.5 text-sm font-semibold text-white shadow-accent transition duration-150 hover:bg-accent-solid-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-60",
+    "inline-flex items-center justify-center gap-2 rounded-md bg-[color:var(--color-accent)] px-4 py-2.5 text-sm font-semibold text-white transition duration-150 hover:bg-[color:var(--color-accent-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-60",
   btnGhost:
-    "inline-flex items-center gap-1.5 rounded-control px-2 py-1.5 text-xs font-medium text-ink-muted transition duration-150 hover:bg-surface-muted hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500",
+    "inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-[color:var(--color-ink-muted)] transition duration-150 hover:bg-[color:var(--color-surface-2)] hover:text-[color:var(--color-ink)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)]",
   input:
-    "w-full rounded-control border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink shadow-sm transition duration-150 placeholder:text-ink-subtle focus:border-accent-500 focus:outline-none focus:ring-4 focus:ring-accent-500/10",
-  inputError: "border-danger focus:border-danger focus:ring-danger/15",
-  label: "block text-sm font-medium text-ink",
-  help: "mt-1.5 text-xs leading-relaxed text-ink-muted",
-  error: "mt-1.5 text-xs font-medium text-danger",
-  chip: "inline-flex items-center gap-1.5 rounded-pill border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink-muted shadow-sm transition duration-150 hover:border-accent-300 hover:text-accent-text",
+    "w-full rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-3.5 py-2.5 text-sm text-[color:var(--color-ink)] transition duration-150 placeholder:text-[color:var(--color-ink-muted)] focus:border-[color:var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-focus-ring)]",
+  inputError: "border-[color:var(--color-error)] focus:border-[color:var(--color-error)] focus:ring-[color:var(--color-error)]",
+  label: "block text-sm font-medium text-[color:var(--color-ink)]",
+  help: "mt-1.5 text-xs leading-relaxed text-[color:var(--color-ink-muted)]",
+  error: "mt-1.5 text-xs font-medium text-[color:var(--color-error)]",
+  chip: "inline-flex items-center gap-1.5 rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-3 py-1.5 text-xs font-medium text-[color:var(--color-ink-muted)] transition duration-150 hover:border-[color:var(--color-accent)] hover:text-[color:var(--color-ink)]",
   sectionLabel:
-    "text-2xs font-semibold uppercase tracking-[0.14em] text-ink-muted",
+    "text-2xs font-semibold uppercase tracking-[0.14em] text-[color:var(--color-ink-muted)]",
   iconBox:
-    "inline-flex shrink-0 items-center justify-center rounded-control bg-accent-soft text-accent-text ring-1 ring-inset ring-accent-soft-line",
+    "inline-flex shrink-0 items-center justify-center rounded-md bg-[color:var(--color-accent-soft)] text-[color:var(--color-accent)] ring-1 ring-inset ring-[color:var(--color-accent-soft)]",
   num: "font-mono tabular-nums",
-  muted: "text-ink-muted",
+  muted: "text-[color:var(--color-ink-muted)]",
 } as const;

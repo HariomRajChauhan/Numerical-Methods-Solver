@@ -97,7 +97,7 @@ export function AppLayout() {
   return (
     <div
       id="top"
-      className="app-shell min-h-dvh bg-slate-50 dark:bg-[#070a13]"
+      className="min-h-dvh bg-[color:var(--color-canvas)]"
       data-focus={focusMode}
     >
       <a
@@ -147,7 +147,7 @@ export function AppLayout() {
           >
             <Suspense
               fallback={
-                <div className="mx-auto min-h-[calc(100dvh-4rem)] max-w-6xl space-y-5 py-2">
+                <div className="mx-auto min-h-[calc(100dvh-4rem)] w-full max-w-[1760px] space-y-5 px-6 py-2">
                   <LoadingSkeleton lines={2} />
                   <LoadingSkeleton lines={6} />
                 </div>
@@ -174,7 +174,7 @@ export function AppLayout() {
           </button>
           <Suspense
             fallback={
-              <div className="mx-auto min-h-dvh max-w-6xl space-y-5 py-2">
+              <div className="mx-auto min-h-dvh w-full max-w-[1760px] space-y-5 px-6 py-2">
                 <LoadingSkeleton lines={2} />
                 <LoadingSkeleton lines={6} />
               </div>

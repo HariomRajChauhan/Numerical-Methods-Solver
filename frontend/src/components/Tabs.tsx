@@ -17,7 +17,7 @@ interface TabsProps {
   className?: string;
 }
 
-/** Accessible tab bar (role=tablist, arrow-key navigation, scrollable on mobile). */
+/** Accessible tab bar (underline style, no outer box, AA contrast). */
 export function Tabs({ tabs, activeId, onChange, className = "" }: TabsProps) {
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +60,7 @@ export function Tabs({ tabs, activeId, onChange, className = "" }: TabsProps) {
       role="tablist"
       aria-label="Solution views"
       onKeyDown={handleKeyDown}
-      className={`no-scrollbar flex gap-1 overflow-x-auto rounded-control border border-line bg-surface/80 p-1 backdrop-blur-sm ${className}`}
+      className={`no-scrollbar relative flex items-center gap-4 overflow-x-auto border-b border-[color:var(--color-border)] px-1 ${className}`}
     >
       {tabs.map((tab) => {
         const active = tab.id === activeId;
@@ -74,22 +74,24 @@ export function Tabs({ tabs, activeId, onChange, className = "" }: TabsProps) {
             disabled={tab.disabled}
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(tab.id)}
-            className={`flex shrink-0 items-center gap-1.5 rounded-control px-3 py-2 text-[13px] font-medium transition duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 disabled:cursor-not-allowed disabled:opacity-40 ${
+            className={`relative flex shrink-0 items-center gap-1.5 py-3 text-sm font-medium transition duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-40 ${
               active
-                ? "bg-accent-solid text-white shadow-sm"
-                : "text-ink-muted hover:bg-surface-muted hover:text-ink"
+                ? "text-[color:var(--color-text)] font-semibold"
+                : "text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)]"
             }`}
           >
-            {tab.icon && <Icon name={tab.icon} size={14} />}
+            {tab.icon && <Icon name={tab.icon} size={15} />}
             {tab.label}
             {tab.badge !== undefined && (
-              <span
-                className={`ml-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
-                  active ? "bg-white text-accent-700" : "bg-surface-muted text-ink-muted"
-                }`}
-              >
+              <span className="ml-1 rounded-full bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[10px] font-semibold tabular-nums text-[color:var(--color-text-muted)]">
                 {tab.badge}
               </span>
+            )}
+            {active && (
+              <span
+                aria-hidden="true"
+                className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t bg-[color:var(--color-accent)]"
+              />
             )}
           </button>
         );

@@ -41,7 +41,7 @@ export function WorkspaceToolbar({
     <div
       role="toolbar"
       aria-label="Solver actions"
-      className="no-print sticky top-16 z-30 mb-5 flex flex-wrap items-center gap-2 rounded-panel border border-line bg-surface/90 p-2 shadow-card backdrop-blur-xl"
+      className="no-print sticky top-16 z-30 mb-5 flex flex-wrap items-center gap-2 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-2"
     >
       <button
         type="button"

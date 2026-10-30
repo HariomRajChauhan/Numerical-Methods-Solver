@@ -49,12 +49,12 @@ export function HomePage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 sm:space-y-12">
-      <section className="hero-glow relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-xl shadow-slate-900/[0.04] sm:p-9 lg:p-12 dark:border-white/[0.07] dark:bg-slate-900/40 dark:shadow-none">
+      <section className="relative overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 sm:p-9 lg:p-12">
         <div aria-hidden="true" className="bg-grid absolute inset-0 opacity-80" />
 
         <div className="relative grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr]">
           <div className="animate-fade-up">
-            <span className="inline-flex items-center gap-2 rounded-full border border-indigo-200/80 bg-white/80 px-3 py-1.5 text-[11px] font-semibold text-indigo-700 shadow-sm backdrop-blur dark:border-indigo-400/20 dark:bg-indigo-500/10 dark:text-indigo-200">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-3 py-1.5 text-[11px] font-semibold text-[color:var(--color-accent)]">
               <Icon name="cap" size={13} />
               ENSH 252 · IOE / Tribhuvan University
             </span>
@@ -124,7 +124,7 @@ export function HomePage() {
 
       <ChapterCatalogue />
 
-      <section className="cta-glow relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-xl shadow-slate-900/20 sm:p-8 dark:border-white/10 dark:bg-slate-900/80">
+      <section className="relative overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 sm:p-8">
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-300">

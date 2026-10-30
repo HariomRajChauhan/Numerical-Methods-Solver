@@ -1,12 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type ThemeMode = "light" | "dark" | "system";
+export type ThemeMode = "light" | "paper" | "dark" | "system";
 
 interface ThemeState {
   mode: ThemeMode;
   setMode: (mode: ThemeMode) => void;
   toggle: () => void;
+  cycle: () => void;
 }
 
 function prefersDark(): boolean {
@@ -16,18 +17,33 @@ function prefersDark(): boolean {
   );
 }
 
-/** Resolve whether a theme mode currently means "dark". */
-export function resolveDark(mode: ThemeMode): boolean {
-  return mode === "dark" || (mode === "system" && prefersDark());
+export function resolveTheme(mode: ThemeMode): "light" | "paper" | "dark" {
+  if (mode === "system") {
+    return prefersDark() ? "dark" : "light";
+  }
+  return mode;
 }
 
-/** Apply the resolved theme to <html> (Tailwind dark variant is class-based). */
+export function resolveDark(mode: ThemeMode): boolean {
+  return resolveTheme(mode) === "dark";
+}
+
+/** Apply the resolved theme to <html> */
 export function applyTheme(mode: ThemeMode): void {
   if (typeof document === "undefined") return;
-  const dark = resolveDark(mode);
-  document.documentElement.classList.toggle("dark", dark);
-  document.documentElement.style.colorScheme = dark ? "dark" : "light";
+  const resolved = resolveTheme(mode);
+  document.documentElement.setAttribute("data-theme", resolved);
+  document.documentElement.classList.toggle("dark", resolved === "dark");
+  document.documentElement.style.colorScheme = resolved === "dark" ? "dark" : "light";
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) {
+    if (resolved === "dark") meta.setAttribute("content", "#0B0D12");
+    else if (resolved === "paper") meta.setAttribute("content", "#FAF7F0");
+    else meta.setAttribute("content", "#FBFBFC");
+  }
 }
+
+const CYCLE: ThemeMode[] = ["light", "paper", "dark", "system"];
 
 export const useThemeStore = create<ThemeState>()(
   persist(
@@ -38,7 +54,16 @@ export const useThemeStore = create<ThemeState>()(
         set({ mode });
       },
       toggle: () => {
-        const next: ThemeMode = get().mode === "dark" ? "light" : "dark";
+        const current = get().mode;
+        const resolved = resolveTheme(current);
+        const next: ThemeMode = resolved === "dark" ? "light" : "dark";
+        applyTheme(next);
+        set({ mode: next });
+      },
+      cycle: () => {
+        const current = get().mode;
+        const idx = CYCLE.indexOf(current);
+        const next = CYCLE[(idx + 1) % CYCLE.length];
         applyTheme(next);
         set({ mode: next });
       },
@@ -52,11 +77,13 @@ export const useThemeStore = create<ThemeState>()(
   ),
 );
 
-/** React to OS theme changes while in "system" mode. */
 export function initThemeListener(): () => void {
   if (typeof window === "undefined" || !window.matchMedia) return () => {};
   const media = window.matchMedia("(prefers-color-scheme: dark)");
-  const listener = (): void => applyTheme(useThemeStore.getState().mode);
+  const listener = (): void => {
+    const mode = useThemeStore.getState().mode;
+    if (mode === "system") applyTheme(mode);
+  };
   media.addEventListener("change", listener);
   return () => media.removeEventListener("change", listener);
 }

@@ -1,22 +1,42 @@
-import { useThemeStore } from "../../store/theme";
+import { useThemeStore, type ThemeMode } from "../../store/theme";
 import { Icon, type IconName } from "../ui/Icon";
 
-const MODES: { id: "light" | "dark" | "system"; label: string; icon: IconName }[] = [
-  { id: "light", label: "Light", icon: "sun" },
-  { id: "dark", label: "Dark", icon: "moon" },
+const MODES: { id: ThemeMode; label: string; icon: IconName }[] = [
+  { id: "light", label: "Utility Light", icon: "sun" },
+  { id: "paper", label: "Academic Paper", icon: "book" },
+  { id: "dark", label: "Developer Dark", icon: "moon" },
   { id: "system", label: "System", icon: "monitor" },
 ];
 
-/** Light / dark / system switch (class-based Tailwind dark mode). */
-export function ThemeToggle() {
+/** Theme switcher for all three themes + system. */
+export function ThemeToggle({ compact = false }: { compact?: boolean }) {
   const mode = useThemeStore((state) => state.mode);
   const setMode = useThemeStore((state) => state.setMode);
+  const cycle = useThemeStore((state) => state.cycle);
+
+  if (compact) {
+    return (
+      <button
+        type="button"
+        onClick={cycle}
+        aria-label="Cycle theme"
+        title="Cycle theme"
+        className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:text-slate-400 dark:hover:bg-white/[0.04] dark:hover:text-white"
+      >
+        {mode === "light" && <Icon name="sun" size={20} />}
+        {mode === "paper" && <Icon name="book" size={20} />}
+        {mode === "dark" && <Icon name="moon" size={20} />}
+        {mode === "system" && <Icon name="monitor" size={20} />}
+        <span className="sr-only">Cycle theme</span>
+      </button>
+    );
+  }
 
   return (
     <div
       role="group"
       aria-label="Colour theme"
-      className="inline-flex shrink-0 items-center gap-0.5 rounded-xl border border-slate-200 bg-slate-100/70 p-0.5 dark:border-white/[0.08] dark:bg-white/[0.04]"
+      className="inline-flex shrink-0 items-center gap-0.5 rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] p-0.5"
     >
       {MODES.map((option) => {
         const active = mode === option.id;
@@ -27,10 +47,10 @@ export function ThemeToggle() {
             onClick={() => setMode(option.id)}
             aria-pressed={active}
             title={`${option.label} theme`}
-            className={`flex h-10 w-10 items-center justify-center rounded-xl transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
+            className={`flex h-8 w-8 items-center justify-center rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
               active
-                ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300"
-                : "text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/[0.04] dark:hover:text-white"
+                ? "bg-[color:var(--color-surface)] text-[color:var(--color-ink)]"
+                : "text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)]"
             }`}
           >
             <Icon name={option.icon} size={18} />
