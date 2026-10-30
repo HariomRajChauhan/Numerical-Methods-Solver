@@ -1,0 +1,26 @@
+{
+  "theme": "light/paper/dark",
+  "resolvedColors": {
+    "background": "#ffffff",
+    "foreground": "#0f172a",
+    "border": "#e2e8f0",
+    "primary": "#2563eb"
+  },
+  "radii": {
+    "card": "8px",
+    "panel": "8px",
+    "control": "4px"
+  },
+  "fontSizes": {
+    "base": "16px",
+    "sm": "14px",
+    "lg": "18px"
+  },
+  "rowHeights": {
+    "tableRow": "40px"
+  },
+  "contrastRatios": {
+    "normalText": 12.5,
+    "largeText": 15
+  }
+}

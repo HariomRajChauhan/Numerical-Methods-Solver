@@ -340,3 +340,10 @@ npm run build
 
 Coming-soon methods are fully navigable: their theory and pseudocode are already
 readable, and the API returns `409 method_unavailable` if a solve is attempted.
+
+## Design system
+
+- **Themes**: Utility Light (default), Academic Paper, Developer Dark, plus System. Controlled by `:root[data-theme]`, persisted in `localStorage` (`nms-theme`).
+- **Tokens**: Centralized in `frontend/src/design/tokens.css` (colors, spacing 4px scale, radii, borders, motion, type). Components use token CSS variables.
+- **Typography**: Inter for UI, JetBrains Mono for code/numbers (tabular-nums), Source Serif 4/Newsreader for Academic Paper headings/prose.
+- **Adding a theme**: Add a `[data-theme="..."]` block in `tokens.css` with the semantic color set, update `ThemeMode` in `frontend/src/store/theme.ts`, and extend the theme toggle/cycle as needed.
