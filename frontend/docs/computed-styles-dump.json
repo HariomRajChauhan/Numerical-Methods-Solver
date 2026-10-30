@@ -1,0 +1,113 @@
+{
+  "light": {
+    "chip": {
+      "borderColor": "rgb(226, 230, 240)",
+      "borderRadius": "0px",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(71, 84, 103)",
+      "boxShadow": "none"
+    },
+    "tabs": {
+      "borderColor": "rgb(226, 230, 240)",
+      "borderRadius": "0px",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 20, 36)",
+      "boxShadow": "none"
+    },
+    "emptyState": {
+      "borderColor": "rgb(226, 230, 240)",
+      "borderRadius": "8px",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "color": "rgb(15, 20, 36)",
+      "boxShadow": "none"
+    },
+    "inputPanel": {
+      "borderColor": "rgb(226, 230, 240)",
+      "borderRadius": "8px",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "color": "rgb(15, 20, 36)",
+      "boxShadow": "none"
+    },
+    "card": {
+      "borderColor": "rgb(226, 230, 240)",
+      "borderRadius": "8px",
+      "backgroundColor": "rgb(241, 243, 249)",
+      "color": "rgb(71, 84, 103)",
+      "boxShadow": "none"
+    }
+  },
+  "paper": {
+    "chip": {
+      "borderColor": "rgb(224, 216, 198)",
+      "borderRadius": "0px",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 86, 72)",
+      "boxShadow": "none"
+    },
+    "tabs": {
+      "borderColor": "rgb(224, 216, 198)",
+      "borderRadius": "0px",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(31, 26, 20)",
+      "boxShadow": "none"
+    },
+    "emptyState": {
+      "borderColor": "rgb(224, 216, 198)",
+      "borderRadius": "8px",
+      "backgroundColor": "rgb(255, 253, 248)",
+      "color": "rgb(31, 26, 20)",
+      "boxShadow": "none"
+    },
+    "inputPanel": {
+      "borderColor": "rgb(224, 216, 198)",
+      "borderRadius": "8px",
+      "backgroundColor": "rgb(255, 253, 248)",
+      "color": "rgb(31, 26, 20)",
+      "boxShadow": "none"
+    },
+    "card": {
+      "borderColor": "rgb(224, 216, 198)",
+      "borderRadius": "8px",
+      "backgroundColor": "rgb(243, 238, 226)",
+      "color": "rgb(94, 86, 72)",
+      "boxShadow": "none"
+    }
+  },
+  "dark": {
+    "chip": {
+      "borderColor": "rgb(38, 44, 59)",
+      "borderRadius": "0px",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(160, 168, 188)",
+      "boxShadow": "none"
+    },
+    "tabs": {
+      "borderColor": "rgb(38, 44, 59)",
+      "borderRadius": "0px",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "color": "rgb(232, 234, 242)",
+      "boxShadow": "none"
+    },
+    "emptyState": {
+      "borderColor": "rgb(38, 44, 59)",
+      "borderRadius": "8px",
+      "backgroundColor": "rgb(16, 19, 29)",
+      "color": "rgb(232, 234, 242)",
+      "boxShadow": "none"
+    },
+    "inputPanel": {
+      "borderColor": "rgb(38, 44, 59)",
+      "borderRadius": "8px",
+      "backgroundColor": "rgb(16, 19, 29)",
+      "color": "rgb(232, 234, 242)",
+      "boxShadow": "none"
+    },
+    "card": {
+      "borderColor": "rgb(38, 44, 59)",
+      "borderRadius": "8px",
+      "backgroundColor": "rgb(22, 26, 38)",
+      "color": "rgb(160, 168, 188)",
+      "boxShadow": "none"
+    }
+  }
+}
