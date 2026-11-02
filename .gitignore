@@ -39,6 +39,3 @@ exports/
 # Docker
 *.pid
 
-
-# frontend docs
-frontend/docs/screenshots/
