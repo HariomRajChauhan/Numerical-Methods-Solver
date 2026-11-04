@@ -68,6 +68,16 @@ body {
   color: var(--color-ink);
 }
 
+/* Subtle graph-paper texture used behind hero headers. */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 2rem 2rem;
+  mask-image: radial-gradient(ellipse 90% 75% at 50% 0%, black 20%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 75% at 50% 0%, black 20%, transparent 78%);
+}
+
 .no-scrollbar {
   scrollbar-width: none;
 }
@@ -233,7 +243,7 @@ body {
 }
 
 [data-focus="true"] #main-content {
-  min-h: 100dvh !important;
+  min-height: 100dvh !important;
   width: 100% !important;
   max-width: none !important;
   padding: 0 !important;

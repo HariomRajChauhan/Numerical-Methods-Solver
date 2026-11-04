@@ -49,7 +49,7 @@ export function HomePage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 sm:space-y-12">
-      <section className="relative overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 sm:p-9 lg:p-12">
+      <section className="relative overflow-hidden rounded-panel border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 sm:p-9 lg:p-12">
         <div aria-hidden="true" className="bg-grid absolute inset-0 opacity-80" />
 
         <div className="relative grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr]">
@@ -124,7 +124,11 @@ export function HomePage() {
 
       <ChapterCatalogue />
 
-      <section className="relative overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 sm:p-8">
+      <section className="relative overflow-hidden rounded-panel border border-slate-800/80 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 p-6 shadow-card sm:p-8">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-indigo-500/20 blur-3xl"
+        />
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-300">
@@ -140,7 +144,7 @@ export function HomePage() {
           </div>
           <Link
             to={`/methods/${STARTER_METHOD.id}`}
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-indigo-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-control bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-indigo-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
           >
             Open {STARTER_METHOD.name.replace(/ Method$/, "")}
             <Icon name="arrowRight" size={15} />

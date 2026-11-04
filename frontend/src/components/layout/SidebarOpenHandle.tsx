@@ -15,7 +15,7 @@ export function SidebarOpenHandle() {
       aria-label="Open sidebar"
       aria-keyshortcuts="Ctrl+B Meta+B"
       title="Open sidebar (Ctrl+B / ⌘B)"
-      onClick={() => setMode("rail")}
+      onClick={() => setMode("expanded")}
       onPointerDown={(event) => {
         event.preventDefault();
         startX.current = event.clientX;
@@ -25,23 +25,15 @@ export function SidebarOpenHandle() {
         if (dragging.current) return;
         if (event.clientX - startX.current > 20) {
           dragging.current = true;
-          setMode("rail");
-          setWidth(56);
+          setMode("expanded");
+          setWidth(280);
         }
       }}
       onPointerUp={() => {
         dragging.current = false;
       }}
-      className="sidebar-open-handle fixed left-0 top-1/2 z-50 -translate-y-1/2 flex h-24 w-8 items-center justify-center gap-1 rounded-r-[12px] bg-white shadow-md transition hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:bg-[#0f172a] dark:hover:bg-[#111a2c]"
+      className="sidebar-open-handle fixed left-0 top-1/2 z-50 -translate-y-1/2 flex h-12 w-2 items-center justify-center rounded-r-[6px] bg-[color:var(--color-accent)] opacity-60 shadow-sm transition hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)]"
       style={{ touchAction: "none" }}
-    >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="text-slate-600 dark:text-slate-300">
-        <rect x="3" y="4" width="18" height="16" rx="2" />
-        <path d="M9 4v16" />
-      </svg>
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-600 [writing-mode:vertical-rl] rotate-180 dark:text-slate-300">
-        MENU
-      </span>
-    </button>
+    />
   );
 }

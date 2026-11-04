@@ -1,0 +1,13 @@
+import { chromium } from "playwright";
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+await page.goto("http://localhost:5173/methods/bisection", { waitUntil: "networkidle" });
+await page.waitForTimeout(500);
+await page.selectOption("#example-select", { index: 1 });
+await page.getByRole("button", { name: "Solve", exact: true }).first().click();
+await page.waitForTimeout(4000);
+const panel = page.locator('[role="tabpanel"]');
+console.log("PANEL TEXT", (await panel.innerText()).slice(0, 2000));
+console.log("PANEL HTML", (await panel.innerHTML()).slice(0, 3000));
+console.log("BODY LEN", (await page.locator("body").innerText()).length);
+await browser.close();

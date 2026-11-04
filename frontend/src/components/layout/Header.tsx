@@ -8,6 +8,7 @@ import { Icon } from "../ui/Icon";
 /** Top bar: brand, global search, shortcut help, theme switch and menu toggle. */
 export function Header({
   onToggleSidebar,
+  sidebarOpen,
   onOpenShortcuts,
   onToggleFocus,
   focusMode,
@@ -21,28 +22,26 @@ export function Header({
   return (
     <header className="site-header no-print sticky top-0 z-40 border-b border-[color:var(--color-border)] bg-[color:var(--color-surface)]">
       <div className="mx-auto flex h-16 max-w-[1680px] items-center gap-0 px-0">
-        <div className="flex h-16 w-[56px] shrink-0 items-center justify-center">
+        <div className="flex h-16 shrink-0 items-center pl-1 sm:pl-2">
           <button
             type="button"
             onClick={onToggleSidebar}
-            aria-label="Toggle sidebar"
+            aria-label="Toggle navigation menu"
+            aria-expanded={sidebarOpen}
+            aria-controls="mobile-navigation"
             aria-keyshortcuts="Ctrl+B Meta+B"
-            title="Toggle sidebar (Ctrl+B / ⌘B)"
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-[color:var(--color-ink-muted)] transition hover:bg-[color:var(--color-surface-2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)] lg:inline hidden sm:flex"
+            title="Navigation menu (Ctrl+B / ⌘B)"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-control text-[color:var(--color-ink-muted)] transition hover:bg-[color:var(--color-surface-2)] hover:text-[color:var(--color-ink)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)]"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 7h16" />
-              <path d="M4 12h16" />
-              <path d="M4 17h16" />
-            </svg>
-            <span className="sr-only">Toggle sidebar (Ctrl+B / ⌘B)</span>
+            <Icon name={sidebarOpen ? "close" : "menu"} size={19} />
+            <span className="sr-only">Toggle navigation menu (Ctrl+B / ⌘B)</span>
           </button>
         </div>
 
         <Link
           to="/"
           aria-label="Numerical Methods Solver — home"
-          className="group ml-3 flex min-w-0 shrink-0 items-center gap-2"
+          className="group ml-2 flex min-w-0 shrink-0 items-center gap-2 rounded-control focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)] sm:ml-3"
         >
           <BrandMark className="h-8 w-8 shrink-0 transition" />
           <span className="hidden max-w-[200px] truncate text-sm font-semibold tracking-tight text-[color:var(--color-ink)] sm:block">
@@ -97,7 +96,12 @@ export function Header({
           </Link>
         </nav>
 
-        <ThemeToggle />
+        <div className="hidden shrink-0 items-center pr-2 sm:flex sm:pr-3">
+          <ThemeToggle />
+        </div>
+        <div className="flex shrink-0 items-center pr-1 sm:hidden">
+          <ThemeToggle compact />
+        </div>
       </div>
     </header>
   );

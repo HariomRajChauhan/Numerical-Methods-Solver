@@ -134,7 +134,7 @@ export function SearchBar() {
             }
           }}
           placeholder="Search methods — Newton, Simpson, RK4…"
-          className={`${ui.input} !py-2 pl-10 pr-16 [&::-webkit-search-cancel-button]:hidden`}
+          className={`${ui.input} !py-2 pl-10 pr-10 sm:pr-16 [&::-webkit-search-cancel-button]:hidden`}
         />
         {trimmed === "" ? (
           <kbd className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 items-center gap-0.5 rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 sm:flex dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300">
@@ -148,7 +148,7 @@ export function SearchBar() {
               inputRef.current?.focus();
             }}
             aria-label="Clear search"
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/[0.06] dark:hover:text-slate-200"
+            className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-control text-[color:var(--color-ink-muted)] transition hover:bg-[color:var(--color-surface-2)] hover:text-[color:var(--color-ink)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)]"
           >
             <Icon name="close" size={14} />
           </button>

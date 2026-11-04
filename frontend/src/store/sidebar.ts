@@ -1,16 +1,16 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type SidebarMode = "expanded" | "rail" | "hidden";
+export type SidebarMode = "expanded" | "hidden";
 
-const MODE_ORDER: SidebarMode[] = ["expanded", "rail", "hidden"];
+const MODE_ORDER: SidebarMode[] = ["expanded", "hidden"];
 export const STORAGE_KEY = "nms-sidebar";
 
 function sanitizeMode(mode: unknown): SidebarMode {
   if (typeof mode === "string" && MODE_ORDER.includes(mode as SidebarMode)) {
     return mode as SidebarMode;
   }
-  return "rail";
+  return "expanded";
 }
 
 function sanitizeWidth(width: unknown): number {
@@ -20,7 +20,7 @@ function sanitizeWidth(width: unknown): number {
 
 /** Read the saved sidebar mode synchronously (before first paint). */
 export function readSavedSidebarMode(): SidebarMode {
-  if (typeof window === "undefined") return "rail";
+  if (typeof window === "undefined") return "expanded";
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -31,7 +31,7 @@ export function readSavedSidebarMode(): SidebarMode {
   } catch {
     // Ignore corrupt/localStorage errors and fall back to default.
   }
-  return "rail";
+  return "expanded";
 }
 
 export function readSavedSidebarWidth(): number {
@@ -41,7 +41,7 @@ export function readSavedSidebarWidth(): number {
     if (raw) {
       const parsed = JSON.parse(raw) as { state?: { mode?: unknown; width?: unknown }; mode?: unknown; width?: unknown };
       const mode = sanitizeMode(parsed.state?.mode ?? parsed.mode);
-      if (mode !== "expanded") return 280;
+      if (mode === "hidden") return 280;
       const width = parsed.state?.width ?? parsed.width;
       return sanitizeWidth(width);
     }
@@ -76,10 +76,10 @@ interface SidebarState {
 export const useSidebarStore = create<SidebarState>()(
   persist(
     (set, get) => ({
-      mode: typeof window === "undefined" ? "rail" : readSavedSidebarMode(),
+      mode: typeof window === "undefined" ? "expanded" : readSavedSidebarMode(),
       width: typeof window === "undefined" ? 280 : readSavedSidebarWidth(),
-      autoCollapse: true,
-      pinned: false,
+      autoCollapse: false,
+      pinned: true,
       recent: [],
       favorites: [],
       focusMode: false,
@@ -97,7 +97,7 @@ export const useSidebarStore = create<SidebarState>()(
         const current = sanitizeMode(get().mode);
         const idx = MODE_ORDER.indexOf(current);
         const next = MODE_ORDER[(idx + 1) % MODE_ORDER.length];
-        set({ mode: next, pinned: false });
+        set({ mode: next, pinned: true });
         if (next === "expanded") {
           set({ width: sanitizeWidth(get().width) });
         }

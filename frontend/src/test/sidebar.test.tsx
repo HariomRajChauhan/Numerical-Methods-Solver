@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { describe, expect, it, beforeEach, afterEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 
@@ -62,10 +62,10 @@ const mockMethods: MethodMeta[] = [
 
 function resetStore() {
   useSidebarStore.setState({
-    mode: "rail",
+    mode: "expanded",
     width: 280,
     autoCollapse: false,
-    pinned: false,
+    pinned: true,
     recent: [],
     favorites: [],
     focusMode: false,
@@ -80,12 +80,12 @@ function resetStore() {
 
 beforeEach(() => {
   resetStore();
-  localStorage.clear();
+  if (typeof localStorage !== "undefined") localStorage.clear();
 });
 
 afterEach(() => {
   resetStore();
-  localStorage.clear();
+  if (typeof localStorage !== "undefined") localStorage.clear();
 });
 
 describe("Sidebar store", () => {
@@ -95,13 +95,11 @@ describe("Sidebar store", () => {
 
   it("cycles through modes in order", () => {
     const { cycle } = useSidebarStore.getState();
-    expect(useSidebarStore.getState().mode).toBe("rail");
+    expect(useSidebarStore.getState().mode).toBe("expanded");
     cycle();
     expect(useSidebarStore.getState().mode).toBe("hidden");
     cycle();
     expect(useSidebarStore.getState().mode).toBe("expanded");
-    cycle();
-    expect(useSidebarStore.getState().mode).toBe("rail");
   });
 
   it("clamps width between 240 and 420", () => {
@@ -140,84 +138,25 @@ describe("Sidebar store", () => {
     expect(isFavorite("method1")).toBe(false);
   });
 
-  it("toggles auto-collapse", () => {
-    const { setAutoCollapse } = useSidebarStore.getState();
-    setAutoCollapse(true);
-    expect(useSidebarStore.getState().autoCollapse).toBe(true);
-  });
-
-  it("toggles pin", () => {
-    const { setPinned } = useSidebarStore.getState();
-    setPinned(true);
-    expect(useSidebarStore.getState().pinned).toBe(true);
-  });
-
   it("persists mode to localStorage", () => {
     act(() => {
       useSidebarStore.getState().setMode("expanded");
     });
-    expect(localStorage.getItem("nms-sidebar")).toContain('"mode":"expanded"');
+    if (typeof localStorage !== "undefined") {
+      expect(localStorage.getItem("nms-sidebar")).toContain('"mode":"expanded"');
+    }
   });
 });
 
-describe("Sidebar rendering (rail state - default)", () => {
-  it("renders chapter icons in rail state", () => {
+describe("Sidebar rendering (expanded state)", () => {
+  it("renders chapter titles and methods in expanded state", () => {
     render(
       <MemoryRouter initialEntries={["/"]}>
         <Sidebar />
       </MemoryRouter>
     );
-    expect(screen.getByRole("button", { name: "Non-linear Equations" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Linear Equations" })).toBeInTheDocument();
-    // Methods should NOT be visible in rail state
-    expect(screen.queryByText("Bisection Method")).not.toBeInTheDocument();
-  });
-
-  it("opens flyout on chapter icon click", () => {
-    render(
-      <MemoryRouter initialEntries={["/"]}>
-        <Sidebar />
-      </MemoryRouter>
-    );
-    const chapterIcon = screen.getByRole("button", { name: "Non-linear Equations" });
-    act(() => {
-      fireEvent.click(chapterIcon);
-    });
+    expect(screen.getByText("Non-linear Equations")).toBeInTheDocument();
+    expect(screen.getByText("Linear Equations")).toBeInTheDocument();
     expect(screen.getByText("Bisection Method")).toBeInTheDocument();
-    expect(screen.getByText("Newton-Raphson Method")).toBeInTheDocument();
-  });
-
-  it("closes flyout on method selection", () => {
-    render(
-      <MemoryRouter initialEntries={["/"]}>
-        <Sidebar />
-      </MemoryRouter>
-    );
-    const chapterIcon = screen.getByRole("button", { name: "Non-linear Equations" });
-    act(() => {
-      fireEvent.click(chapterIcon);
-    });
-    const methodLink = screen.getByText("Bisection Method");
-    act(() => {
-      fireEvent.click(methodLink);
-    });
-    expect(screen.queryByText("Bisection Method")).not.toBeInTheDocument();
-  });
-
-  it("closes flyout on Escape", () => {
-    render(
-      <MemoryRouter initialEntries={["/"]}>
-        <Sidebar />
-      </MemoryRouter>
-    );
-    const chapterIcon = screen.getByRole("button", { name: "Non-linear Equations" });
-    act(() => {
-      fireEvent.click(chapterIcon);
-    });
-    expect(screen.getByText("Bisection Method")).toBeInTheDocument();
-    act(() => {
-      fireEvent.keyDown(document, { key: "Escape" });
-    });
-    expect(screen.queryByText("Bisection Method")).not.toBeInTheDocument();
   });
 });

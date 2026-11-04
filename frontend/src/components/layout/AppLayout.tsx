@@ -1,14 +1,16 @@
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
 import { useCatalog } from "../../hooks/useCatalog";
 import { Toaster } from "../Toaster";
 import { LoadingSkeleton } from "../LoadingSkeleton";
+import { Icon } from "../ui/Icon";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { ShortcutsSheet } from "./ShortcutsSheet";
 import { Sidebar } from "./Sidebar";
 import { useSidebarStore } from "../../store/sidebar";
+import { ui } from "../../utils/ui";
 
 /**
  * App shell: header + sidebar (desktop) / drawer (mobile) + routed content.
@@ -31,9 +33,23 @@ export function AppLayout() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const drawerOpen = openFor === location.pathname;
   const closeShortcuts = useCallback(() => setShortcutsOpen(false), []);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
 
   function setDrawer(open: boolean): void {
     setOpenFor(open ? location.pathname : null);
+  }
+
+  /**
+   * Below `lg` the menu button opens the navigation drawer; from `lg` up it
+   * keeps its original behaviour of cycling the desktop sidebar state.
+   */
+  function handleToggleSidebar(): void {
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches) {
+      setDrawer(!drawerOpen);
+      return;
+    }
+    cycle();
   }
 
   useEffect(() => {
@@ -55,17 +71,50 @@ export function AppLayout() {
     return () => document.removeEventListener("keydown", handleFocusKeys);
   }, [focusMode, setFocusMode]);
 
+  // Mobile drawer: lock scroll, move focus inside, trap Tab and restore focus
+  // to the trigger when the drawer closes (Escape, backdrop, close or route).
   useEffect(() => {
     if (!drawerOpen) return;
-    const previous = document.body.style.overflow;
+
+    const trigger = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    function handleEscape(event: KeyboardEvent): void {
-      if (event.key === "Escape") setOpenFor(null);
+    const frame = window.requestAnimationFrame(() => drawerCloseRef.current?.focus());
+
+    function handleKeyDown(event: KeyboardEvent): void {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpenFor(null);
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const root = drawerRef.current;
+      if (!root) return;
+      const focusable = Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((element) => element.offsetParent !== null);
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
-    window.addEventListener("keydown", handleEscape);
+
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.body.style.overflow = previous;
-      window.removeEventListener("keydown", handleEscape);
+      window.cancelAnimationFrame(frame);
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+      trigger?.focus?.();
     };
   }, [drawerOpen]);
 
@@ -111,7 +160,7 @@ export function AppLayout() {
 
       {!focusMode && (
         <Header
-          onToggleSidebar={cycle}
+          onToggleSidebar={handleToggleSidebar}
           sidebarOpen={drawerOpen}
           onOpenShortcuts={() => setShortcutsOpen(true)}
           onToggleFocus={() => setFocusMode(!focusMode)}
@@ -122,7 +171,10 @@ export function AppLayout() {
       {!focusMode ? (
         <div className="mx-auto flex w-full max-w-[1680px]">
           {/* Desktop sidebar — three states (managed internally by Sidebar) */}
-          <Sidebar onNavigate={() => setDrawer(false)} />
+          <Sidebar
+            className="hidden lg:block"
+            onNavigate={() => setDrawer(false)}
+          />
 
           {drawerOpen && (
             <>
@@ -131,12 +183,38 @@ export function AppLayout() {
                 onClick={() => setDrawer(false)}
                 className="no-print fixed inset-x-0 bottom-0 top-16 z-30 bg-slate-950/40 backdrop-blur-sm lg:hidden"
               />
-              <aside
-                aria-label="Navigation"
-                className="site-sidebar no-print fixed bottom-0 left-0 top-16 z-40 w-[19rem] max-w-[86vw] animate-slide-in overflow-y-auto border-r border-slate-200/80 bg-white shadow-2xl scroll-slim lg:hidden dark:border-white/10 dark:bg-[#0b1020]"
+              <div
+                ref={drawerRef}
+                id="mobile-navigation"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Navigation menu"
+                className="no-print fixed bottom-0 left-0 top-16 z-40 flex w-[19rem] max-w-[86vw] flex-col overflow-hidden border-r border-[color:var(--color-border)] bg-[color:var(--color-surface)] shadow-2xl animate-slide-in lg:hidden"
               >
-                <Sidebar onNavigate={() => setDrawer(false)} />
-              </aside>
+                <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[color:var(--color-border)] px-4 py-3">
+                  <div className="min-w-0">
+                    <p className={ui.sectionLabel}>Navigation</p>
+                    <p className="truncate text-sm font-semibold text-[color:var(--color-ink)]">
+                      Numerical Methods Solver
+                    </p>
+                  </div>
+                  <button
+                    ref={drawerCloseRef}
+                    type="button"
+                    onClick={() => setDrawer(false)}
+                    aria-label="Close navigation menu"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control text-[color:var(--color-ink-muted)] transition hover:bg-[color:var(--color-surface-2)] hover:text-[color:var(--color-ink)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)]"
+                  >
+                    <Icon name="close" size={18} />
+                  </button>
+                </div>
+                <div className="min-h-0 flex-1 overflow-y-auto scroll-slim">
+                  <Sidebar
+                    variant="drawer"
+                    onNavigate={() => setDrawer(false)}
+                  />
+                </div>
+              </div>
             </>
           )}
 
