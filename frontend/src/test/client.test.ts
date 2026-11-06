@@ -71,7 +71,7 @@ describe("api client", () => {
 
   it("downloads a report as a Blob", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(new Blob(["%PDF-1.4"], { type: "application/pdf" }), {
+      new Response("%PDF-1.4", {
         status: 200,
         headers: { "Content-Type": "application/pdf" },
       }),

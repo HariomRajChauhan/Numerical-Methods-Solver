@@ -19,7 +19,10 @@ afterEach(() => {
 describe("ExportButtons", () => {
   it("posts to the export endpoint and downloads the blob", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(new Blob(["%PDF-1.4"], { type: "application/pdf" }), { status: 200 }),
+      new Response("%PDF-1.4", {
+        status: 200,
+        headers: { "Content-Type": "application/pdf" },
+      }),
     );
     vi.stubGlobal("fetch", fetchMock);
 
