@@ -34,7 +34,12 @@ describe("ExportButtons", () => {
       "/api/export/bisection?format=pdf",
       expect.objectContaining({ method: "POST", body: JSON.stringify({ a: 1 }) }),
     );
-    expect(downloadBlob).toHaveBeenCalledWith("nms_bisection.pdf", expect.any(Blob));
+    expect(downloadBlob).toHaveBeenCalledTimes(1);
+    const [filename, blob] = vi.mocked(downloadBlob).mock.calls[0];
+    expect(filename).toBe("nms_bisection.pdf");
+    expect(blob).toBeDefined();
+    expect(blob.type).toBe("application/pdf");
+    expect(blob.size).toBe(8);
   });
 
   it("shows the backend message when the export fails", async () => {

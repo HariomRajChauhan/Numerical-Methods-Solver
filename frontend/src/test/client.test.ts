@@ -79,7 +79,9 @@ describe("api client", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const blob = await api.exportReport("bisection", { a: 1, b: 2 }, "pdf");
-    expect(blob).toBeInstanceOf(Blob);
+    expect(blob).toBeDefined();
+    expect(typeof blob.arrayBuffer).toBe("function");
+    expect(blob.size).toBe(8);
     expect(blob.type).toBe("application/pdf");
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/export/bisection?format=pdf",
