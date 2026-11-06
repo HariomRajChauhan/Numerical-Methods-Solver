@@ -19,7 +19,10 @@ afterEach(() => {
 describe("ExportButtons", () => {
   it("posts to the export endpoint and downloads the blob", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(new Blob(["%PDF-1.4"], { type: "application/pdf" }), { status: 200 }),
+      new Response("%PDF-1.4", {
+        status: 200,
+        headers: { "Content-Type": "application/pdf" },
+      }),
     );
     vi.stubGlobal("fetch", fetchMock);
 
@@ -31,7 +34,12 @@ describe("ExportButtons", () => {
       "/api/export/bisection?format=pdf",
       expect.objectContaining({ method: "POST", body: JSON.stringify({ a: 1 }) }),
     );
-    expect(downloadBlob).toHaveBeenCalledWith("nms_bisection.pdf", expect.any(Blob));
+    expect(downloadBlob).toHaveBeenCalledTimes(1);
+    const [filename, blob] = vi.mocked(downloadBlob).mock.calls[0];
+    expect(filename).toBe("nms_bisection.pdf");
+    expect(blob).toBeDefined();
+    expect(blob.type).toBe("application/pdf");
+    expect(blob.size).toBe(8);
   });
 
   it("shows the backend message when the export fails", async () => {

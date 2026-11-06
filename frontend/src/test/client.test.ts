@@ -71,7 +71,7 @@ describe("api client", () => {
 
   it("downloads a report as a Blob", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(new Blob(["%PDF-1.4"], { type: "application/pdf" }), {
+      new Response("%PDF-1.4", {
         status: 200,
         headers: { "Content-Type": "application/pdf" },
       }),
@@ -79,7 +79,9 @@ describe("api client", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const blob = await api.exportReport("bisection", { a: 1, b: 2 }, "pdf");
-    expect(blob).toBeInstanceOf(Blob);
+    expect(blob).toBeDefined();
+    expect(typeof blob.arrayBuffer).toBe("function");
+    expect(blob.size).toBe(8);
     expect(blob.type).toBe("application/pdf");
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/export/bisection?format=pdf",

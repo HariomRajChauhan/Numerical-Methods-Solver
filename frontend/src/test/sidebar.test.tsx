@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, beforeEach, afterEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 
@@ -149,7 +149,7 @@ describe("Sidebar store", () => {
 });
 
 describe("Sidebar rendering (expanded state)", () => {
-  it("renders chapter titles and methods in expanded state", () => {
+  it("renders chapter titles and methods in expanded state", async () => {
     render(
       <MemoryRouter initialEntries={["/"]}>
         <Sidebar />
@@ -157,6 +157,7 @@ describe("Sidebar rendering (expanded state)", () => {
     );
     expect(screen.getByText("Non-linear Equations")).toBeInTheDocument();
     expect(screen.getByText("Linear Equations")).toBeInTheDocument();
-    expect(screen.getByText("Bisection Method")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Non-linear Equations"));
+    expect(await screen.findByText("Bisection Method")).toBeInTheDocument();
   });
 });
