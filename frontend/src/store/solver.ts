@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 import { api, ApiError } from "../api/client";
+import { backendUnavailableError, waitForBackendReady } from "./connection";
 import type { InputField, MethodMeta, SolveResponse } from "../types/api";
 
 /** Build the initial input state for a method from its schema defaults. */
@@ -84,6 +85,19 @@ export const useSolverStore = create<SolverState>()((set, get) => ({
     }),
 
   run: async (meta) => {
+    // Shared links auto-run on page load, possibly before a sleeping Render
+    // instance is ready. Wait on the shared readiness cycle rather than sending
+    // solve requests that would fail during the cold start.
+    const ready = await waitForBackendReady();
+    if (!ready) {
+      set({
+        status: "error",
+        error: backendUnavailableError(),
+        response: undefined,
+      });
+      return;
+    }
+
     set({ status: "loading", error: undefined, response: undefined });
     try {
       const response = await api.solve(meta.id, get().inputs);

@@ -29,6 +29,7 @@ import { ResizeDivider } from "../components/workspace/ResizeDivider";
 import { WorkspaceToolbar } from "../components/workspace/WorkspaceToolbar";
 import { useMethodMeta } from "../hooks/useMethodMeta";
 import { usePageTitle } from "../hooks/usePageTitle";
+import { retryBackendConnection, useBackendConnectionStore } from "../store/connection";
 import { useSolverStore } from "../store/solver";
 import { toast } from "../store/toast";
 import type { SolveResponse } from "../types/api";
@@ -96,6 +97,7 @@ export function MethodSolverPage() {
   const status = useSolverStore((state) => state.status);
   const response = useSolverStore((state) => state.response);
   const solveError = useSolverStore((state) => state.error);
+  const backendStatus = useBackendConnectionStore((state) => state.status);
   const initialize = useSolverStore((state) => state.initialize);
   const setInput = useSolverStore((state) => state.setInput);
   const loadExample = useSolverStore((state) => state.loadExample);
@@ -251,6 +253,21 @@ export function MethodSolverPage() {
 
   async function handleSolve(): Promise<void> {
     setActiveTab("answer");
+
+    if (backendStatus !== "ready") {
+      const starting = backendStatus === "checking" || backendStatus === "waking";
+      if (!starting) void retryBackendConnection();
+      toast({
+        tone: starting ? "info" : "error",
+        title: starting ? "Solver is starting" : "Solver offline",
+        message: starting
+          ? "The free solver server is waking up. Your inputs are safe — try again in a moment."
+          : "Reconnecting to the solver. Your inputs are safe — try again shortly.",
+        duration: 5200,
+      });
+      return;
+    }
+
     await run(method);
     setSolveVersion((value) => value + 1);
     const result = useSolverStore.getState();
@@ -352,6 +369,7 @@ export function MethodSolverPage() {
         formId="method-form"
         busy={busy}
         canSolve={meta.status === "available"}
+        backendStatus={backendStatus}
         methodId={meta.id}
         methodName={meta.name}
         shareUrl={shareUrl}

@@ -1,6 +1,10 @@
 import { useState } from "react";
 
 import { api, ApiError, type ExportFormat } from "../api/client";
+import {
+  retryBackendConnection,
+  useBackendConnectionStore,
+} from "../store/connection";
 import { toast } from "../store/toast";
 import { downloadBlob } from "../utils/download";
 import { ui } from "../utils/ui";
@@ -21,6 +25,28 @@ export function ExportButtons({ methodId, inputs, compact = false }: ExportButto
   const [error, setError] = useState<string | null>(null);
 
   async function handleExport(format: ExportFormat): Promise<void> {
+    const connection = useBackendConnectionStore.getState().status;
+    if (connection !== "ready") {
+      const starting = connection === "checking" || connection === "waking";
+      if (starting) {
+        toast({
+          tone: "info",
+          title: "Solver is starting",
+          message: "The solver is still starting. Please try again in a moment.",
+        });
+        return;
+      }
+      const message = "Reconnecting to the solver. Please try again shortly.";
+      setError(message);
+      void retryBackendConnection();
+      toast({
+        tone: "error",
+        title: "Solver offline",
+        message,
+      });
+      return;
+    }
+
     setBusy(format);
     setError(null);
     try {

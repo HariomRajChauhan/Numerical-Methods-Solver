@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { api, ApiError } from "../api/client";
+import { backendUnavailableError, waitForBackendReady } from "../store/connection";
 import type { MethodMeta } from "../types/api";
 
 interface MethodState {
@@ -23,30 +24,41 @@ interface Resolved {
  */
 export function useMethodMeta(methodId: string | undefined): MethodState {
   const [resolved, setResolved] = useState<Resolved>();
-  const [attempt, setAttempt] = useState(0);
-  const key = methodId ? `${methodId}:${attempt}` : "";
-  const reload = () => setAttempt((value) => value + 1);
+  const [attempt, setAttempt] = useState<{ methodId?: string; count: number }>({ count: 0 });
+  const key = methodId ? `${methodId}:${attempt.count}` : "";
+  const reload = () =>
+    setAttempt((value) => ({ methodId, count: value.count + 1 }));
 
   useEffect(() => {
     if (!methodId) return;
-    const requestKey = `${methodId}:${attempt}`;
+    const requestKey = `${methodId}:${attempt.count}`;
+    const restartOnError = attempt.methodId === methodId && attempt.count > 0;
     let cancelled = false;
-    api
-      .getMethod(methodId)
-      .then((meta) => {
+
+    async function loadMeta(): Promise<void> {
+      const ready = await waitForBackendReady(restartOnError);
+      if (cancelled) return;
+      if (!ready) {
+        setResolved({ key: requestKey, error: backendUnavailableError() });
+        return;
+      }
+      try {
+        const meta = await api.getMethod(methodId as string);
         if (!cancelled) setResolved({ key: requestKey, meta });
-      })
-      .catch((error: unknown) => {
+      } catch (error) {
         if (cancelled) return;
         setResolved({
           key: requestKey,
           error: error instanceof ApiError ? error : new ApiError("Failed to load the method."),
         });
-      });
+      }
+    }
+
+    void loadMeta();
     return () => {
       cancelled = true;
     };
-  }, [methodId, attempt]);
+  }, [methodId, attempt.count, attempt.methodId]);
 
   if (!methodId) {
     return {

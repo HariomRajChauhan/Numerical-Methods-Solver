@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
+import type { BackendConnectionStatus } from "../../store/connection";
 import { toast } from "../../store/toast";
 import type { MethodExample } from "../../types/api";
 import { copyText } from "../../utils/download";
@@ -11,6 +12,7 @@ interface WorkspaceToolbarProps {
   formId: string;
   busy: boolean;
   canSolve: boolean;
+  backendStatus: BackendConnectionStatus;
   methodId: string;
   methodName: string;
   shareUrl: string;
@@ -27,6 +29,7 @@ export function WorkspaceToolbar({
   formId,
   busy,
   canSolve,
+  backendStatus,
   methodId,
   methodName,
   shareUrl,
@@ -37,6 +40,27 @@ export function WorkspaceToolbar({
   onToggleInputs,
   onLoadExample,
 }: WorkspaceToolbarProps) {
+  const solveLabel = !canSolve
+    ? "Solve"
+    : busy
+      ? "Solving…"
+      : backendStatus === "error"
+        ? "Retry"
+        : backendStatus === "ready"
+          ? "Solve"
+          : backendStatus === "checking"
+            ? "Connecting…"
+            : "Waking…";
+  const solveTitle = !canSolve
+    ? "This method is coming soon"
+    : backendStatus === "ready"
+      ? "Solve (Ctrl/⌘ + Enter)"
+      : backendStatus === "error"
+        ? "Reconnect to the solver"
+        : backendStatus === "checking"
+          ? "Connecting to the solver"
+          : "The solver is waking up";
+
   return (
     <div
       role="toolbar"
@@ -61,15 +85,15 @@ export function WorkspaceToolbar({
         disabled={busy || !canSolve}
         aria-busy={busy}
         aria-keyshortcuts="Control+Enter Meta+Enter"
-        title={canSolve ? "Solve (Ctrl/⌘ + Enter)" : "This method is coming soon"}
+        title={solveTitle}
         className={`${ui.btnPrimary} px-4 py-2`}
       >
         <Icon
-          name={busy ? "loader" : "play"}
+          name={busy ? "loader" : backendStatus === "error" ? "refresh" : "play"}
           size={15}
           className={busy ? "animate-spin" : undefined}
         />
-        {busy ? "Solving…" : "Solve"}
+        {solveLabel}
       </button>
 
       <span aria-hidden="true" className="mx-0.5 hidden h-5 w-px bg-line sm:block" />

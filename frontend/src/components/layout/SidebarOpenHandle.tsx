@@ -32,7 +32,7 @@ export function SidebarOpenHandle() {
       onPointerUp={() => {
         dragging.current = false;
       }}
-      className="sidebar-open-handle fixed left-0 top-1/2 z-50 -translate-y-1/2 flex h-12 w-2 items-center justify-center rounded-r-[6px] bg-[color:var(--color-accent)] opacity-60 shadow-sm transition hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)]"
+      className="sidebar-open-handle fixed left-0 top-1/2 z-50 -translate-y-1/2 flex h-12 w-2 items-center justify-center rounded-r-md bg-accent opacity-60 shadow-sm transition hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       style={{ touchAction: "none" }}
     />
   );

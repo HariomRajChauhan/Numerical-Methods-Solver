@@ -21,7 +21,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
         onClick={cycle}
         aria-label="Cycle theme"
         title="Cycle theme"
-        className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:text-slate-400 dark:hover:bg-white/[0.04] dark:hover:text-white"
+        className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:text-slate-400 dark:hover:bg-white/4 dark:hover:text-white"
       >
         {mode === "light" && <Icon name="sun" size={20} />}
         {mode === "paper" && <Icon name="book" size={20} />}
@@ -36,7 +36,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
     <div
       role="group"
       aria-label="Colour theme"
-      className="inline-flex shrink-0 items-center gap-0.5 rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] p-0.5"
+      className="inline-flex shrink-0 items-center gap-0.5 rounded-xl border border-border bg-surface-2 p-0.5"
     >
       {MODES.map((option) => {
         const active = mode === option.id;
@@ -49,8 +49,8 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
             title={`${option.label} theme`}
             className={`flex h-8 w-8 items-center justify-center rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
               active
-                ? "bg-[color:var(--color-surface)] text-[color:var(--color-ink)]"
-                : "text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)]"
+                ? "bg-surface text-ink"
+                : "text-ink-muted hover:text-ink"
             }`}
           >
             <Icon name={option.icon} size={18} />

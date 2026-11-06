@@ -114,6 +114,60 @@ docker compose up --build
 The frontend container serves the built SPA through nginx, which also proxies
 `/api/` to the backend service — again same-origin, no CORS.
 
+## Production deployment (Cloudflare Workers + Render Free)
+
+The production frontend is hosted on Cloudflare Workers and calls the Render
+backend directly, so CORS applies (there is no nginx proxy in that path).
+
+**Cloudflare Workers build variable**
+
+```text
+VITE_API_BASE_URL=https://numerical-methods-solver-api.onrender.com
+```
+
+Do **not** include `/api` or a trailing slash in this value. The API client adds
+`/api/health`, producing the canonical endpoint:
+
+```text
+https://numerical-methods-solver-api.onrender.com/api/health
+```
+
+Vite embeds this variable at build time — rebuild and redeploy the Worker after
+changing it.
+
+**Render service settings**
+
+- Health-check path: `/api/health` (not `/health`).
+- Environment: `API_PREFIX=/api`.
+- `CORS_ORIGINS` must include `https://nms.hariomchauhan.com.np` (the backend
+  default now includes it; Render dashboard env vars override the default).
+- The Docker image already health-checks `http://127.0.0.1:8000/api/health`, and
+  Uvicorn listens on port `8000`.
+
+**Render free-tier wake-up**
+
+The API spins down after inactivity. On a fresh visit the frontend immediately
+sends one shared `GET /api/health` request, retries transient network/502/503/504
+responses with backoff for up to about 150 seconds, and shows a compact status
+indicator in the header. The page shell, navigation and inputs stay usable while
+the backend wakes. There is no permanent pinger, cron job or paid keep-alive;
+Render Free cannot be kept awake for free.
+
+Quick production checks:
+
+```bash
+curl -i https://numerical-methods-solver-api.onrender.com/api/health
+# expected: HTTP 200 and {"status":"ok","service":"Numerical Methods Solver",...}
+
+curl -i https://numerical-methods-solver-api.onrender.com/health
+# expected: HTTP 404 — /health is intentionally not an alias; use /api/health
+```
+
+To test a cold start, wait for the Render service to spin down after inactivity,
+open a fresh browser session at <https://nms.hariomchauhan.com.np/>, watch the
+header indicator move through “Connecting…” / “Waking solver…” to “Connected”,
+then run a solver without refreshing.
+
 ## Configuration
 
 Copy `.env.example` to `.env` (root) and adjust. Backend settings use the
@@ -122,14 +176,15 @@ Copy `.env.example` to `.env` (root) and adjust. Backend settings use the
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `API_PREFIX` | `/api` | Prefix for every route. |
-| `CORS_ORIGINS` | `localhost:5173,127.0.0.1:5173,localhost:3000,127.0.0.1:3000` | Comma-separated allowed origins (only relevant if you bypass the proxy). |
+| `CORS_ORIGINS` | `localhost:5173,127.0.0.1:5173,localhost:3000,127.0.0.1:3000,https://nms.hariomchauhan.com.np` | Comma-separated allowed origins (only relevant if you bypass the proxy). |
 | `RATE_LIMIT_PER_MINUTE` | `60` | Per-IP limit for `/solve` and `/export`. |
 | `SOLVER_TIMEOUT_SECONDS` | `10` | Wall-clock budget per solve. |
 | `MAX_ITERATIONS_LIMIT` | `10000` | Cap solvers must respect. |
 | `MAX_MATRIX_SIZE` | `50` | Largest accepted matrix dimension. |
 
 Frontend: `VITE_API_BASE_URL` (leave empty for same-origin; set a full URL only for
-a remote backend).
+a remote backend). Production Cloudflare build:
+`VITE_API_BASE_URL=https://numerical-methods-solver-api.onrender.com`.
 
 ## API reference
 

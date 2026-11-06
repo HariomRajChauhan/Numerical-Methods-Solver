@@ -1,6 +1,7 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
+import { useBackendConnection } from "../../hooks/useBackendConnection";
 import { useCatalog } from "../../hooks/useCatalog";
 import { Toaster } from "../Toaster";
 import { LoadingSkeleton } from "../LoadingSkeleton";
@@ -20,6 +21,7 @@ import { ui } from "../../utils/ui";
  * directly inside Sidebar so the component works standalone.
  */
 export function AppLayout() {
+  useBackendConnection();
   useCatalog();
   const location = useLocation();
 

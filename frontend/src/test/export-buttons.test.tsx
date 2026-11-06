@@ -1,7 +1,9 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ExportButtons } from "../components/ExportButtons";
+import { useBackendConnectionStore } from "../store/connection";
+import { useToastStore } from "../store/toast";
 import { downloadBlob } from "../utils/download";
 
 vi.mock("../utils/download", () => ({
@@ -11,9 +13,23 @@ vi.mock("../utils/download", () => ({
   slugify: (text: string) => text,
 }));
 
+beforeEach(() => {
+  useBackendConnectionStore.setState({
+    status: "ready",
+    error: undefined,
+    lastReadyAt: Date.now(),
+  });
+});
+
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.clearAllMocks();
+  useToastStore.getState().clear();
+  useBackendConnectionStore.setState({
+    status: "checking",
+    error: undefined,
+    lastReadyAt: undefined,
+  });
 });
 
 describe("ExportButtons", () => {
@@ -57,6 +73,23 @@ describe("ExportButtons", () => {
     fireEvent.click(screen.getByRole("button", { name: /Download CSV report/i }));
 
     expect(await screen.findByText("not implemented yet")).toBeInTheDocument();
+    expect(downloadBlob).not.toHaveBeenCalled();
+  });
+
+  it("does not request an export until the backend is ready", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    useBackendConnectionStore.setState({ status: "checking", error: undefined });
+
+    render(<ExportButtons methodId="bisection" inputs={{ a: 1 }} />);
+    fireEvent.click(screen.getByRole("button", { name: /Download PDF report/i }));
+
+    await waitFor(() => {
+      expect(useToastStore.getState().toasts.at(-1)?.message).toContain(
+        "still starting",
+      );
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
     expect(downloadBlob).not.toHaveBeenCalled();
   });
 });

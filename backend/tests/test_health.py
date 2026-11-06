@@ -17,6 +17,12 @@ def test_health_returns_ok() -> None:
     assert body["version"]
 
 
+def test_non_prefixed_health_is_not_exposed() -> None:
+    """`/health` is intentionally not aliased; the canonical path is `/api/health`."""
+    response = client.get("/health")
+    assert response.status_code == 404
+
+
 def test_openapi_document_available() -> None:
     """The OpenAPI schema is served (useful for frontend/types tooling)."""
     response = client.get("/openapi.json")

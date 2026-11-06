@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+import { ConnectionStatus } from "./ConnectionStatus";
 import { SearchBar } from "./SearchBar";
 import { ThemeToggle } from "./ThemeToggle";
 import { BrandMark } from "../ui/BrandMark";
@@ -96,6 +97,9 @@ export function Header({
           </Link>
         </nav>
 
+        <div className="flex shrink-0 items-center pl-1 sm:pl-2">
+          <ConnectionStatus />
+        </div>
         <div className="hidden shrink-0 items-center pr-2 sm:flex sm:pr-3">
           <ThemeToggle />
         </div>

@@ -1,7 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { defaultInputs } from "../store/solver";
-import type { MethodMeta } from "../types/api";
+import { api, ApiError } from "../api/client";
+import { useBackendConnectionStore } from "../store/connection";
+import { defaultInputs, useSolverStore } from "../store/solver";
+import type { MethodMeta, SolveResponse } from "../types/api";
 
 const META: MethodMeta = {
   id: "bisection",
@@ -82,5 +84,57 @@ describe("defaultInputs", () => {
   it("starts text/function fields as empty strings", () => {
     const inputs = defaultInputs(META);
     expect(inputs.function).toBe("");
+  });
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  useBackendConnectionStore.setState({
+    status: "checking",
+    error: undefined,
+    lastReadyAt: undefined,
+  });
+});
+
+describe("solver readiness", () => {
+  it("does not POST a solve while the backend is unavailable and keeps inputs", async () => {
+    const solve = vi.spyOn(api, "solve");
+    useBackendConnectionStore.setState({
+      status: "error",
+      error: new ApiError("offline", { code: "backend_unavailable" }),
+      lastReadyAt: undefined,
+    });
+    useSolverStore.getState().initialize(META);
+    useSolverStore.getState().setInput("function", "x^2 - 2");
+    const before = useSolverStore.getState().inputs;
+
+    await useSolverStore.getState().run(META);
+
+    expect(solve).not.toHaveBeenCalled();
+    expect(useSolverStore.getState().inputs).toEqual(before);
+    expect(useSolverStore.getState().status).toBe("error");
+  });
+
+  it("sends the solve request once the backend is ready", async () => {
+    const response = {
+      method: "bisection",
+      status: "converged",
+      result: { root: 1 },
+      steps: [],
+      tables: [],
+      plot: null,
+      error: null,
+      warnings: [],
+      pseudocode: "",
+      python_source: "",
+    } as unknown as SolveResponse;
+    const solve = vi.spyOn(api, "solve").mockResolvedValue(response);
+    useBackendConnectionStore.setState({ status: "ready", error: undefined });
+    useSolverStore.getState().initialize(META);
+
+    await useSolverStore.getState().run(META);
+
+    expect(solve).toHaveBeenCalledWith("bisection", useSolverStore.getState().inputs);
+    expect(useSolverStore.getState().status).toBe("done");
   });
 });

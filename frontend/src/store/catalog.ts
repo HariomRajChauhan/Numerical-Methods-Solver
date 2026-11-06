@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 import { api, ApiError } from "../api/client";
+import { backendUnavailableError, waitForBackendReady } from "./connection";
 import type { ChapterInfo, MethodCatalog, MethodMeta } from "../types/api";
 
 interface CatalogState {
@@ -21,6 +22,16 @@ export const useCatalogStore = create<CatalogState>()((set, get) => ({
     const { status } = get();
     if (!force && (status === "loading" || status === "ready")) return;
     set({ status: "loading", error: undefined });
+
+    // A cold Render instance needs to wake before the catalogue can load.
+    // A forced reload is an explicit user action, so it may restart a failed
+    // connection cycle.
+    const ready = await waitForBackendReady(force);
+    if (!ready) {
+      set({ status: "error", error: backendUnavailableError() });
+      return;
+    }
+
     try {
       const catalog: MethodCatalog = await api.getCatalog();
       set({

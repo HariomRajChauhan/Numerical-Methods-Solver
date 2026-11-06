@@ -107,9 +107,12 @@ async function requestBlob(path: string, init?: RequestInit): Promise<Blob> {
 export type ExportFormat = "pdf" | "csv";
 
 export const api = {
-  /** Backend liveness probe. */
-  health(): Promise<HealthResponse> {
-    return request<HealthResponse>("/health");
+  /** Backend liveness probe. Always hits the canonical `/api/health` route. */
+  health(signal?: AbortSignal): Promise<HealthResponse> {
+    return request<HealthResponse>("/health", {
+      cache: "no-store",
+      ...(signal ? { signal } : {}),
+    });
   },
 
   /** Chapter cards + every registered method (available and coming soon). */
